@@ -77,7 +77,7 @@
             
             <div class="mb-4 flex items-center justify-between">
                 <h2 class="text-xs font-extrabold uppercase text-[#003B70] tracking-wider flex items-center space-x-2">
-                    <i class="fa-solid fa-[#00529B] fa-filter"></i>
+                    <i class="fa-solid fa-filter text-[#00529B]"></i>
                     <span>Paso 1: Selecciona tus variables de origen</span>
                 </h2>
                 <button onclick="resetFilters()" class="text-xs text-slate-400 hover:text-[#00529B] font-semibold underline">
@@ -275,6 +275,7 @@
         const AREA_NAMES = { 'hq': 'HQ', 'tiendas': 'Tiendas', 'ops': 'Ops / Lab' };
 
         const INITIAL_SERVICES = [
+            // MÉXICO
             {
                 id: '1',
                 title: 'Mantenimiento Ben & Frank (México)',
@@ -344,6 +345,58 @@
                 description: 'Atención a personal de HQ: Equipo de cómputo, Telefonía Celular Galileo y Asignación de Licencias.',
                 flag: '🇲🇽',
                 icon: 'fa-laptop'
+            },
+            // CHILE
+            {
+                id: '8',
+                title: 'Soporte HQ Chile',
+                country: 'CL',
+                area: 'hq',
+                url: 'https://forms.clickup.com/14177510/f/dgn76-111957/Q5NIEFTQ8AFVECDQYF',
+                description: 'Solicitudes de soporte para colaboradores de HeadQuarters en Chile.',
+                flag: '🇨🇱',
+                icon: 'fa-building'
+            },
+            {
+                id: '9',
+                title: 'Soporte Tiendas Chile (Casimiros)',
+                country: 'CL',
+                area: 'tiendas',
+                url: 'https://templos-mx.casimiros.com/web?debug=1#cids=1&action=menu',
+                description: 'Atención y reporte de incidentes para templos y tiendas en Chile.',
+                flag: '🇨🇱',
+                icon: 'fa-store'
+            },
+            // COLOMBIA
+            {
+                id: '10',
+                title: 'Mantenimiento Ben & Frank (Colombia)',
+                country: 'CO',
+                area: 'tiendas',
+                url: 'https://forms.clickup.com/14177510/f/dgn76-108457/ANZNI99C6TOU93RLGP',
+                description: 'Solicitudes e incidencias de mantenimiento para sedes y tiendas en Colombia.',
+                flag: '🇨🇴',
+                icon: 'fa-wrench'
+            },
+            {
+                id: '11',
+                title: 'Soporte a Tienda (Colombia)',
+                country: 'CO',
+                area: 'tiendas',
+                url: 'https://templos-mx.casimiros.com/web?debug=1#cids=1&action=menu',
+                description: 'Atención operativa y técnica para tiendas en Colombia.',
+                flag: '🇨🇴',
+                icon: 'fa-cash-register'
+            },
+            {
+                id: '12',
+                title: 'Soporte a Templos (Colombia)',
+                country: 'CO',
+                area: 'ops',
+                url: 'https://forms.clickup.com/14177510/f/dgn76-74297/BJPQI9ZZZNKKQJM1RG',
+                description: 'Atención de soporte en operaciones y aperturas para templos en Colombia.',
+                flag: '🇨🇴',
+                icon: 'fa-handshake-angle'
             }
         ];
 
@@ -423,12 +476,18 @@
 
             const filtered = services.filter(s => {
                 const matchCountry = !selectedCountry || s.country === selectedCountry;
-                const matchArea = !selectedArea || s.area === selectedArea;
+                
+                // REGLA HQ MEXICO: Muestra TODOS los formularios de México si se selecciona MX + HQ
+                let matchArea = !selectedArea || s.area === selectedArea;
+                if (selectedCountry === 'MX' && selectedArea === 'hq') {
+                    matchArea = true;
+                }
+
                 const matchQuery = s.title.toLowerCase().includes(query) || s.description.toLowerCase().includes(query);
                 return matchCountry && matchArea && matchQuery;
             });
 
-            // Resumen activo
+            // Resumen de Filtros Activos
             let summaryText = [];
             if (selectedCountry) summaryText.push(COUNTRY_NAMES[selectedCountry]);
             if (selectedArea) summaryText.push(AREA_NAMES[selectedArea]);
