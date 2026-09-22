@@ -458,14 +458,14 @@
             },
             {
                 id: '14',
-                title: 'Soporte a Templos (Colombia)',
+                title: 'Soporte Operación (Aperturas)',
                 country: 'CO',
                 brand: 'all',
-                area: 'ops',
+                area: 'tiendas',
                 url: 'https://forms.clickup.com/14177510/f/dgn76-74297/BJPQI9ZZZNKKQJM1RG',
-                description: 'Atención de soporte en operaciones y aperturas para templos en Colombia.',
+                description: 'Gestión y creación de tiendas: Alta de tiendas, Contadores y habilitación de Aperturas.',
                 flag: '🇨🇴',
-                icon: 'fa-handshake-angle'
+                icon: 'fa-store'
             },
             {
                 id: '15',
@@ -486,7 +486,7 @@
         let services = [];
 
         document.addEventListener('DOMContentLoaded', () => {
-            const saved = localStorage.getItem('guided_clickup_services_v4');
+            const saved = localStorage.getItem('guided_clickup_services_v5');
             services = saved ? JSON.parse(saved) : INITIAL_SERVICES;
             renderCards();
 
@@ -510,7 +510,7 @@
                 };
 
                 services.push(newServ);
-                localStorage.setItem('guided_clickup_services_v4', JSON.stringify(services));
+                localStorage.setItem('guided_clickup_services_v5', JSON.stringify(services));
                 renderCards();
                 closeModal('addModal');
                 document.getElementById('addForm').reset();
