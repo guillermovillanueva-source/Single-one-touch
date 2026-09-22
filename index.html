@@ -411,9 +411,20 @@
                 flag: '🇨🇱',
                 icon: 'fa-store'
             },
-            // COLOMBIA
             {
                 id: '10',
+                title: 'Soporte Ops / Lab (Chile)',
+                country: 'CL',
+                brand: 'all',
+                area: 'ops',
+                url: 'https://forms.clickup.com/14177510/f/dgn76-41665/YYJC5NOK3FBBNW1P57',
+                description: 'Atención a usuarios de Ops y Laboratorio en Chile: Procesos Batch, Errores y Soporte.',
+                flag: '🇨🇱',
+                icon: 'fa-gears'
+            },
+            // COLOMBIA
+            {
+                id: '11',
                 title: 'Soporte HQ Colombia',
                 country: 'CO',
                 brand: 'bf',
@@ -424,7 +435,7 @@
                 icon: 'fa-laptop'
             },
             {
-                id: '11',
+                id: '12',
                 title: 'Mantenimiento Ben & Frank (Colombia)',
                 country: 'CO',
                 brand: 'bf',
@@ -435,7 +446,7 @@
                 icon: 'fa-wrench'
             },
             {
-                id: '12',
+                id: '13',
                 title: 'Soporte a Tienda (Colombia)',
                 country: 'CO',
                 brand: 'all',
@@ -446,7 +457,7 @@
                 icon: 'fa-cash-register'
             },
             {
-                id: '13',
+                id: '14',
                 title: 'Soporte a Templos (Colombia)',
                 country: 'CO',
                 brand: 'all',
@@ -455,6 +466,17 @@
                 description: 'Atención de soporte en operaciones y aperturas para templos en Colombia.',
                 flag: '🇨🇴',
                 icon: 'fa-handshake-angle'
+            },
+            {
+                id: '15',
+                title: 'Soporte Ops / Lab (Colombia)',
+                country: 'CO',
+                brand: 'all',
+                area: 'ops',
+                url: 'https://forms.clickup.com/14177510/f/dgn76-41665/YYJC5NOK3FBBNW1P57',
+                description: 'Atención a usuarios de Ops y Laboratorio en Colombia: Procesos Batch, Control de Calidad y Errores.',
+                flag: '🇨🇴',
+                icon: 'fa-gears'
             }
         ];
 
@@ -464,7 +486,7 @@
         let services = [];
 
         document.addEventListener('DOMContentLoaded', () => {
-            const saved = localStorage.getItem('guided_clickup_services_v3');
+            const saved = localStorage.getItem('guided_clickup_services_v4');
             services = saved ? JSON.parse(saved) : INITIAL_SERVICES;
             renderCards();
 
@@ -488,7 +510,7 @@
                 };
 
                 services.push(newServ);
-                localStorage.setItem('guided_clickup_services_v3', JSON.stringify(services));
+                localStorage.setItem('guided_clickup_services_v4', JSON.stringify(services));
                 renderCards();
                 closeModal('addModal');
                 document.getElementById('addForm').reset();
