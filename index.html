@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hub de Soporte & Formularios ClickUp</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200 flex flex-col font-sans">
+
+    <!-- Header / Navbar -->
+    <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Title -->
+                <div class="flex items-center space-x-3">
+                    <div class="bg-brand-600 text-white p-2.5 rounded-xl shadow-md">
+                        <i class="fa-solid fa-layer-group text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg leading-tight text-slate-900 dark:text-white">Portal de Solicitudes</h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Hub Centralizado de Soporte</p>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <button id="toggleDarkModeBtn" class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors" title="Cambiar Tema">
+                        <i id="themeIcon" class="fa-solid fa-moon text-lg"></i>
+                    </button>
+                    <button id="exportJsonBtn" class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors" title="Exportar JSON">
+                        <i class="fa-solid fa-download text-lg"></i>
+                    </button>
+                    <label id="importJsonBtn" class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" title="Importar JSON">
+                        <i class="fa-solid fa-upload text-lg"></i>
+                        <input type="file" id="importJsonInput" class="hidden" accept=".json">
+                    </label>
+                    <button id="addFormBtn" class="bg-brand-600 hover:bg-brand-700 text-white font-medium px-3.5 py-2 rounded-lg text-sm transition-all flex items-center space-x-2 shadow-sm">
+                        <i class="fa-solid fa-plus"></i>
+                        <span class="hidden sm:inline">Agregar Formulario</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Controls: Search & Category Filters -->
+        <div class="flex flex-col md:flex-row gap-4 mb-8 justify-between items-stretch md:items-center">
+            <!-- Search Bar -->
+            <div class="relative flex-grow max-w-md">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="searchInput" placeholder="Buscar formulario o servicio..." 
+                    class="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white placeholder-slate-400 text-sm shadow-sm transition-all">
+            </div>
+
+            <!-- Categories Pills -->
+            <div id="categoryPills" class="flex items-center space-x-1.5 overflow-x-auto pb-2 md:pb-0 custom-scrollbar text-sm">
+                <!-- Dynamic categories injected by JS -->
+            </div>
+        </div>
+
+        <!-- Cards Grid -->
+        <div id="formsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Dynamic cards injected by JS -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-16">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 mb-4">
+                <i class="fa-solid fa-folder-open text-2xl"></i>
+            </div>
+            <h3 class="text-base font-semibold text-slate-800 dark:text-slate-200">No se encontraron formularios</h3>
+            <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Intenta ajustando tu búsqueda o los filtros seleccionados.</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-500 dark:text-slate-400">
+            <p>Portal Interno de Soporte - Concentrador de Solicitudes y Mantenimiento</p>
+        </div>
+    </footer>
+
+    <!-- MODAL: Form Viewer / Embed -->
+    <div id="viewerModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4 transition-opacity">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-5xl h-[92vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-700">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+                <div class="flex items-center space-x-3 overflow-hidden">
+                    <span id="modalIcon" class="p-2 rounded-lg bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 flex-shrink-0">
+                        <i class="fa-solid fa-file-lines"></i>
+                    </span>
+                    <div class="truncate">
+                        <h3 id="modalTitle" class="font-bold text-slate-900 dark:text-white truncate">Cargando...</h3>
+                        <p id="modalCategory" class="text-xs text-slate-500 dark:text-slate-400">Formulario</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2 flex-shrink-0">
+                    <a id="modalExternalLink" href="#" target="_blank" class="p-2 text-slate-500 hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" title="Abrir en pestaña nueva">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                    <button id="closeViewerModal" class="p-2 text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Modal Body (Iframe) -->
+            <div class="flex-grow relative bg-slate-100 dark:bg-slate-900">
+                <div id="iframeLoader" class="absolute inset-0 flex items-center justify-center bg-white dark:bg-slate-900 z-10">
+                    <div class="flex flex-col items-center space-y-3">
+                        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-brand-600"></i>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Cargando formulario...</p>
+                    </div>
+                </div>
+                <iframe id="modalIframe" class="w-full h-full border-0 relative z-20" src="" allow="camera; microphone; clipboard-write"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Add / Edit Form -->
+    <div id="editModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-700">
+            <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <h3 id="editModalTitle" class="font-bold text-slate-900 dark:text-white">Agregar Formulario</h3>
+                <button id="closeEditModal" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form id="editForm" class="p-6 space-y-4">
+                <input type="hidden" id="formId">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">Título del Formulario</label>
+                    <input type="text" id="formTitle" required placeholder="Ej. Soporte HQ" 
+                        class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">Categoría</label>
+                    <select id="formCategory" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm dark:text-white">
+                        <option value="mantenimiento-mx">Mantenimiento México</option>
+                        <option value="soporte-tiendas">Soporte Tiendas</option>
+                        <option value="soporte-operacion">Soporte Operación</option>
+                        <option value="soporte-ops">Soporte Ops</option>
+                        <option value="sitio-lab">Soporte Sitio Lab</option>
+                        <option value="soporte-hq">Soporte HQ</option>
+                        <option value="mantenimiento-co">Mantenimiento Colombia</option>
+                        <option value="streams">Support Streams</option>
+                        <option value="service-desk">Service Desk</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">URL del Formulario</label>
+                    <input type="url" id="formUrl" required placeholder="https://forms.clickup.com/..." 
+                        class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">Descripción</label>
+                    <textarea id="formDescription" rows="3" placeholder="Detalles o items que atiende este formulario..." 
+                        class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm dark:text-white"></textarea>
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" id="cancelEditBtn" class="px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 text-sm bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-medium shadow-sm">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript logic -->
+    <script>
+        // Categorías predefinidas
+        const CATEGORIES = {
+            'all': { label: 'Todos', icon: 'fa-border-all' },
+            'mantenimiento-mx': { label: 'Mantenimiento México', icon: 'fa-screwdriver-wrench' },
+            'soporte-tiendas': { label: 'Soporte Tiendas', icon: 'fa-store' },
+            'soporte-operacion': { label: 'Soporte Operación', icon: 'fa-diagram-project' },
+            'soporte-ops': { label: 'Soporte Ops', icon: 'fa-gears' },
+            'sitio-lab': { label: 'Soporte Sitio Lab', icon: 'fa-flask' },
+            'soporte-hq': { label: 'Soporte HQ', icon: 'fa-building' },
+            'mantenimiento-co': { label: 'Mantenimiento Colombia', icon: 'fa-wrench' },
+            'streams': { label: 'Support Streams', icon: 'fa-headset' },
+            'service-desk': { label: 'Service Desk', icon: 'fa-display' }
+        };
+
+        // Formularios iniciales
+        const INITIAL_FORMS = [
+            {
+                id: '1',
+                title: 'Mantenimiento Ben & Frank (México)',
+                category: 'mantenimiento-mx',
+                url: 'https://forms.clickup.com/14177510/f/dgn76-104777/O14JII635QGEB2LM0W',
+                description: 'Solicitudes de mantenimiento para tiendas B&F: Electricidad, Clima, Mobiliario.'
+            },
+            {
+                id: '2',
+                title: 'Mantenimiento Bombavista (México)',
+                category: 'mantenimiento-mx',
+                url: 'https://forms.clickup.com/14177510/f/dgn76-110897/CDV8W0PS0X1EQW3176',
+                description: 'Solicitudes de mantenimiento para tiendas Bombavista: Electricidad, Clima, Mobiliario.'
+            },
+            {
+                id: '3',
+                title: 'Soporte Tiendas',
+                category: 'soporte-tiendas',
+                url: 'https://templos-mx.casimiros.com/web?debug=1#cids=1&action=menu',
+                description: 'Solicitudes para atención a tiendas: Incidentes Odoo, Incidentes con Mercado Pago, MO\'s.'
+            },
+            {
+                id: '4',
+                title: 'Soporte Operación',
+                category: 'soporte-operacion',
+                url: 'https://forms.clickup.com/14177510/f/dgn76-74297/BJPQI9ZZZNKKQJM1RG',
+                description: 'Creación de tiendas: Alta de tiendas, Contadores, Aperturas.'
+            },
+            {
+                id: '5',
+                title: 'Soporte Ops',
+                category: 'soporte-ops',
+                url: 'https://forms.clickup.com/14177510/f/dgn76-41665/YYJC5NOK3FBBNW1P57',
+                description: 'Solicitudes para atención a usuarios de Ops: Control de Calidad, Batch, Errores de Reserva.'
+            },
+            {
+                id: '6',
+                title: 'Soporte Sitio Lab',
+                category: 'sitio-lab',
+                url: 'https://forms.clickup.com/14177510/f/dgn76-103457/W79DD8MVUQ0OB9STGE',
+                description: 'Solicitudes para atención a usuarios de Vallejo: Soporte equipo de cómputo, Impresoras, Producción.'
+            },
+            {
+                id: '7',
+                title: 'Soporte HQ',
+                category: 'soporte-hq',
+                url: 'https://forms.clickup.com/14177510/f/dgn76-62697/2GDMHEPAQY71IFJL91',
+                description: 'Solicitudes para atención a usuarios de HQ: Soporte equipo de cómputo, Telefonía Celular Galileo, Asignación de licencias.'
+            }
+        ];
+
+        // Estado de la app
+        let forms = [];
+        let currentCategory = 'all';
+        let searchQuery = '';
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            loadForms();
+            setupTheme();
+            renderCategoryPills();
+            renderForms();
+            setupEventListeners();
+        });
+
+        // Cargar datos
+        function loadForms() {
+            const saved = localStorage.getItem('clickup_hub_forms');
+            if (saved) {
+                try {
+                    forms = JSON.parse(saved);
+                } catch (e) {
+                    forms = [...INITIAL_FORMS];
+                }
+            } else {
+                forms = [...INITIAL_FORMS];
+                saveForms();
+            }
+        }
+
+        function saveForms() {
+            localStorage.setItem('clickup_hub_forms', JSON.stringify(forms));
+        }
+
+        // Renderizado de Filtros
+        function renderCategoryPills() {
+            const container = document.getElementById('categoryPills');
+            container.innerHTML = Object.entries(CATEGORIES).map(([key, cat]) => `
+                <button onclick="setCategory('${key}')" 
+                    class="px-3.5 py-1.5 rounded-xl font-medium text-xs whitespace-nowrap transition-all flex items-center space-x-1.5 ${
+                        currentCategory === key 
+                        ? 'bg-brand-600 text-white shadow-sm' 
+                        : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                    }">
+                    <i class="fa-solid ${cat.icon}"></i>
+                    <span>${cat.label}</span>
+                </button>
+            `).join('');
+        }
+
+        function setCategory(catKey) {
+            currentCategory = catKey;
+            renderCategoryPills();
+            renderForms();
+        }
+
+        // Renderizado de Tarjetas
+        function renderForms() {
+            const grid = document.getElementById('formsGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            const filtered = forms.filter(form => {
+                const matchesCat = currentCategory === 'all' || form.category === currentCategory;
+                const matchesSearch = form.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                     form.description.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesCat && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            grid.innerHTML = filtered.map(form => {
+                const catInfo = CATEGORIES[form.category] || { label: form.category, icon: 'fa-file-lines' };
+                return `
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-start justify-between mb-3">
+                            <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300">
+                                <i class="fa-solid ${catInfo.icon} text-slate-400"></i>
+                                <span>${catInfo.label}</span>
+                            </span>
+                            <div class="opacity-0 group-hover:opacity-100 transition-opacity flex items-center space-x-1">
+                                <button onclick="openEditModal('${form.id}')" class="p-1.5 text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 rounded transition-colors" title="Editar">
+                                    <i class="fa-solid fa-pen-to-square text-xs"></i>
+                                </button>
+                                <button onclick="deleteForm('${form.id}')" class="p-1.5 text-slate-400 hover:text-red-600 dark:hover:text-red-400 rounded transition-colors" title="Eliminar">
+                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <h3 class="font-bold text-slate-900 dark:text-white mb-2 line-clamp-1 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">${escapeHtml(form.title)}</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-3 mb-4 leading-relaxed">${escapeHtml(form.description || 'Sin descripción disponible.')}</p>
+                    </div>
+                    
+                    <div class="pt-3 border-t border-slate-100 dark:border-slate-700/50 flex items-center space-x-2">
+                        <button onclick="openViewerModal('${form.id}')" class="flex-grow bg-brand-50 hover:bg-brand-100 dark:bg-brand-950/40 dark:hover:bg-brand-900/60 text-brand-600 dark:text-brand-400 font-medium py-2 px-3 rounded-xl text-xs transition-colors flex items-center justify-center space-x-1.5">
+                            <i class="fa-solid fa-window-restore"></i>
+                            <span>Abrir Formulario</span>
+                        </button>
+                        <a href="${form.url}" target="_blank" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-50 dark:bg-slate-700/40 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl text-xs transition-colors" title="Abrir en pestaña nueva">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        // Modales
+        function openViewerModal(id) {
+            const form = forms.find(f => f.id === id);
+            if (!form) return;
+
+            const isExternalApp = form.url.includes('casimiros.com') || form.url.includes('odoo');
+
+            if (isExternalApp) {
+                window.open(form.url, '_blank');
+                return;
+            }
+
+            document.getElementById('modalTitle').textContent = form.title;
+            document.getElementById('modalCategory').textContent = CATEGORIES[form.category]?.label || 'Formulario';
+            document.getElementById('modalExternalLink').href = form.url;
+            
+            const iframe = document.getElementById('modalIframe');
+            const loader = document.getElementById('iframeLoader');
+            
+            loader.classList.remove('hidden');
+            iframe.src = form.url;
+            
+            iframe.onload = () => {
+                loader.classList.add('hidden');
+            };
+
+            document.getElementById('viewerModal').classList.remove('hidden');
+        }
+
+        function closeViewerModal() {
+            document.getElementById('viewerModal').classList.add('hidden');
+            document.getElementById('modalIframe').src = '';
+        }
+
+        function openEditModal(id = null) {
+            const modal = document.getElementById('editModal');
+            const formEl = document.getElementById('editForm');
+            
+            if (id) {
+                const form = forms.find(f => f.id === id);
+                if (!form) return;
+                document.getElementById('editModalTitle').textContent = 'Editar Formulario';
+                document.getElementById('formId').value = form.id;
+                document.getElementById('formTitle').value = form.title;
+                document.getElementById('formCategory').value = form.category;
+                document.getElementById('formUrl').value = form.url;
+                document.getElementById('formDescription').value = form.description || '';
+            } else {
+                document.getElementById('editModalTitle').textContent = 'Agregar Formulario';
+                formEl.reset();
+                document.getElementById('formId').value = '';
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+        }
+
+        function deleteForm(id) {
+            if (confirm('¿Estás seguro de que deseas eliminar este formulario?')) {
+                forms = forms.filter(f => f.id !== id);
+                saveForms();
+                renderForms();
+            }
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                searchQuery = e.target.value;
+                renderForms();
+            });
+
+            document.getElementById('closeViewerModal').addEventListener('click', closeViewerModal);
+            document.getElementById('closeEditModal').addEventListener('click', closeEditModal);
+            document.getElementById('cancelEditBtn').addEventListener('click', closeEditModal);
+            document.getElementById('addFormBtn').addEventListener('click', () => openEditModal());
+
+            document.getElementById('editForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const id = document.getElementById('formId').value;
+                const formData = {
+                    id: id || Date.now().toString(),
+                    title: document.getElementById('formTitle').value.trim(),
+                    category: document.getElementById('formCategory').value,
+                    url: document.getElementById('formUrl').value.trim(),
+                    description: document.getElementById('formDescription').value.trim()
+                };
+
+                if (id) {
+                    const idx = forms.findIndex(f => f.id === id);
+                    if (idx !== -1) forms[idx] = formData;
+                } else {
+                    forms.push(formData);
+                }
+
+                saveForms();
+                renderForms();
+                closeEditModal();
+            });
+
+            // JSON Import/Export
+            document.getElementById('exportJsonBtn').addEventListener('click', () => {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(forms, null, 2));
+                const downloadAnchor = document.createElement('a');
+                downloadAnchor.setAttribute("href", dataStr);
+                downloadAnchor.setAttribute("download", "formularios_clickup.json");
+                document.body.appendChild(downloadAnchor);
+                downloadAnchor.click();
+                downloadAnchor.remove();
+            });
+
+            document.getElementById('importJsonInput').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const imported = JSON.parse(event.target.result);
+                        if (Array.isArray(imported)) {
+                            forms = imported;
+                            saveForms();
+                            renderForms();
+                            alert('Formularios importados correctamente.');
+                        } else {
+                            alert('El archivo JSON no tiene un formato válido.');
+                        }
+                    } catch (err) {
+                        alert('Error al leer el archivo JSON.');
+                    }
+                };
+                reader.readAsText(file);
+            });
+        }
+
+        // Modos Oscuro/Claro
+        function setupTheme() {
+            const toggleBtn = document.getElementById('toggleDarkModeBtn');
+            const themeIcon = document.getElementById('themeIcon');
+
+            toggleBtn.addEventListener('click', () => {
+                const isDark = document.documentElement.classList.toggle('dark');
+                themeIcon.className = isDark ? 'fa-solid fa-sun text-lg' : 'fa-solid fa-moon text-lg';
+            });
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
