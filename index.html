@@ -18,7 +18,6 @@
                             darkBlue: '#003B70',
                             yellow: '#FFD100',
                             lightBg: '#F4F7FA',
-                            cardBg: '#FFFFFF'
                         }
                     }
                 }
@@ -26,81 +25,133 @@
         }
     </script>
     <style>
-        .service-card {
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .service-card:hover {
-            transform: translateY(-4px);
-        }
+        .service-card { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        .service-card:hover { transform: translateY(-3px); }
     </style>
 </head>
 <body class="bg-[#F4F7FA] text-slate-800 font-sans min-h-screen flex flex-col antialiased">
 
-    <!-- Top Bar Corporativa -->
-    <div class="bg-[#003B70] text-white text-xs py-2 px-4 shadow-inner">
+    <!-- Top Bar -->
+    <div class="bg-[#003B70] text-white text-xs py-2 px-4">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-3">
                 <span class="flex items-center space-x-1.5 font-medium">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                     <span>Sistemas Operativos 100%</span>
                 </span>
-                <span class="hidden md:inline text-blue-200">|</span>
-                <span class="hidden md:inline text-blue-100">Mesa de Ayuda & Atención Integral</span>
+                <span class="text-blue-300">|</span>
+                <span class="text-blue-100">Atención de Mesa de Servicios</span>
             </div>
-            <div class="flex items-center space-x-4 text-blue-200">
-                <a href="#faq" class="hover:text-white transition-colors">Preguntas Frecuentes</a>
-                <span>•</span>
-                <span class="text-white font-semibold">Atención 24/7</span>
+            <div class="text-blue-200">
+                <span>Atención Multi-Región: 🇲🇽 🇨🇴 🇨🇱</span>
             </div>
         </div>
     </div>
 
-    <!-- Header Principal Estilo Centro de Ayuda -->
-    <header class="bg-[#00529B] text-white border-b-4 border-[#FFD100] shadow-lg relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-r from-blue-900/40 to-transparent pointer-events-none"></div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative z-10">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                
-                <!-- Identidad y Título -->
+    <!-- Header Principal -->
+    <header class="bg-[#00529B] text-white border-b-4 border-[#FFD100] shadow-md relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div class="flex items-center space-x-4">
-                    <div class="bg-white/10 backdrop-blur-md p-3.5 rounded-2xl border border-white/20 shadow-inner">
-                        <i class="fa-solid fa-[#FFD100] fa-headset text-3xl text-[#FFD100]"></i>
+                    <div class="bg-white/10 p-3 rounded-2xl border border-white/20">
+                        <i class="fa-solid fa-headset text-3xl text-[#FFD100]"></i>
                     </div>
                     <div>
-                        <div class="flex items-center space-x-2">
-                            <span class="bg-[#FFD100] text-[#003B70] text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-wider">Portal Oficial</span>
-                        </div>
-                        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 text-white">Centro de Soporte Tecnológico</h1>
-                        <p class="text-blue-100 text-sm mt-0.5">Selecciona el área encargada para registrar tu solicitud o reporte técnico</p>
+                        <span class="bg-[#FFD100] text-[#003B70] text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-wider">Portal Unificado</span>
+                        <h1 class="text-2xl font-extrabold tracking-tight mt-0.5 text-white">Centro de Soporte Tecnológico</h1>
+                        <p class="text-blue-100 text-xs mt-0.5">Filtra por tu región y área para encontrar el formulario exacto</p>
                     </div>
                 </div>
 
-                <!-- Botón Secundario de Acción -->
-                <div class="flex items-center space-x-3">
-                    <button onclick="openModal('addModal')" class="bg-[#FFD100] hover:bg-yellow-400 text-[#003B70] font-bold px-4 py-2.5 rounded-xl text-sm transition-all shadow-md flex items-center space-x-2">
-                        <i class="fa-solid fa-plus text-xs"></i>
-                        <span>Agregar Servicio</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Buscador Estilo Banner Principal -->
-            <div class="mt-8 max-w-2xl">
-                <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
-                    <input type="text" id="searchInput" placeholder="¿Qué problema o requerimiento necesitas reportar? (ej. Impresora, Odoo, Clima...)" 
-                        class="w-full pl-12 pr-4 py-3.5 bg-white text-slate-900 rounded-xl shadow-xl focus:outline-none focus:ring-4 focus:ring-[#FFD100]/50 placeholder-slate-400 text-sm font-medium">
-                </div>
+                <button onclick="openModal('addModal')" class="bg-[#FFD100] hover:bg-yellow-400 text-[#003B70] font-bold px-3.5 py-2 rounded-xl text-xs transition-all shadow-md flex items-center space-x-2 self-start md:self-auto">
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    <span>Agregar Nuevo Formulario</span>
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- Navegación de Categorías / Filtros Rápidos -->
-    <section class="bg-white border-b border-slate-200 sticky top-0 z-20 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div id="categoryPills" class="flex items-center space-x-2 overflow-x-auto py-3 no-scrollbar text-xs font-semibold text-slate-600">
-                <!-- Se inyecta dinámicamente -->
+    <!-- PANEL PREDICTIVO DE SELECCIÓN (GUIADO) -->
+    <section class="bg-white border-b border-slate-200 shadow-sm relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            
+            <div class="mb-4 flex items-center justify-between">
+                <h2 class="text-xs font-extrabold uppercase text-[#003B70] tracking-wider flex items-center space-x-2">
+                    <i class="fa-solid fa-[#00529B] fa-filter"></i>
+                    <span>Paso 1: Selecciona tus variables de origen</span>
+                </h2>
+                <button onclick="resetFilters()" class="text-xs text-slate-400 hover:text-[#00529B] font-semibold underline">
+                    Limpiar Filtros
+                </button>
             </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                
+                <!-- Selector 1: PAÍS -->
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-earth-americas text-[#00529B]"></i>
+                        <span>1. Selecciona tu País</span>
+                    </label>
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <button onclick="setCountry('MX')" id="btn-MX" class="country-btn px-2 py-2 rounded-lg text-xs font-bold border flex flex-col items-center justify-center space-y-1 bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <span class="text-base">🇲🇽</span>
+                            <span>México</span>
+                        </button>
+                        <button onclick="setCountry('CO')" id="btn-CO" class="country-btn px-2 py-2 rounded-lg text-xs font-bold border flex flex-col items-center justify-center space-y-1 bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <span class="text-base">🇨🇴</span>
+                            <span>Colombia</span>
+                        </button>
+                        <button onclick="setCountry('CL')" id="btn-CL" class="country-btn px-2 py-2 rounded-lg text-xs font-bold border flex flex-col items-center justify-center space-y-1 bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <span class="text-base">🇨🇱</span>
+                            <span>Chile</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Selector 2: ÁREA / ROL -->
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-users-gear text-[#00529B]"></i>
+                        <span>2. Selecciona tu Área o Unidad</span>
+                    </label>
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <button onclick="setArea('hq')" id="btn-hq" class="area-btn px-2 py-2 rounded-lg text-xs font-bold border flex flex-col items-center justify-center space-y-1 bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <i class="fa-solid fa-building text-slate-500"></i>
+                            <span>HQ</span>
+                        </button>
+                        <button onclick="setArea('tiendas')" id="btn-tiendas" class="area-btn px-2 py-2 rounded-lg text-xs font-bold border flex flex-col items-center justify-center space-y-1 bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <i class="fa-solid fa-store text-slate-500"></i>
+                            <span>Tiendas</span>
+                        </button>
+                        <button onclick="setArea('ops')" id="btn-ops" class="area-btn px-2 py-2 rounded-lg text-xs font-bold border flex flex-col items-center justify-center space-y-1 bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <i class="fa-solid fa-gears text-slate-500"></i>
+                            <span>Ops / Lab</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Selector 3: BÚSQUEDA PREDICTIVA -->
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex flex-col justify-between">
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-magnifying-glass text-[#00529B]"></i>
+                        <span>3. Búsqueda por Palabras Clave</span>
+                    </label>
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Ej. Clima, Odoo, Impresora..." 
+                            class="w-full pl-3 pr-8 py-2 bg-white border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#00529B]">
+                        <i class="fa-solid fa-search absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Resumen de Selección Activa -->
+            <div id="activeFilterBadge" class="mt-3 text-xs text-slate-500 flex items-center space-x-2">
+                <span>Mostrando resultados para:</span>
+                <span id="filterSummary" class="font-bold text-[#003B70] bg-blue-50 px-2 py-0.5 rounded border border-blue-100">Todos los países y áreas</span>
+            </div>
+
         </div>
     </section>
 
@@ -109,74 +160,41 @@
         
         <div class="flex items-center justify-between mb-6">
             <div>
-                <h2 class="text-xl font-bold text-[#003B70]">Catálogo de Servicios y Solicitudes</h2>
-                <p class="text-xs text-slate-500">Selecciona la tarjeta del módulo al que deseas canalizar tu solicitud</p>
+                <h3 class="text-lg font-bold text-[#003B70]">Formularios y Accesos Recomendados</h3>
+                <p class="text-xs text-slate-500">Selecciona el módulo para llenar tu reporte</p>
             </div>
-            <span id="totalCards" class="text-xs font-bold bg-blue-50 text-[#00529B] px-3 py-1 rounded-full border border-blue-100">0 Módulos disponibles</span>
+            <span id="totalCards" class="text-xs font-bold bg-blue-50 text-[#00529B] px-3 py-1 rounded-full border border-blue-100">0 Resultados</span>
         </div>
 
         <!-- Grid de Cards -->
-        <div id="formsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Cards inyectadas por Javascript -->
-        </div>
+        <div id="formsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 
-        <!-- Estado Vacío cuando no hay búsquedas -->
+        <!-- Estado Vacío -->
         <div id="emptyState" class="hidden text-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm mt-4">
             <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-3">
-                <i class="fa-solid fa-magnifying-glass text-2xl"></i>
+                <i class="fa-solid fa-filter-circle-xmark text-2xl"></i>
             </div>
-            <h3 class="text-base font-bold text-slate-800">No encontramos resultados para tu búsqueda</h3>
-            <p class="text-slate-500 text-xs mt-1">Intenta con otros términos como "Mantenimiento", "Odoo", "Lab" o "HQ".</p>
+            <h3 class="text-base font-bold text-slate-800">No encontramos formularios para esta combinación</h3>
+            <p class="text-slate-500 text-xs mt-1">Prueba cambiando el país o el área en los filtros de arriba.</p>
+            <button onclick="resetFilters()" class="mt-4 px-4 py-2 bg-[#00529B] text-white text-xs font-bold rounded-lg">Restablecer Filtros</button>
         </div>
 
-        <!-- Sección Estilo FAQ Acordeón (Como el portal de ayuda) -->
-        <section id="faq" class="mt-16 pt-8 border-t border-slate-200">
-            <div class="text-center max-w-2xl mx-auto mb-8">
-                <span class="text-xs font-extrabold text-[#00529B] uppercase tracking-wider bg-blue-50 px-3 py-1 rounded-full">Ayuda Rápida</span>
-                <h3 class="text-xl font-bold text-[#003B70] mt-2">¿Tienes dudas antes de levantar tu reporte?</h3>
-                <p class="text-xs text-slate-500 mt-1">Consulta los lineamientos básicos de la Mesa de Servicios</p>
-            </div>
-
-            <div class="max-w-3xl mx-auto space-y-3">
-                <details class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm group">
-                    <summary class="font-bold text-sm text-[#003B70] cursor-pointer flex justify-between items-center">
-                        <span>¿Cuánto tiempo tarda en atenderse una solicitud?</span>
-                        <i class="fa-solid fa-chevron-down text-xs text-slate-400 group-open:rotate-180 transition-transform"></i>
-                    </summary>
-                    <p class="text-xs text-slate-600 mt-3 leading-relaxed border-t border-slate-100 pt-2">
-                        Los tiempos de atención varían según la prioridad del incidente. Los eventos críticos (caída de punto de venta, falla de red) se atienden de forma inmediata. Las solicitudes generales de cómputo tienen un tiempo promedio de respuesta menor a 15 minutos.
-                    </p>
-                </details>
-
-                <details class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm group">
-                    <summary class="font-bold text-sm text-[#003B70] cursor-pointer flex justify-between items-center">
-                        <span>¿Cómo puedo dar seguimiento a mi ticket enviado?</span>
-                        <i class="fa-solid fa-chevron-down text-xs text-slate-400 group-open:rotate-180 transition-transform"></i>
-                    </summary>
-                    <p class="text-xs text-slate-600 mt-3 leading-relaxed border-t border-slate-100 pt-2">
-                        Una vez que envías el formulario correspondiente, ClickUp genera automáticamente un número de folio que se enviará a tu correo electrónico registrado para consultar avances o agregar comentarios.
-                    </p>
-                </details>
-            </div>
-        </section>
     </main>
 
-    <!-- Footer Corporativo -->
-    <footer class="bg-[#003B70] text-white border-t-4 border-[#FFD100] mt-16 py-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-blue-200 space-y-2">
-            <p class="font-semibold text-white">Portal Interno de Servicios & Mesa de Soporte Tecnológico</p>
+    <!-- Footer -->
+    <footer class="bg-[#003B70] text-white border-t-4 border-[#FFD100] mt-12 py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-blue-200">
+            <p class="font-semibold text-white">Mesa de Servicios Corporativa & Soporte Tecnológico</p>
             <p>© 2026 Operaciones & Plataformas. Todos los derechos reservados.</p>
         </div>
     </footer>
 
-    <!-- MODAL DE VISUALIZACIÓN / IFRAME -->
+    <!-- MODAL IFRAME / VISUALIZADOR -->
     <div id="viewerModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
         <div class="bg-white rounded-2xl w-full max-w-5xl h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
             <div class="px-6 py-3.5 bg-[#00529B] text-white flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                    <span class="p-2 bg-white/10 rounded-lg text-[#FFD100]">
-                        <i class="fa-solid fa-file-signature text-base"></i>
-                    </span>
+                    <span id="modalFlag" class="text-xl">🇲🇽</span>
                     <div>
                         <h3 id="modalTitle" class="font-bold text-sm text-white">Cargando servicio...</h3>
                         <p id="modalCategory" class="text-[11px] text-blue-200">Mesa de Ayuda</p>
@@ -195,7 +213,7 @@
                 <div id="iframeLoader" class="absolute inset-0 flex items-center justify-center bg-white z-10">
                     <div class="flex flex-col items-center space-y-3">
                         <i class="fa-solid fa-circle-notch fa-spin text-3xl text-[#00529B]"></i>
-                        <p class="text-xs text-slate-500 font-medium">Cargando formulario de soporte...</p>
+                        <p class="text-xs text-slate-500 font-medium">Cargando formulario...</p>
                     </div>
                 </div>
                 <iframe id="modalIframe" class="w-full h-full border-0 relative z-20" src=""></iframe>
@@ -203,11 +221,11 @@
         </div>
     </div>
 
-    <!-- MODAL AGREGAR/EDITAR -->
+    <!-- MODAL AGREGAR NUEVO FORMULARIO -->
     <div id="addModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden border border-slate-200">
             <div class="px-6 py-4 bg-[#00529B] text-white flex justify-between items-center">
-                <h3 class="font-bold text-sm">Agregar Nuevo Servicio</h3>
+                <h3 class="font-bold text-sm">Agregar Nuevo Formulario</h3>
                 <button onclick="closeModal('addModal')" class="text-blue-200 hover:text-white">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
@@ -215,156 +233,186 @@
             <form id="addForm" class="p-6 space-y-4 text-xs">
                 <div>
                     <label class="block font-bold text-slate-700 uppercase mb-1">Nombre del Servicio</label>
-                    <input type="text" id="formTitle" required placeholder="Ej. Mantenimiento Equipos" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#00529B]">
+                    <input type="text" id="formTitle" required placeholder="Ej. Mantenimiento Colombia" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#00529B]">
                 </div>
-                <div>
-                    <label class="block font-bold text-slate-700 uppercase mb-1">Categoría</label>
-                    <select id="formCategory" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#00529B]">
-                        <option value="mantenimiento">Mantenimiento</option>
-                        <option value="tiendas">Soporte Tiendas</option>
-                        <option value="operaciones">Operaciones / Ops</option>
-                        <option value="hq">Soporte HQ</option>
-                    </select>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-bold text-slate-700 uppercase mb-1">País</label>
+                        <select id="formCountry" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#00529B]">
+                            <option value="MX">🇲🇽 México</option>
+                            <option value="CO">🇨🇴 Colombia</option>
+                            <option value="CL">🇨🇱 Chile</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 uppercase mb-1">Área</label>
+                        <select id="formArea" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#00529B]">
+                            <option value="hq">HQ</option>
+                            <option value="tiendas">Tiendas</option>
+                            <option value="ops">Ops / Lab</option>
+                        </select>
+                    </div>
                 </div>
                 <div>
                     <label class="block font-bold text-slate-700 uppercase mb-1">URL de ClickUp o Sitio</label>
                     <input type="url" id="formUrl" required placeholder="https://forms.clickup.com/..." class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#00529B]">
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-700 uppercase mb-1">Descripción / Cobertura</label>
-                    <textarea id="formDescription" rows="3" placeholder="Describe los ítems o fallas que atiende..." class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#00529B]"></textarea>
+                    <label class="block font-bold text-slate-700 uppercase mb-1">Descripción</label>
+                    <textarea id="formDescription" rows="3" placeholder="Detalla las solicitudes que atiende..." class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#00529B]"></textarea>
                 </div>
                 <div class="flex justify-end space-x-2 pt-2">
                     <button type="button" onclick="closeModal('addModal')" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg font-bold">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 bg-[#00529B] text-white rounded-lg font-bold">Guardar Servicio</button>
+                    <button type="submit" class="px-4 py-2 bg-[#00529B] text-white rounded-lg font-bold">Guardar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- LOGICA JAVASCRIPT -->
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        const CATEGORIES = {
-            'all': { label: 'Todos los Servicios', icon: 'fa-border-all' },
-            'mantenimiento': { label: 'Mantenimiento', icon: 'fa-screwdriver-wrench' },
-            'tiendas': { label: 'Soporte Tiendas', icon: 'fa-store' },
-            'operaciones': { label: 'Operaciones / Ops', icon: 'fa-diagram-project' },
-            'hq': { label: 'Soporte HQ', icon: 'fa-building' }
-        };
+        const COUNTRY_NAMES = { 'MX': '🇲🇽 México', 'CO': '🇨🇴 Colombia', 'CL': '🇨🇱 Chile' };
+        const AREA_NAMES = { 'hq': 'HQ', 'tiendas': 'Tiendas', 'ops': 'Ops / Lab' };
 
         const INITIAL_SERVICES = [
             {
                 id: '1',
                 title: 'Mantenimiento Ben & Frank (México)',
-                category: 'mantenimiento',
+                country: 'MX',
+                area: 'tiendas',
                 url: 'https://forms.clickup.com/14177510/f/dgn76-104777/O14JII635QGEB2LM0W',
                 description: 'Solicitudes e incidencias de mantenimiento para tiendas B&F: Electricidad, Clima, Mobiliario.',
-                badge: 'México',
+                flag: '🇲🇽',
                 icon: 'fa-wrench'
             },
             {
                 id: '2',
                 title: 'Mantenimiento Bombavista (México)',
-                category: 'mantenimiento',
+                country: 'MX',
+                area: 'tiendas',
                 url: 'https://forms.clickup.com/14177510/f/dgn76-110897/CDV8W0PS0X1EQW3176',
                 description: 'Solicitudes de mantenimiento preventivo y correctivo para tiendas Bombavista: Electricidad, Clima, Mobiliario.',
-                badge: 'México',
+                flag: '🇲🇽',
                 icon: 'fa-screwdriver-wrench'
             },
             {
                 id: '3',
                 title: 'Soporte Tiendas (Casimiros / Odoo)',
-                category: 'tiendas',
+                country: 'MX',
+                area: 'tiendas',
                 url: 'https://templos-mx.casimiros.com/web?debug=1#cids=1&action=menu',
                 description: 'Atención directa para tiendas: Incidentes Odoo, Fallas Mercado Pago, MO\'s y Cajas.',
-                badge: 'Sistema',
+                flag: '🇲🇽',
                 icon: 'fa-cash-register'
             },
             {
                 id: '4',
                 title: 'Soporte Operación (Aperturas)',
-                category: 'operaciones',
+                country: 'MX',
+                area: 'ops',
                 url: 'https://forms.clickup.com/14177510/f/dgn76-74297/BJPQI9ZZZNKKQJM1RG',
                 description: 'Gestión y creación de tiendas: Alta de tiendas, Contadores y habilitación de Aperturas.',
-                badge: 'Operaciones',
+                flag: '🇲🇽',
                 icon: 'fa-store'
             },
             {
                 id: '5',
                 title: 'Soporte Ops (Atención Usuarios)',
-                category: 'operaciones',
+                country: 'MX',
+                area: 'ops',
                 url: 'https://forms.clickup.com/14177510/f/dgn76-41665/YYJC5NOK3FBBNW1P57',
                 description: 'Atención a usuarios de Ops: Control de Calidad, Procesos Batch, Errores de Reserva.',
-                badge: 'Ops',
+                flag: '🇲🇽',
                 icon: 'fa-gears'
             },
             {
                 id: '6',
                 title: 'Soporte Sitio Lab (Vallejo)',
-                category: 'operaciones',
+                country: 'MX',
+                area: 'ops',
                 url: 'https://forms.clickup.com/14177510/f/dgn76-103457/W79DD8MVUQ0OB9STGE',
                 description: 'Solicitudes para usuarios de laboratorio Vallejo: Equipo de cómputo, Impresoras y Producción.',
-                badge: 'Laboratorio',
+                flag: '🇲🇽',
                 icon: 'fa-flask'
             },
             {
                 id: '7',
                 title: 'Soporte HQ (Corporativo)',
-                category: 'hq',
+                country: 'MX',
+                area: 'hq',
                 url: 'https://forms.clickup.com/14177510/f/dgn76-62697/2GDMHEPAQY71IFJL91',
                 description: 'Atención a personal de HQ: Equipo de cómputo, Telefonía Celular Galileo y Asignación de Licencias.',
-                badge: 'Corporativo',
+                flag: '🇲🇽',
                 icon: 'fa-laptop'
             }
         ];
 
+        let selectedCountry = null;
+        let selectedArea = null;
         let services = [];
-        let currentCat = 'all';
 
         document.addEventListener('DOMContentLoaded', () => {
-            const saved = localStorage.getItem('coppel_style_services');
+            const saved = localStorage.getItem('guided_clickup_services');
             services = saved ? JSON.parse(saved) : INITIAL_SERVICES;
-            renderPills();
             renderCards();
 
             document.getElementById('searchInput').addEventListener('input', renderCards);
-            
+
             document.getElementById('addForm').addEventListener('submit', (e) => {
                 e.preventDefault();
+                const country = document.getElementById('formCountry').value;
+                const flags = { 'MX': '🇲🇽', 'CO': '🇨🇴', 'CL': '🇨🇱' };
+
                 const newServ = {
                     id: Date.now().toString(),
                     title: document.getElementById('formTitle').value,
-                    category: document.getElementById('formCategory').value,
+                    country: country,
+                    area: document.getElementById('formArea').value,
                     url: document.getElementById('formUrl').value,
                     description: document.getElementById('formDescription').value,
-                    badge: 'Nuevo',
+                    flag: flags[country] || '🌐',
                     icon: 'fa-headset'
                 };
+
                 services.push(newServ);
-                localStorage.setItem('coppel_style_services', JSON.stringify(services));
+                localStorage.setItem('guided_clickup_services', JSON.stringify(services));
                 renderCards();
                 closeModal('addModal');
                 document.getElementById('addForm').reset();
             });
         });
 
-        function renderPills() {
-            const container = document.getElementById('categoryPills');
-            container.innerHTML = Object.entries(CATEGORIES).map(([key, cat]) => `
-                <button onclick="filterCat('${key}')" class="px-4 py-2 rounded-xl transition-all whitespace-nowrap flex items-center space-x-2 ${
-                    currentCat === key 
-                    ? 'bg-[#00529B] text-white font-bold shadow-sm' 
-                    : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
-                }">
-                    <i class="fa-solid ${cat.icon} text-xs"></i>
-                    <span>${cat.label}</span>
-                </button>
-            `).join('');
+        function setCountry(country) {
+            selectedCountry = (selectedCountry === country) ? null : country;
+            updateBtnStyles('country-btn', 'btn-' + selectedCountry, 'border-[#00529B]', 'bg-blue-50');
+            renderCards();
         }
 
-        function filterCat(catKey) {
-            currentCat = catKey;
-            renderPills();
+        function setArea(area) {
+            selectedArea = (selectedArea === area) ? null : area;
+            updateBtnStyles('area-btn', 'btn-' + selectedArea, 'border-[#00529B]', 'bg-blue-50');
+            renderCards();
+        }
+
+        function updateBtnStyles(className, activeId, borderClass, bgClass) {
+            document.querySelectorAll('.' + className).forEach(btn => {
+                btn.classList.remove(borderClass, bgClass, 'text-[#00529B]');
+                btn.classList.add('bg-white', 'border-slate-200');
+            });
+
+            const activeBtn = document.getElementById(activeId);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-white', 'border-slate-200');
+                activeBtn.classList.add(borderClass, bgClass, 'text-[#00529B]');
+            }
+        }
+
+        function resetFilters() {
+            selectedCountry = null;
+            selectedArea = null;
+            document.getElementById('searchInput').value = '';
+            updateBtnStyles('country-btn', null, 'border-[#00529B]', 'bg-blue-50');
+            updateBtnStyles('area-btn', null, 'border-[#00529B]', 'bg-blue-50');
             renderCards();
         }
 
@@ -374,12 +422,20 @@
             const empty = document.getElementById('emptyState');
 
             const filtered = services.filter(s => {
-                const matchCat = currentCat === 'all' || s.category === currentCat;
+                const matchCountry = !selectedCountry || s.country === selectedCountry;
+                const matchArea = !selectedArea || s.area === selectedArea;
                 const matchQuery = s.title.toLowerCase().includes(query) || s.description.toLowerCase().includes(query);
-                return matchCat && matchQuery;
+                return matchCountry && matchArea && matchQuery;
             });
 
-            document.getElementById('totalCards').textContent = `${filtered.length} Módulos disponibles`;
+            // Resumen activo
+            let summaryText = [];
+            if (selectedCountry) summaryText.push(COUNTRY_NAMES[selectedCountry]);
+            if (selectedArea) summaryText.push(AREA_NAMES[selectedArea]);
+            if (query) summaryText.push(`"${query}"`);
+            
+            document.getElementById('filterSummary').textContent = summaryText.length > 0 ? summaryText.join(' + ') : 'Todos los países y áreas';
+            document.getElementById('totalCards').textContent = `${filtered.length} Resultados`;
 
             if (filtered.length === 0) {
                 grid.innerHTML = '';
@@ -389,24 +445,27 @@
 
             empty.classList.add('hidden');
             grid.innerHTML = filtered.map(s => `
-                <div class="service-card bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-xl flex flex-col justify-between border-t-4 border-t-[#00529B] relative overflow-hidden">
+                <div class="service-card bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-xl flex flex-col justify-between border-t-4 border-t-[#00529B] relative">
                     <div>
                         <div class="flex items-center justify-between mb-3">
-                            <span class="bg-blue-50 text-[#00529B] font-bold text-[10px] uppercase px-2.5 py-1 rounded-md border border-blue-100">
-                                ${s.badge || 'Soporte'}
-                            </span>
-                            <i class="fa-solid ${s.icon || 'fa-headset'} text-slate-300 text-xl"></i>
+                            <div class="flex items-center space-x-1.5">
+                                <span class="text-lg">${s.flag}</span>
+                                <span class="bg-blue-50 text-[#00529B] font-extrabold text-[10px] uppercase px-2 py-0.5 rounded border border-blue-100">
+                                    ${AREA_NAMES[s.area] || s.area}
+                                </span>
+                            </div>
+                            <i class="fa-solid ${s.icon || 'fa-headset'} text-slate-300 text-lg"></i>
                         </div>
-                        <h3 class="font-bold text-slate-900 text-base mb-2 group-hover:text-[#00529B] transition-colors">${s.title}</h3>
-                        <p class="text-xs text-slate-500 leading-relaxed mb-6">${s.description}</p>
+                        <h3 class="font-bold text-slate-900 text-sm mb-2 leading-snug">${s.title}</h3>
+                        <p class="text-xs text-slate-500 leading-relaxed mb-4">${s.description}</p>
                     </div>
 
-                    <div class="pt-4 border-t border-slate-100 flex items-center space-x-2">
-                        <button onclick="openViewer('${s.id}')" class="flex-grow bg-[#00529B] hover:bg-[#003B70] text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors flex items-center justify-center space-x-2 shadow-sm">
+                    <div class="pt-3 border-t border-slate-100 flex items-center space-x-2">
+                        <button onclick="openViewer('${s.id}')" class="flex-grow bg-[#00529B] hover:bg-[#003B70] text-white font-bold py-2 px-3 rounded-xl text-xs transition-colors flex items-center justify-center space-x-2 shadow-sm">
                             <i class="fa-solid fa-[#FFD100] fa-paper-plane text-[#FFD100]"></i>
-                            <span>Abrir Solicitud</span>
+                            <span>Llenar Solicitud</span>
                         </button>
-                        <a href="${s.url}" target="_blank" class="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs transition-colors" title="Abrir en pestaña nueva">
+                        <a href="${s.url}" target="_blank" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs transition-colors" title="Abrir en pestaña nueva">
                             <i class="fa-solid fa-arrow-up-right-from-square"></i>
                         </a>
                     </div>
@@ -424,6 +483,8 @@
             }
 
             document.getElementById('modalTitle').textContent = serv.title;
+            document.getElementById('modalFlag').textContent = serv.flag;
+            document.getElementById('modalCategory').textContent = `${COUNTRY_NAMES[serv.country]} - ${AREA_NAMES[serv.area]}`;
             document.getElementById('modalExternalLink').href = serv.url;
             
             const iframe = document.getElementById('modalIframe');
@@ -436,10 +497,7 @@
             openModal('viewerModal');
         }
 
-        function openModal(id) {
-            document.getElementById(id).classList.remove('hidden');
-        }
-
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function closeModal(id) {
             document.getElementById(id).classList.add('hidden');
             if (id === 'viewerModal') document.getElementById('modalIframe').src = '';
