@@ -464,7 +464,7 @@
         let services = [];
 
         document.addEventListener('DOMContentLoaded', () => {
-            const saved = localStorage.getItem('guided_clickup_services_v2');
+            const saved = localStorage.getItem('guided_clickup_services_v3');
             services = saved ? JSON.parse(saved) : INITIAL_SERVICES;
             renderCards();
 
@@ -488,7 +488,7 @@
                 };
 
                 services.push(newServ);
-                localStorage.setItem('guided_clickup_services_v2', JSON.stringify(services));
+                localStorage.setItem('guided_clickup_services_v3', JSON.stringify(services));
                 renderCards();
                 closeModal('addModal');
                 document.getElementById('addForm').reset();
@@ -543,6 +543,11 @@
             const empty = document.getElementById('emptyState');
 
             const filtered = services.filter(s => {
+                // REGLA SOLICITADA: Bombavista en Chile o Colombia NUNCA muestra resultados
+                if ((selectedCountry === 'CO' || selectedCountry === 'CL') && selectedBrand === 'bv') {
+                    return false;
+                }
+
                 const matchCountry = !selectedCountry || s.country === selectedCountry;
                 const matchBrand = !selectedBrand || s.brand === 'all' || s.brand === selectedBrand;
                 
