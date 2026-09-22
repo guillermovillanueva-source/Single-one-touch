@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Service Desk | Centro de Soporte Tecnológico</title>
-    <!-- Favicon Oficial Service Desk -->
-    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <title>Central de Tickets Galileo | Service Desk B&F</title>
+    <!-- Favicon Vectorial -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22black%22/><text x=%2250%25%22 y=%2255%25%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%2245%22 fill=%22white%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>B%26F</text></svg>">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -30,6 +30,8 @@
     <style>
         .service-card { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
         .service-card:hover { transform: translateY(-3px); }
+        .brand-bf { font-family: 'Courier New', Courier, monospace; letter-spacing: 1.5px; font-weight: bold; }
+        .brand-bv { font-family: system-ui, -apple-system, sans-serif; font-weight: 800; color: #00529B; }
     </style>
 </head>
 <body class="bg-[#F4F7FA] text-slate-800 font-sans min-h-screen flex flex-col antialiased">
@@ -43,7 +45,7 @@
                     <span>Sistemas Operativos 100%</span>
                 </span>
                 <span class="text-blue-300">|</span>
-                <span class="text-blue-100">Atención de Mesa de Servicios B&F</span>
+                <span class="text-blue-100">Central de Tickets Galileo • Service Desk</span>
             </div>
             <div class="text-blue-200">
                 <span>Atención Multi-Región: 🇲🇽 🇨🇴 🇨🇱</span>
@@ -51,19 +53,30 @@
         </div>
     </div>
 
-    <!-- Header Principal -->
+    <!-- Header Principal con Logo HD Vectorial Nítido -->
     <header class="bg-[#00529B] text-white border-b-4 border-[#FFD100] shadow-md relative overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div class="flex items-center space-x-4">
-                    <!-- Logo Service Desk B&F -->
-                    <div class="bg-white p-1 rounded-full shadow-md w-16 h-16 overflow-hidden flex items-center justify-center flex-shrink-0">
-                        <img src="logo.jpg" alt="B&F Service Desk" class="w-full h-full object-cover">
+                    
+                    <!-- Logo Service Desk Vectorial HD Nítido -->
+                    <div class="bg-black text-white rounded-full w-16 h-16 flex items-center justify-center flex-shrink-0 shadow-xl border-2 border-white/30 p-2">
+                        <svg viewBox="0 0 200 200" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                            <g fill="white">
+                                <!-- Monograma B&F HD -->
+                                <path d="M 35,25 L 75,25 C 95,25 105,38 105,55 C 105,68 98,78 85,82 C 102,87 112,98 112,120 C 112,145 95,160 68,160 L 35,160 L 35,25 Z M 55,42 L 55,75 L 72,75 C 82,75 88,70 88,58 C 88,46 82,42 72,42 L 55,42 Z M 55,92 L 55,142 L 75,142 C 86,142 93,135 93,117 C 93,99 86,92 75,92 L 55,92 Z" />
+                                <path d="M 70,115 L 115,160 L 135,160 L 90,115 Z" />
+                                <!-- Texto SERVICE DESK HD -->
+                                <text x="120" y="75" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="22" letter-spacing="1">SERVICE</text>
+                                <text x="120" y="105" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="22" letter-spacing="1">DESK</text>
+                            </g>
+                        </svg>
                     </div>
+
                     <div>
-                        <span class="bg-[#FFD100] text-[#003B70] text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-wider">Portal Unificado</span>
-                        <h1 class="text-2xl font-extrabold tracking-tight mt-0.5 text-white">Centro de Soporte Tecnológico</h1>
-                        <p class="text-blue-100 text-xs mt-0.5">Filtra por tu región y área para encontrar el formulario exacto</p>
+                        <span class="bg-[#FFD100] text-[#003B70] text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-wider">Portal Oficial</span>
+                        <h1 class="text-2xl font-extrabold tracking-tight mt-0.5 text-white">Central de Tickets Galileo</h1>
+                        <p class="text-blue-100 text-xs mt-0.5">Mesa de Servicios e Incidencias Técnicas Multi-Región</p>
                     </div>
                 </div>
 
@@ -75,120 +88,136 @@
         </div>
     </header>
 
-    <!-- PANEL PREDICTIVO DE SELECCIÓN (GUIADO) -->
+    <!-- PANEL PREDICTIVO DE SELECCIÓN (GUIADO EN 4 PASOS) -->
     <section class="bg-white border-b border-slate-200 shadow-sm relative z-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
             
-            <div class="mb-4 flex items-center justify-between">
+            <div class="mb-3 flex items-center justify-between">
                 <h2 class="text-xs font-extrabold uppercase text-[#003B70] tracking-wider flex items-center space-x-2">
                     <i class="fa-solid fa-filter text-[#00529B]"></i>
-                    <span>Paso 1: Selecciona tus variables de origen</span>
+                    <span>Filtro Predictivo de Solicitudes</span>
                 </h2>
                 <button onclick="resetFilters()" class="text-xs text-slate-400 hover:text-[#00529B] font-semibold underline">
                     Limpiar Filtros
                 </button>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 
                 <!-- Selector 1: PAÍS -->
-                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2 flex items-center space-x-1.5">
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-2 flex items-center space-x-1">
                         <i class="fa-solid fa-earth-americas text-[#00529B]"></i>
-                        <span>1. Selecciona tu País</span>
+                        <span>1. País</span>
                     </label>
-                    <div class="grid grid-cols-3 gap-1.5">
-                        <button onclick="setCountry('MX')" id="btn-MX" class="country-btn px-2 py-2 rounded-lg text-xs font-bold border flex flex-col items-center justify-center space-y-1 bg-white border-slate-200 hover:border-[#00529B] transition-all">
-                            <span class="text-base">🇲🇽</span>
-                            <span>México</span>
+                    <div class="grid grid-cols-3 gap-1">
+                        <button onclick="setCountry('MX')" id="btn-MX" class="country-btn px-1.5 py-1.5 rounded-lg text-xs font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <span class="text-sm">🇲🇽</span>
+                            <span class="text-[10px]">México</span>
                         </button>
-                        <button onclick="setCountry('CO')" id="btn-CO" class="country-btn px-2 py-2 rounded-lg text-xs font-bold border flex flex-col items-center justify-center space-y-1 bg-white border-slate-200 hover:border-[#00529B] transition-all">
-                            <span class="text-base">🇨🇴</span>
-                            <span>Colombia</span>
+                        <button onclick="setCountry('CO')" id="btn-CO" class="country-btn px-1.5 py-1.5 rounded-lg text-xs font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <span class="text-sm">🇨🇴</span>
+                            <span class="text-[10px]">Colombia</span>
                         </button>
-                        <button onclick="setCountry('CL')" id="btn-CL" class="country-btn px-2 py-2 rounded-lg text-xs font-bold border flex flex-col items-center justify-center space-y-1 bg-white border-slate-200 hover:border-[#00529B] transition-all">
-                            <span class="text-base">🇨🇱</span>
-                            <span>Chile</span>
+                        <button onclick="setCountry('CL')" id="btn-CL" class="country-btn px-2 py-1.5 rounded-lg text-xs font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <span class="text-sm">🇨🇱</span>
+                            <span class="text-[10px]">Chile</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Selector 2: ÁREA / ROL -->
-                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2 flex items-center space-x-1.5">
-                        <i class="fa-solid fa-users-gear text-[#00529B]"></i>
-                        <span>2. Selecciona tu Área o Unidad</span>
+                <!-- Selector 2: MARCA / BU -->
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-2 flex items-center space-x-1">
+                        <i class="fa-solid fa-glasses text-[#00529B]"></i>
+                        <span>2. Marca / BU</span>
                     </label>
-                    <div class="grid grid-cols-3 gap-1.5">
-                        <button onclick="setArea('hq')" id="btn-hq" class="area-btn px-2 py-2 rounded-lg text-xs font-bold border flex flex-col items-center justify-center space-y-1 bg-white border-slate-200 hover:border-[#00529B] transition-all">
-                            <i class="fa-solid fa-building text-slate-500"></i>
+                    <div class="grid grid-cols-2 gap-1">
+                        <button onclick="setBrand('bf')" id="btn-bf" class="brand-btn px-2 py-1.5 rounded-lg text-[10px] font-bold border flex items-center justify-center space-x-1 bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <span class="brand-bf text-[9px] uppercase">Ben & Frank</span>
+                        </button>
+                        <button onclick="setBrand('bv')" id="btn-bv" class="brand-btn px-2 py-1.5 rounded-lg text-[10px] font-bold border flex items-center justify-center space-x-1 bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <span class="brand-bv text-[10px] lowercase">bombavista</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Selector 3: ÁREA / ROL -->
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-2 flex items-center space-x-1">
+                        <i class="fa-solid fa-users-gear text-[#00529B]"></i>
+                        <span>3. Área</span>
+                    </label>
+                    <div class="grid grid-cols-3 gap-1">
+                        <button onclick="setArea('hq')" id="btn-hq" class="area-btn px-1 py-1.5 rounded-lg text-[10px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <i class="fa-solid fa-building text-slate-400 text-xs"></i>
                             <span>HQ</span>
                         </button>
-                        <button onclick="setArea('tiendas')" id="btn-tiendas" class="area-btn px-2 py-2 rounded-lg text-xs font-bold border flex flex-col items-center justify-center space-y-1 bg-white border-slate-200 hover:border-[#00529B] transition-all">
-                            <i class="fa-solid fa-store text-slate-500"></i>
+                        <button onclick="setArea('tiendas')" id="btn-tiendas" class="area-btn px-1 py-1.5 rounded-lg text-[10px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <i class="fa-solid fa-store text-slate-400 text-xs"></i>
                             <span>Tiendas</span>
                         </button>
-                        <button onclick="setArea('ops')" id="btn-ops" class="area-btn px-2 py-2 rounded-lg text-xs font-bold border flex flex-col items-center justify-center space-y-1 bg-white border-slate-200 hover:border-[#00529B] transition-all">
-                            <i class="fa-solid fa-gears text-slate-500"></i>
+                        <button onclick="setArea('ops')" id="btn-ops" class="area-btn px-1 py-1.5 rounded-lg text-[10px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <i class="fa-solid fa-gears text-slate-400 text-xs"></i>
                             <span>Ops / Lab</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Selector 3: BÚSQUEDA PREDICTIVA -->
-                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex flex-col justify-between">
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2 flex items-center space-x-1.5">
+                <!-- Selector 4: BÚSQUEDA -->
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex flex-col justify-between">
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 flex items-center space-x-1">
                         <i class="fa-solid fa-magnifying-glass text-[#00529B]"></i>
-                        <span>3. Búsqueda por Palabras Clave</span>
+                        <span>4. Búsqueda</span>
                     </label>
                     <div class="relative">
-                        <input type="text" id="searchInput" placeholder="Ej. Clima, Odoo, Impresora..." 
-                            class="w-full pl-3 pr-8 py-2 bg-white border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#00529B]">
-                        <i class="fa-solid fa-search absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="searchInput" placeholder="Buscar falla..." 
+                            class="w-full pl-2.5 pr-7 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#00529B]">
+                        <i class="fa-solid fa-search absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                     </div>
                 </div>
 
             </div>
 
             <!-- Resumen de Selección Activa -->
-            <div id="activeFilterBadge" class="mt-3 text-xs text-slate-500 flex items-center space-x-2">
-                <span>Mostrando resultados para:</span>
-                <span id="filterSummary" class="font-bold text-[#003B70] bg-blue-50 px-2 py-0.5 rounded border border-blue-100">Todos los países y áreas</span>
+            <div id="activeFilterBadge" class="mt-2.5 text-xs text-slate-500 flex items-center space-x-2">
+                <span>Filtro activo:</span>
+                <span id="filterSummary" class="font-bold text-[#003B70] bg-blue-50 px-2 py-0.5 rounded border border-blue-100">Todos los formularios</span>
             </div>
 
         </div>
     </section>
 
     <!-- Contenido Principal: Grid de Servicios -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         
-        <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center justify-between mb-4">
             <div>
-                <h3 class="text-lg font-bold text-[#003B70]">Formularios y Accesos Recomendados</h3>
-                <p class="text-xs text-slate-500">Selecciona el módulo para llenar tu reporte</p>
+                <h3 class="text-base font-bold text-[#003B70]">Formularios y Accesos Disponibles</h3>
+                <p class="text-xs text-slate-500">Selecciona el módulo para reportar tu requerimiento</p>
             </div>
             <span id="totalCards" class="text-xs font-bold bg-blue-50 text-[#00529B] px-3 py-1 rounded-full border border-blue-100">0 Resultados</span>
         </div>
 
         <!-- Grid de Cards -->
-        <div id="formsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <div id="formsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
 
         <!-- Estado Vacío -->
-        <div id="emptyState" class="hidden text-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm mt-4">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-3">
-                <i class="fa-solid fa-filter-circle-xmark text-2xl"></i>
+        <div id="emptyState" class="hidden text-center py-12 bg-white rounded-2xl border border-slate-200 shadow-sm mt-4">
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-slate-100 text-slate-400 mb-3">
+                <i class="fa-solid fa-filter-circle-xmark text-xl"></i>
             </div>
-            <h3 class="text-base font-bold text-slate-800">No encontramos formularios para esta combinación</h3>
-            <p class="text-slate-500 text-xs mt-1">Prueba cambiando el país o el área en los filtros de arriba.</p>
-            <button onclick="resetFilters()" class="mt-4 px-4 py-2 bg-[#00529B] text-white text-xs font-bold rounded-lg">Restablecer Filtros</button>
+            <h3 class="text-sm font-bold text-slate-800">No encontramos formularios para estos filtros</h3>
+            <p class="text-slate-500 text-xs mt-1">Prueba seleccionando otra marca o área en la barra superior.</p>
+            <button onclick="resetFilters()" class="mt-3 px-3 py-1.5 bg-[#00529B] text-white text-xs font-bold rounded-lg">Restablecer Filtros</button>
         </div>
 
     </main>
 
     <!-- Footer -->
-    <footer class="bg-[#003B70] text-white border-t-4 border-[#FFD100] mt-12 py-6">
+    <footer class="bg-[#003B70] text-white border-t-4 border-[#FFD100] mt-12 py-5">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-blue-200">
-            <p class="font-semibold text-white">Service Desk B&F • Mesa de Servicios Corporativa & Soporte Tecnológico</p>
+            <p class="font-semibold text-white">Central de Tickets Galileo • Service Desk</p>
             <p>© 2026 Operaciones & Plataformas. Todos los derechos reservados.</p>
         </div>
     </footer>
@@ -239,18 +268,26 @@
                     <label class="block font-bold text-slate-700 uppercase mb-1">Nombre del Servicio</label>
                     <input type="text" id="formTitle" required placeholder="Ej. Mantenimiento Colombia" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#00529B]">
                 </div>
-                <div class="grid grid-cols-2 gap-2">
+                <div class="grid grid-cols-3 gap-2">
                     <div>
                         <label class="block font-bold text-slate-700 uppercase mb-1">País</label>
-                        <select id="formCountry" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#00529B]">
+                        <select id="formCountry" class="w-full px-2 py-2 border rounded-lg focus:ring-2 focus:ring-[#00529B]">
                             <option value="MX">🇲🇽 México</option>
                             <option value="CO">🇨🇴 Colombia</option>
                             <option value="CL">🇨🇱 Chile</option>
                         </select>
                     </div>
                     <div>
+                        <label class="block font-bold text-slate-700 uppercase mb-1">Marca</label>
+                        <select id="formBrand" class="w-full px-2 py-2 border rounded-lg focus:ring-2 focus:ring-[#00529B]">
+                            <option value="all">Todas</option>
+                            <option value="bf">Ben & Frank</option>
+                            <option value="bv">Bombavista</option>
+                        </select>
+                    </div>
+                    <div>
                         <label class="block font-bold text-slate-700 uppercase mb-1">Área</label>
-                        <select id="formArea" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#00529B]">
+                        <select id="formArea" class="w-full px-2 py-2 border rounded-lg focus:ring-2 focus:ring-[#00529B]">
                             <option value="hq">HQ</option>
                             <option value="tiendas">Tiendas</option>
                             <option value="ops">Ops / Lab</option>
@@ -276,6 +313,7 @@
     <!-- JAVASCRIPT LOGIC -->
     <script>
         const COUNTRY_NAMES = { 'MX': '🇲🇽 México', 'CO': '🇨🇴 Colombia', 'CL': '🇨🇱 Chile' };
+        const BRAND_NAMES = { 'bf': 'Ben & Frank', 'bv': 'Bombavista', 'all': 'Todas las marcas' };
         const AREA_NAMES = { 'hq': 'HQ', 'tiendas': 'Tiendas', 'ops': 'Ops / Lab' };
 
         const INITIAL_SERVICES = [
@@ -284,6 +322,7 @@
                 id: '1',
                 title: 'Mantenimiento Ben & Frank (México)',
                 country: 'MX',
+                brand: 'bf',
                 area: 'tiendas',
                 url: 'https://forms.clickup.com/14177510/f/dgn76-104777/O14JII635QGEB2LM0W',
                 description: 'Solicitudes e incidencias de mantenimiento para tiendas B&F: Electricidad, Clima, Mobiliario.',
@@ -294,6 +333,7 @@
                 id: '2',
                 title: 'Mantenimiento Bombavista (México)',
                 country: 'MX',
+                brand: 'bv',
                 area: 'tiendas',
                 url: 'https://forms.clickup.com/14177510/f/dgn76-110897/CDV8W0PS0X1EQW3176',
                 description: 'Solicitudes de mantenimiento preventivo y correctivo para tiendas Bombavista: Electricidad, Clima, Mobiliario.',
@@ -304,6 +344,7 @@
                 id: '3',
                 title: 'Soporte Tiendas (Casimiros / Odoo)',
                 country: 'MX',
+                brand: 'all',
                 area: 'tiendas',
                 url: 'https://templos-mx.casimiros.com/web?debug=1#cids=1&action=menu',
                 description: 'Atención directa para tiendas: Incidentes Odoo, Fallas Mercado Pago, MO\'s y Cajas.',
@@ -314,6 +355,7 @@
                 id: '4',
                 title: 'Soporte Operación (Aperturas)',
                 country: 'MX',
+                brand: 'all',
                 area: 'ops',
                 url: 'https://forms.clickup.com/14177510/f/dgn76-74297/BJPQI9ZZZNKKQJM1RG',
                 description: 'Gestión y creación de tiendas: Alta de tiendas, Contadores y habilitación de Aperturas.',
@@ -324,6 +366,7 @@
                 id: '5',
                 title: 'Soporte Ops (Atención Usuarios)',
                 country: 'MX',
+                brand: 'all',
                 area: 'ops',
                 url: 'https://forms.clickup.com/14177510/f/dgn76-41665/YYJC5NOK3FBBNW1P57',
                 description: 'Atención a usuarios de Ops: Control de Calidad, Procesos Batch, Errores de Reserva.',
@@ -334,6 +377,7 @@
                 id: '6',
                 title: 'Soporte Sitio Lab (Vallejo)',
                 country: 'MX',
+                brand: 'all',
                 area: 'ops',
                 url: 'https://forms.clickup.com/14177510/f/dgn76-103457/W79DD8MVUQ0OB9STGE',
                 description: 'Solicitudes para usuarios de laboratorio Vallejo: Equipo de cómputo, Impresoras y Producción.',
@@ -344,6 +388,7 @@
                 id: '7',
                 title: 'Soporte HQ (Corporativo México)',
                 country: 'MX',
+                brand: 'all',
                 area: 'hq',
                 url: 'https://forms.clickup.com/14177510/f/dgn76-62697/2GDMHEPAQY71IFJL91',
                 description: 'Atención a personal de HQ México: Equipo de cómputo, Telefonía Celular Galileo y Licencias.',
@@ -355,6 +400,7 @@
                 id: '8',
                 title: 'Soporte HQ Chile',
                 country: 'CL',
+                brand: 'bf',
                 area: 'hq',
                 url: 'https://forms.clickup.com/14177510/f/dgn76-111957/Q5NIEFTQ8AFVECDQYF',
                 description: 'Solicitudes de soporte para colaboradores de HeadQuarters en Chile.',
@@ -365,6 +411,7 @@
                 id: '9',
                 title: 'Soporte Tiendas Chile (Casimiros)',
                 country: 'CL',
+                brand: 'all',
                 area: 'tiendas',
                 url: 'https://templos-mx.casimiros.com/web?debug=1#cids=1&action=menu',
                 description: 'Atención y reporte de incidentes para templos y tiendas en Chile.',
@@ -376,6 +423,7 @@
                 id: '10',
                 title: 'Soporte HQ Colombia',
                 country: 'CO',
+                brand: 'bf',
                 area: 'hq',
                 url: 'https://forms.clickup.com/14177510/f/dgn76-62697/2GDMHEPAQY71IFJL91',
                 description: 'Atención a personal corporativo/HQ en Colombia: Cómputo, telefonía y licencias.',
@@ -386,6 +434,7 @@
                 id: '11',
                 title: 'Mantenimiento Ben & Frank (Colombia)',
                 country: 'CO',
+                brand: 'bf',
                 area: 'tiendas',
                 url: 'https://forms.clickup.com/14177510/f/dgn76-108457/ANZNI99C6TOU93RLGP',
                 description: 'Solicitudes e incidencias de mantenimiento para sedes y tiendas en Colombia.',
@@ -396,6 +445,7 @@
                 id: '12',
                 title: 'Soporte a Tienda (Colombia)',
                 country: 'CO',
+                brand: 'all',
                 area: 'tiendas',
                 url: 'https://templos-mx.casimiros.com/web?debug=1#cids=1&action=menu',
                 description: 'Atención operativa y técnica para tiendas en Colombia.',
@@ -406,6 +456,7 @@
                 id: '13',
                 title: 'Soporte a Templos (Colombia)',
                 country: 'CO',
+                brand: 'all',
                 area: 'ops',
                 url: 'https://forms.clickup.com/14177510/f/dgn76-74297/BJPQI9ZZZNKKQJM1RG',
                 description: 'Atención de soporte en operaciones y aperturas para templos en Colombia.',
@@ -415,11 +466,12 @@
         ];
 
         let selectedCountry = null;
+        let selectedBrand = null;
         let selectedArea = null;
         let services = [];
 
         document.addEventListener('DOMContentLoaded', () => {
-            const saved = localStorage.getItem('guided_clickup_services');
+            const saved = localStorage.getItem('guided_clickup_services_v2');
             services = saved ? JSON.parse(saved) : INITIAL_SERVICES;
             renderCards();
 
@@ -434,6 +486,7 @@
                     id: Date.now().toString(),
                     title: document.getElementById('formTitle').value,
                     country: country,
+                    brand: document.getElementById('formBrand').value,
                     area: document.getElementById('formArea').value,
                     url: document.getElementById('formUrl').value,
                     description: document.getElementById('formDescription').value,
@@ -442,7 +495,7 @@
                 };
 
                 services.push(newServ);
-                localStorage.setItem('guided_clickup_services', JSON.stringify(services));
+                localStorage.setItem('guided_clickup_services_v2', JSON.stringify(services));
                 renderCards();
                 closeModal('addModal');
                 document.getElementById('addForm').reset();
@@ -452,6 +505,12 @@
         function setCountry(country) {
             selectedCountry = (selectedCountry === country) ? null : country;
             updateBtnStyles('country-btn', 'btn-' + selectedCountry, 'border-[#00529B]', 'bg-blue-50');
+            renderCards();
+        }
+
+        function setBrand(brand) {
+            selectedBrand = (selectedBrand === brand) ? null : brand;
+            updateBtnStyles('brand-btn', 'btn-' + selectedBrand, 'border-[#00529B]', 'bg-blue-50');
             renderCards();
         }
 
@@ -476,9 +535,11 @@
 
         function resetFilters() {
             selectedCountry = null;
+            selectedBrand = null;
             selectedArea = null;
             document.getElementById('searchInput').value = '';
             updateBtnStyles('country-btn', null, 'border-[#00529B]', 'bg-blue-50');
+            updateBtnStyles('brand-btn', null, 'border-[#00529B]', 'bg-blue-50');
             updateBtnStyles('area-btn', null, 'border-[#00529B]', 'bg-blue-50');
             renderCards();
         }
@@ -490,24 +551,26 @@
 
             const filtered = services.filter(s => {
                 const matchCountry = !selectedCountry || s.country === selectedCountry;
+                const matchBrand = !selectedBrand || s.brand === 'all' || s.brand === selectedBrand;
                 
-                // REGLA HQ MEXICO: Muestra TODOS los formularios de México si se selecciona MX + HQ
+                // REGLA HQ MEXICO
                 let matchArea = !selectedArea || s.area === selectedArea;
                 if (selectedCountry === 'MX' && selectedArea === 'hq') {
                     matchArea = true;
                 }
 
                 const matchQuery = s.title.toLowerCase().includes(query) || s.description.toLowerCase().includes(query);
-                return matchCountry && matchArea && matchQuery;
+                return matchCountry && matchBrand && matchArea && matchQuery;
             });
 
-            // Resumen de Filtros Activos
+            // Resumen Activo
             let summaryText = [];
             if (selectedCountry) summaryText.push(COUNTRY_NAMES[selectedCountry]);
+            if (selectedBrand) summaryText.push(BRAND_NAMES[selectedBrand]);
             if (selectedArea) summaryText.push(AREA_NAMES[selectedArea]);
             if (query) summaryText.push(`"${query}"`);
             
-            document.getElementById('filterSummary').textContent = summaryText.length > 0 ? summaryText.join(' + ') : 'Todos los países y áreas';
+            document.getElementById('filterSummary').textContent = summaryText.length > 0 ? summaryText.join(' + ') : 'Todos los formularios';
             document.getElementById('totalCards').textContent = `${filtered.length} Resultados`;
 
             if (filtered.length === 0) {
@@ -517,19 +580,25 @@
             }
 
             empty.classList.add('hidden');
-            grid.innerHTML = filtered.map(s => `
+            grid.innerHTML = filtered.map(s => {
+                let brandTag = '';
+                if (s.brand === 'bf') brandTag = '<span class="brand-bf text-[9px] uppercase border px-1.5 py-0.5 rounded bg-slate-50 border-slate-300">BEN & FRANK</span>';
+                else if (s.brand === 'bv') brandTag = '<span class="brand-bv text-[10px] lowercase border px-1.5 py-0.5 rounded bg-blue-50/60 border-blue-200">bombavista</span>';
+
+                return `
                 <div class="service-card bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-xl flex flex-col justify-between border-t-4 border-t-[#00529B] relative">
                     <div>
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center space-x-1.5">
-                                <span class="text-lg">${s.flag}</span>
+                                <span class="text-base">${s.flag}</span>
+                                ${brandTag}
                                 <span class="bg-blue-50 text-[#00529B] font-extrabold text-[10px] uppercase px-2 py-0.5 rounded border border-blue-100">
                                     ${AREA_NAMES[s.area] || s.area}
                                 </span>
                             </div>
-                            <i class="fa-solid ${s.icon || 'fa-headset'} text-slate-300 text-lg"></i>
+                            <i class="fa-solid ${s.icon || 'fa-headset'} text-slate-300 text-base"></i>
                         </div>
-                        <h3 class="font-bold text-slate-900 text-sm mb-2 leading-snug">${s.title}</h3>
+                        <h3 class="font-bold text-slate-900 text-sm mb-1.5 leading-snug">${s.title}</h3>
                         <p class="text-xs text-slate-500 leading-relaxed mb-4">${s.description}</p>
                     </div>
 
@@ -543,7 +612,7 @@
                         </a>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         function openViewer(id) {
