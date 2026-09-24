@@ -65,7 +65,7 @@
                     </label>
                     <select id="userBU" required class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#00529B] focus:outline-none text-xs font-semibold bg-white">
                         <option value="" disabled selected>Selecciona tu Business Unit (BU)...</option>
-                        <option value="Operaciones">⚙️ Operaciones</option>
+                        <option value="Operaciones">🧪 Operaciones</option>
                         <option value="HQ">🏢 HQ</option>
                         <option value="Retail">🏪 Retail</option>
                         <option value="Finanzas">📊 Finanzas</option>
@@ -216,7 +216,7 @@
                     </div>
                 </div>
 
-                <!-- Selector 3: BU / ÁREA CON ÍCONOS ILUSTRATIVOS -->
+                <!-- Selector 3: BU / ÁREA CON ÍCONO DE LABORATORIO EN OPS -->
                 <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
                     <label class="block text-[11px] font-bold text-slate-700 uppercase mb-2 flex items-center justify-between">
                         <span class="flex items-center space-x-1">
@@ -225,9 +225,10 @@
                         </span>
                     </label>
                     <div class="grid grid-cols-4 gap-1">
+                        <!-- ÍCONO DE LABORATORIO (MATRAZ) -->
                         <button onclick="setBU('Operaciones')" id="btn-bu-Operaciones" class="bu-btn px-1 py-1 rounded text-[9px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
                             <span id="badge-bu-Operaciones" class="absolute -top-1.5 -right-1 bg-slate-800 text-white text-[8px] px-1 rounded-full font-extrabold">0</span>
-                            <i class="fa-solid fa-gears text-slate-500 text-xs mb-0.5"></i>
+                            <i class="fa-solid fa-flask text-slate-500 text-xs mb-0.5"></i>
                             <span>Ops</span>
                         </button>
                         <button onclick="setBU('Retail')" id="btn-bu-Retail" class="bu-btn px-1 py-1 rounded text-[9px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
@@ -665,7 +666,6 @@
             userEmailDisplay.textContent = currentUser.email;
             userBUDisplay.textContent = currentUser.bu;
 
-            // Muestra panel exclusivo de Admin si es Guillermo Villanueva en BU Tech
             if (currentUser.email === ADMIN_EMAIL && currentUser.bu === ADMIN_BU) {
                 adminReportSection.classList.remove('hidden');
                 populateLogsTable();
@@ -697,7 +697,6 @@
             
             analytics.totalUsage++;
 
-            // Registrar Log detallado de Usabilidad
             const now = new Date();
             const timestamp = now.getFullYear() + '-' +
                 String(now.getMonth() + 1).padStart(2, '0') + '-' +
@@ -714,7 +713,7 @@
                 filters: `País: ${selectedCountry || 'Todos'} | Marca: ${selectedBrand || 'Todas'} | BU: ${selectedBU || 'Todas'}`
             };
 
-            analytics.logs.unshift(logEntry); // Insertar al inicio
+            analytics.logs.unshift(logEntry);
 
             localStorage.setItem('galileo_analytics_data_v5', JSON.stringify(analytics));
             updateAnalyticsBadges();
@@ -748,7 +747,7 @@
                 return;
             }
 
-            let csvContent = "\uFEFF"; // BOM UTF-8 para Excel
+            let csvContent = "\uFEFF";
             csvContent += "Fecha y Hora,Usuario (Correo),Business Unit (BU),Formulario Seleccionado,Filtros Seleccionados\n";
 
             analytics.logs.forEach(log => {
