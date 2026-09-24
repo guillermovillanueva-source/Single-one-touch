@@ -225,7 +225,6 @@
                         </span>
                     </label>
                     <div class="grid grid-cols-4 gap-1">
-                        <!-- ÍCONO DE LABORATORIO (MATRAZ) -->
                         <button onclick="setBU('Operaciones')" id="btn-bu-Operaciones" class="bu-btn px-1 py-1 rounded text-[9px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
                             <span id="badge-bu-Operaciones" class="absolute -top-1.5 -right-1 bg-slate-800 text-white text-[8px] px-1 rounded-full font-extrabold">0</span>
                             <i class="fa-solid fa-flask text-slate-500 text-xs mb-0.5"></i>
@@ -538,9 +537,20 @@
                 flag: '🇨🇱',
                 icon: 'fa-gears'
             },
-            // COLOMBIA
             {
                 id: '11',
+                title: 'Soporte Operación (Aperturas)',
+                country: 'CL',
+                brand: 'all',
+                area: 'tiendas',
+                url: 'https://forms.clickup.com/14177510/f/dgn76-74297/BJPQI9ZZZNKKQJM1RG',
+                description: 'Gestión y creación de tiendas: Alta de tiendas, Contadores y habilitación de Aperturas.',
+                flag: '🇨🇱',
+                icon: 'fa-store'
+            },
+            // COLOMBIA
+            {
+                id: '12',
                 title: 'Soporte HQ Colombia',
                 country: 'CO',
                 brand: 'bf',
@@ -551,7 +561,7 @@
                 icon: 'fa-laptop'
             },
             {
-                id: '12',
+                id: '13',
                 title: 'Mantenimiento Ben & Frank (Colombia)',
                 country: 'CO',
                 brand: 'bf',
@@ -562,7 +572,7 @@
                 icon: 'fa-wrench'
             },
             {
-                id: '13',
+                id: '14',
                 title: 'Soporte a Tienda (Colombia)',
                 country: 'CO',
                 brand: 'all',
@@ -573,7 +583,7 @@
                 icon: 'fa-cash-register'
             },
             {
-                id: '14',
+                id: '15',
                 title: 'Soporte Operación (Aperturas)',
                 country: 'CO',
                 brand: 'all',
@@ -584,7 +594,7 @@
                 icon: 'fa-store'
             },
             {
-                id: '15',
+                id: '16',
                 title: 'Soporte Ops / Lab (Colombia)',
                 country: 'CO',
                 brand: 'all',
@@ -616,7 +626,7 @@
 
             services = INITIAL_SERVICES;
 
-            const savedAnalytics = localStorage.getItem('galileo_analytics_data_v5');
+            const savedAnalytics = localStorage.getItem('galileo_analytics_data_v6');
             if (savedAnalytics) {
                 analytics = JSON.parse(savedAnalytics);
                 if (!analytics.logs) analytics.logs = [];
@@ -635,7 +645,7 @@
                 if (email && bu) {
                     const mappedArea = BU_AREA_MAP[bu] || 'hq';
                     currentUser = { email, bu, mappedArea };
-                    localStorage.setItem('galileo_user_session_v4', JSON.stringify(currentUser));
+                    localStorage.setItem('galileo_user_session_v5', JSON.stringify(currentUser));
                     
                     document.getElementById('loginModal').classList.add('hidden');
                     setupUserEnvironment();
@@ -644,7 +654,7 @@
         });
 
         function checkUserSession() {
-            const savedSession = localStorage.getItem('galileo_user_session_v4');
+            const savedSession = localStorage.getItem('galileo_user_session_v5');
             if (savedSession) {
                 currentUser = JSON.parse(savedSession);
                 document.getElementById('loginModal').classList.add('hidden');
@@ -680,7 +690,7 @@
 
         function logoutUser() {
             if (confirm("¿Deseas cambiar de usuario o ingresar con otro correo?")) {
-                localStorage.removeItem('galileo_user_session_v4');
+                localStorage.removeItem('galileo_user_session_v5');
                 currentUser = null;
                 document.getElementById('userInfoHeader').classList.add('hidden');
                 document.getElementById('adminReportSection').classList.add('hidden');
@@ -715,7 +725,7 @@
 
             analytics.logs.unshift(logEntry);
 
-            localStorage.setItem('galileo_analytics_data_v5', JSON.stringify(analytics));
+            localStorage.setItem('galileo_analytics_data_v6', JSON.stringify(analytics));
             updateAnalyticsBadges();
             populateLogsTable();
             renderCards();
