@@ -34,7 +34,53 @@
         .brand-bv { font-family: system-ui, -apple-system, sans-serif; font-weight: 800; color: #00529B; }
     </style>
 </head>
-<body class="bg-[#F4F7FA] text-slate-800 font-sans min-h-screen flex flex-col antialiased">
+<body class="bg-[#F4F7FA] text-slate-800 font-sans min-h-screen flex flex-col antialiased relative">
+
+    <!-- MODAL INICIAL DE ACCESO Y REGISTRO DE USUARIO -->
+    <div id="loginModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden border border-slate-100 animate-fade-in">
+            <div class="bg-[#00529B] text-white p-6 text-center relative border-b-4 border-[#FFD100]">
+                <div class="bg-black text-white rounded-full w-14 h-14 mx-auto flex items-center justify-center shadow-lg border-2 border-white/30 mb-3">
+                    <svg viewBox="0 0 100 100" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                        <text x="50%" y="56%" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="64" fill="white" text-anchor="middle" dominant-baseline="middle" letter-spacing="-2">G</text>
+                    </svg>
+                </div>
+                <h2 class="text-xl font-extrabold tracking-tight">Bienvenido a la Central Galileo</h2>
+                <p class="text-blue-100 text-xs mt-1">Ingresa tus datos corporativos para personalizar tu soporte</p>
+            </div>
+            
+            <form id="userLoginForm" class="p-6 space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 uppercase mb-1.5 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-envelope text-[#00529B]"></i>
+                        <span>Correo Electrónico Corporativo</span>
+                    </label>
+                    <input type="email" id="userEmail" required placeholder="tu.nombre@benandfrank.com" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#00529B] focus:outline-none text-xs font-medium">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 uppercase mb-1.5 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-sitemap text-[#00529B]"></i>
+                        <span>Área a la que perteneces</span>
+                    </label>
+                    <select id="userArea" required class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#00529B] focus:outline-none text-xs font-semibold bg-white">
+                        <option value="" disabled selected>Selecciona tu área...</option>
+                        <option value="hq">🏢 HQ (Corporativo)</option>
+                        <option value="tiendas">🏪 Retail / Tiendas</option>
+                        <option value="ops">⚙️ Ops / Laboratorio</option>
+                        <option value="rh">👥 Recursos Humanos (RH)</option>
+                    </select>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" class="w-full bg-[#00529B] hover:bg-[#003B70] text-white font-bold py-3 px-4 rounded-xl text-xs transition-all shadow-md flex items-center justify-center space-x-2">
+                        <span>Ingresar al Portal</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Top Bar -->
     <div class="bg-[#003B70] text-white text-xs py-2 px-4">
@@ -47,9 +93,15 @@
                 <span class="text-blue-300">|</span>
                 <span class="text-blue-100">Central de Tickets Galileo • Service Desk</span>
             </div>
+            
             <div class="flex items-center space-x-4 text-blue-200">
-                <span>Atención Multi-Región: 🇲🇽 🇨🇴 🇨🇱</span>
-                <button onclick="resetAnalytics()" class="text-blue-200 hover:text-white underline text-[10px]">Reiniciar Contadores</button>
+                <!-- Info del Usuario Logueado -->
+                <div id="userInfoHeader" class="hidden flex items-center space-x-2 bg-white/10 px-2.5 py-1 rounded-lg border border-white/10">
+                    <i class="fa-solid fa-circle-user text-[#FFD100]"></i>
+                    <span id="userEmailDisplay" class="font-semibold text-white text-[11px]"></span>
+                    <button onclick="logoutUser()" class="text-amber-300 hover:text-white underline text-[10px] ml-2" title="Cerrar sesión o cambiar datos">Salir</button>
+                </div>
+                <span>🇲🇽 🇨🇴 🇨🇱</span>
             </div>
         </div>
     </div>
@@ -304,6 +356,7 @@
                             <option value="hq">HQ</option>
                             <option value="tiendas">Tiendas</option>
                             <option value="ops">Ops / Lab</option>
+                            <option value="rh">Recursos Humanos (RH)</option>
                         </select>
                     </div>
                 </div>
@@ -323,11 +376,11 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC CON CONTADORES DE USABILIDAD -->
+    <!-- JAVASCRIPT LOGIC CON CONTADORES Y CONTROL DE USUARIO -->
     <script>
         const COUNTRY_NAMES = { 'MX': '🇲🇽 México', 'CO': '🇨🇴 Colombia', 'CL': '🇨🇱 Chile' };
         const BRAND_NAMES = { 'bf': 'Ben & Frank', 'bv': 'Bombavista', 'all': 'Todas las marcas' };
-        const AREA_NAMES = { 'hq': 'HQ', 'tiendas': 'Tiendas', 'ops': 'Ops / Lab' };
+        const AREA_NAMES = { 'hq': 'HQ', 'tiendas': 'Tiendas', 'ops': 'Ops / Lab', 'rh': 'RH' };
 
         const INITIAL_SERVICES = [
             // MÉXICO
@@ -500,6 +553,7 @@
             }
         ];
 
+        let currentUser = null;
         let selectedCountry = null;
         let selectedBrand = null;
         let selectedArea = null;
@@ -508,15 +562,17 @@
             cards: {},
             countries: { 'MX': 0, 'CO': 0, 'CL': 0 },
             brands: { 'bf': 0, 'bv': 0 },
-            areas: { 'hq': 0, 'tiendas': 0, 'ops': 0 },
+            areas: { 'hq': 0, 'tiendas': 0, 'ops': 0, 'rh': 0 },
             totalUsage: 0
         };
 
         document.addEventListener('DOMContentLoaded', () => {
-            const savedServices = localStorage.getItem('guided_clickup_services_v6');
+            checkUserSession();
+
+            const savedServices = localStorage.getItem('guided_clickup_services_v7');
             services = savedServices ? JSON.parse(savedServices) : INITIAL_SERVICES;
 
-            const savedAnalytics = localStorage.getItem('galileo_analytics_data');
+            const savedAnalytics = localStorage.getItem('galileo_analytics_data_v2');
             if (savedAnalytics) {
                 analytics = JSON.parse(savedAnalytics);
             }
@@ -525,6 +581,21 @@
             renderCards();
 
             document.getElementById('searchInput').addEventListener('input', renderCards);
+
+            // Registro del formulario de Login / Identificación
+            document.getElementById('userLoginForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('userEmail').value.trim();
+                const area = document.getElementById('userArea').value;
+
+                if (email && area) {
+                    currentUser = { email, area };
+                    localStorage.setItem('galileo_user_session', JSON.stringify(currentUser));
+                    
+                    document.getElementById('loginModal').classList.add('hidden');
+                    setupUserEnvironment();
+                }
+            });
 
             document.getElementById('addForm').addEventListener('submit', (e) => {
                 e.preventDefault();
@@ -544,12 +615,47 @@
                 };
 
                 services.push(newServ);
-                localStorage.setItem('guided_clickup_services_v6', JSON.stringify(services));
+                localStorage.setItem('guided_clickup_services_v7', JSON.stringify(services));
                 renderCards();
                 closeModal('addModal');
                 document.getElementById('addForm').reset();
             });
         });
+
+        function checkUserSession() {
+            const savedSession = localStorage.getItem('galileo_user_session');
+            if (savedSession) {
+                currentUser = JSON.parse(savedSession);
+                document.getElementById('loginModal').classList.add('hidden');
+                setupUserEnvironment();
+            } else {
+                document.getElementById('loginModal').classList.remove('hidden');
+            }
+        }
+
+        function setupUserEnvironment() {
+            if (!currentUser) return;
+            
+            const userHeader = document.getElementById('userInfoHeader');
+            const userEmailDisplay = document.getElementById('userEmailDisplay');
+            
+            userHeader.classList.remove('hidden');
+            userEmailDisplay.textContent = currentUser.email;
+
+            // Auto-seleccionar el área del usuario
+            if (currentUser.area && currentUser.area !== 'rh') {
+                setArea(currentUser.area);
+            }
+        }
+
+        function logoutUser() {
+            if (confirm("¿Deseas cambiar de usuario o ingresar con otro correo?")) {
+                localStorage.removeItem('galileo_user_session');
+                currentUser = null;
+                document.getElementById('userInfoHeader').classList.add('hidden');
+                document.getElementById('loginModal').classList.remove('hidden');
+            }
+        }
 
         function recordUsage(serviceId, country, brand, area) {
             analytics.cards[serviceId] = (analytics.cards[serviceId] || 0) + 1;
@@ -560,7 +666,7 @@
             
             analytics.totalUsage++;
 
-            localStorage.setItem('galileo_analytics_data', JSON.stringify(analytics));
+            localStorage.setItem('galileo_analytics_data_v2', JSON.stringify(analytics));
             updateAnalyticsBadges();
             renderCards();
         }
@@ -582,21 +688,6 @@
                 const el = document.getElementById(`badge-area-${a}`);
                 if (el) el.textContent = analytics.areas[a] || 0;
             });
-        }
-
-        function resetAnalytics() {
-            if (confirm("¿Deseas reiniciar los contadores de uso a cero?")) {
-                analytics = {
-                    cards: {},
-                    countries: { 'MX': 0, 'CO': 0, 'CL': 0 },
-                    brands: { 'bf': 0, 'bv': 0 },
-                    areas: { 'hq': 0, 'tiendas': 0, 'ops': 0 },
-                    totalUsage: 0
-                };
-                localStorage.setItem('galileo_analytics_data', JSON.stringify(analytics));
-                updateAnalyticsBadges();
-                renderCards();
-            }
         }
 
         function setCountry(country) {
