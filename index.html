@@ -131,10 +131,24 @@
                     </div>
                 </div>
 
-                <button onclick="openModal('addModal')" class="bg-[#FFD100] hover:bg-yellow-400 text-[#003B70] font-bold px-3.5 py-2 rounded-xl text-xs transition-all shadow-md flex items-center space-x-2 self-start md:self-auto">
-                    <i class="fa-solid fa-plus text-xs"></i>
-                    <span>Agregar Nuevo Formulario</span>
-                </button>
+                <!-- SECCIÓN EXCLUSIVA ADMINISTRADOR (Guillermo Villanueva - Tech) -->
+                <div id="adminReportSection" class="hidden flex items-center space-x-2 bg-emerald-950/60 p-2.5 rounded-2xl border border-emerald-400/40 shadow-lg">
+                    <div class="flex flex-col text-left mr-2">
+                        <span class="text-[#FFD100] text-[10px] font-black uppercase tracking-wider flex items-center space-x-1">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span>Admin Mode</span>
+                        </span>
+                        <span class="text-white text-xs font-bold">Reportes de Usabilidad</span>
+                    </div>
+                    <button onclick="downloadCSVReport()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold px-3 py-2 rounded-xl text-xs transition-all shadow-md flex items-center space-x-1.5">
+                        <i class="fa-solid fa-file-csv text-sm"></i>
+                        <span>Descargar CSV</span>
+                    </button>
+                    <button onclick="openModal('logsModal')" class="bg-white/10 hover:bg-white/20 text-white font-bold px-3 py-2 rounded-xl text-xs transition-all border border-white/20 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-table"></i>
+                        <span>Ver Registro</span>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -202,29 +216,54 @@
                     </div>
                 </div>
 
-                <!-- Selector 3: ÁREA GENERAL -->
+                <!-- Selector 3: BU / ÁREA CON ÍCONOS ILUSTRATIVOS -->
                 <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
                     <label class="block text-[11px] font-bold text-slate-700 uppercase mb-2 flex items-center justify-between">
                         <span class="flex items-center space-x-1">
                             <i class="fa-solid fa-users-gear text-[#00529B]"></i>
-                            <span>3. Área</span>
+                            <span>3. Área (BU)</span>
                         </span>
                     </label>
-                    <div class="grid grid-cols-3 gap-1">
-                        <button onclick="setArea('hq')" id="btn-hq" class="area-btn px-1 py-1.5 rounded-lg text-[10px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
-                            <span id="badge-area-hq" class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white text-[9px] px-1.5 py-0.2 rounded-full font-extrabold">0</span>
-                            <i class="fa-solid fa-building text-slate-400 text-xs"></i>
+                    <div class="grid grid-cols-4 gap-1">
+                        <button onclick="setBU('Operaciones')" id="btn-bu-Operaciones" class="bu-btn px-1 py-1 rounded text-[9px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
+                            <span id="badge-bu-Operaciones" class="absolute -top-1.5 -right-1 bg-slate-800 text-white text-[8px] px-1 rounded-full font-extrabold">0</span>
+                            <i class="fa-solid fa-gears text-slate-500 text-xs mb-0.5"></i>
+                            <span>Ops</span>
+                        </button>
+                        <button onclick="setBU('Retail')" id="btn-bu-Retail" class="bu-btn px-1 py-1 rounded text-[9px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
+                            <span id="badge-bu-Retail" class="absolute -top-1.5 -right-1 bg-slate-800 text-white text-[8px] px-1 rounded-full font-extrabold">0</span>
+                            <i class="fa-solid fa-store text-slate-500 text-xs mb-0.5"></i>
+                            <span>Retail</span>
+                        </button>
+                        <button onclick="setBU('HQ')" id="btn-bu-HQ" class="bu-btn px-1 py-1 rounded text-[9px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
+                            <span id="badge-bu-HQ" class="absolute -top-1.5 -right-1 bg-slate-800 text-white text-[8px] px-1 rounded-full font-extrabold">0</span>
+                            <i class="fa-solid fa-building text-slate-500 text-xs mb-0.5"></i>
                             <span>HQ</span>
                         </button>
-                        <button onclick="setArea('tiendas')" id="btn-tiendas" class="area-btn px-1 py-1.5 rounded-lg text-[10px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
-                            <span id="badge-area-tiendas" class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white text-[9px] px-1.5 py-0.2 rounded-full font-extrabold">0</span>
-                            <i class="fa-solid fa-store text-slate-400 text-xs"></i>
-                            <span>Tiendas</span>
+                        <button onclick="setBU('Finanzas')" id="btn-bu-Finanzas" class="bu-btn px-1 py-1 rounded text-[9px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
+                            <span id="badge-bu-Finanzas" class="absolute -top-1.5 -right-1 bg-slate-800 text-white text-[8px] px-1 rounded-full font-extrabold">0</span>
+                            <i class="fa-solid fa-chart-pie text-slate-500 text-xs mb-0.5"></i>
+                            <span>Finanzas</span>
                         </button>
-                        <button onclick="setArea('ops')" id="btn-ops" class="area-btn px-1 py-1.5 rounded-lg text-[10px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
-                            <span id="badge-area-ops" class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white text-[9px] px-1.5 py-0.2 rounded-full font-extrabold">0</span>
-                            <i class="fa-solid fa-gears text-slate-400 text-xs"></i>
-                            <span>Ops / Lab</span>
+                        <button onclick="setBU('Estrategia')" id="btn-bu-Estrategia" class="bu-btn px-1 py-1 rounded text-[9px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
+                            <span id="badge-bu-Estrategia" class="absolute -top-1.5 -right-1 bg-slate-800 text-white text-[8px] px-1 rounded-full font-extrabold">0</span>
+                            <i class="fa-solid fa-bullseye text-slate-500 text-xs mb-0.5"></i>
+                            <span>Estrategia</span>
+                        </button>
+                        <button onclick="setBU('Recursos Humanos')" id="btn-bu-Recursos Humanos" class="bu-btn px-1 py-1 rounded text-[9px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
+                            <span id="badge-bu-Recursos Humanos" class="absolute -top-1.5 -right-1 bg-slate-800 text-white text-[8px] px-1 rounded-full font-extrabold">0</span>
+                            <i class="fa-solid fa-users-gear text-slate-500 text-xs mb-0.5"></i>
+                            <span>RH</span>
+                        </button>
+                        <button onclick="setBU('Marketing')" id="btn-bu-Marketing" class="bu-btn px-1 py-1 rounded text-[9px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
+                            <span id="badge-bu-Marketing" class="absolute -top-1.5 -right-1 bg-slate-800 text-white text-[8px] px-1 rounded-full font-extrabold">0</span>
+                            <i class="fa-solid fa-bullhorn text-slate-500 text-xs mb-0.5"></i>
+                            <span>Marketing</span>
+                        </button>
+                        <button onclick="setBU('Tech')" id="btn-bu-Tech" class="bu-btn px-1 py-1 rounded text-[9px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
+                            <span id="badge-bu-Tech" class="absolute -top-1.5 -right-1 bg-slate-800 text-white text-[8px] px-1 rounded-full font-extrabold">0</span>
+                            <i class="fa-solid fa-laptop-code text-slate-500 text-xs mb-0.5"></i>
+                            <span>Tech</span>
                         </button>
                     </div>
                 </div>
@@ -324,69 +363,56 @@
         </div>
     </div>
 
-    <!-- MODAL AGREGAR NUEVO FORMULARIO -->
-    <div id="addModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden border border-slate-200">
-            <div class="px-6 py-4 bg-[#00529B] text-white flex justify-between items-center">
-                <h3 class="font-bold text-sm">Agregar Nuevo Formulario</h3>
-                <button onclick="closeModal('addModal')" class="text-blue-200 hover:text-white">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+    <!-- MODAL TABLA DE AUDITORÍA Y LOGS PARA ADMIN -->
+    <div id="logsModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-6">
+        <div class="bg-white rounded-2xl w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
+            <div class="px-6 py-4 bg-[#003B70] text-white flex justify-between items-center border-b-4 border-[#FFD100]">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-list-check text-[#FFD100] text-lg"></i>
+                    <div>
+                        <h3 class="font-bold text-sm">Registro Detallado de Usabilidad</h3>
+                        <p class="text-[10px] text-blue-200">Listado cronológico de accesos e interacciones</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="downloadCSVReport()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-3 py-1.5 rounded-lg text-xs transition-colors flex items-center space-x-1">
+                        <i class="fa-solid fa-download"></i>
+                        <span>Exportar CSV</span>
+                    </button>
+                    <button onclick="closeModal('logsModal')" class="text-blue-200 hover:text-white p-2">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
             </div>
-            <form id="addForm" class="p-6 space-y-4 text-xs">
-                <div>
-                    <label class="block font-bold text-slate-700 uppercase mb-1">Nombre del Servicio</label>
-                    <input type="text" id="formTitle" required placeholder="Ej. Mantenimiento Colombia" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#00529B]">
-                </div>
-                <div class="grid grid-cols-3 gap-2">
-                    <div>
-                        <label class="block font-bold text-slate-700 uppercase mb-1">País</label>
-                        <select id="formCountry" class="w-full px-2 py-2 border rounded-lg focus:ring-2 focus:ring-[#00529B]">
-                            <option value="MX">🇲🇽 México</option>
-                            <option value="CO">🇨🇴 Colombia</option>
-                            <option value="CL">🇨🇱 Chile</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 uppercase mb-1">Marca</label>
-                        <select id="formBrand" class="w-full px-2 py-2 border rounded-lg focus:ring-2 focus:ring-[#00529B]">
-                            <option value="all">Todas</option>
-                            <option value="bf">Ben & Frank</option>
-                            <option value="bv">Bombavista</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 uppercase mb-1">Área</label>
-                        <select id="formArea" class="w-full px-2 py-2 border rounded-lg focus:ring-2 focus:ring-[#00529B]">
-                            <option value="hq">HQ</option>
-                            <option value="tiendas">Tiendas</option>
-                            <option value="ops">Ops / Lab</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 uppercase mb-1">URL de ClickUp o Sitio</label>
-                    <input type="url" id="formUrl" required placeholder="https://forms.clickup.com/..." class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#00529B]">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 uppercase mb-1">Descripción</label>
-                    <textarea id="formDescription" rows="3" placeholder="Detalla las solicitudes que atiende..." class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#00529B]"></textarea>
-                </div>
-                <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" onclick="closeModal('addModal')" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg font-bold">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 bg-[#00529B] text-white rounded-lg font-bold">Guardar</button>
-                </div>
-            </form>
+            
+            <div class="flex-grow overflow-auto p-4 bg-slate-50">
+                <table class="w-full text-left text-xs bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <thead class="bg-slate-100 border-b border-slate-200 font-bold text-slate-700 uppercase text-[10px]">
+                        <tr>
+                            <th class="p-3">Fecha y Hora</th>
+                            <th class="p-3">Usuario</th>
+                            <th class="p-3">BU Usuario</th>
+                            <th class="p-3">Formulario Seleccionado</th>
+                            <th class="p-3">Filtros Aplicados</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logsTableBody" class="divide-y divide-slate-100 text-[11px] text-slate-700">
+                        <!-- Se llena dinámicamente con JS -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC CON MAPEADOR DE BU Y CONTADORES -->
+    <!-- JAVASCRIPT LOGIC CON AUDITORÍA EXCLUSIVA DE ADMIN -->
     <script>
         const COUNTRY_NAMES = { 'MX': '🇲🇽 México', 'CO': '🇨🇴 Colombia', 'CL': '🇨🇱 Chile' };
         const BRAND_NAMES = { 'bf': 'Ben & Frank', 'bv': 'Bombavista', 'all': 'Todas las marcas' };
         const AREA_NAMES = { 'hq': 'HQ', 'tiendas': 'Tiendas', 'ops': 'Ops / Lab' };
 
-        // TABLA DE EQUIVALENCIAS BU -> ÁREA GENERAL DEL SISTEMA
+        const ADMIN_EMAIL = "guillermo.villanueva@benandfrank.com";
+        const ADMIN_BU = "Tech";
+
         const BU_AREA_MAP = {
             'Operaciones': 'ops',
             'HQ': 'hq',
@@ -572,25 +598,27 @@
         let currentUser = null;
         let selectedCountry = null;
         let selectedBrand = null;
+        let selectedBU = null;
         let selectedArea = null;
         let services = [];
         let analytics = {
             cards: {},
             countries: { 'MX': 0, 'CO': 0, 'CL': 0 },
             brands: { 'bf': 0, 'bv': 0 },
-            areas: { 'hq': 0, 'tiendas': 0, 'ops': 0 },
-            totalUsage: 0
+            bus: { 'Operaciones': 0, 'HQ': 0, 'Retail': 0, 'Finanzas': 0, 'Estrategia': 0, 'Recursos Humanos': 0, 'Marketing': 0, 'Tech': 0 },
+            totalUsage: 0,
+            logs: []
         };
 
         document.addEventListener('DOMContentLoaded', () => {
             checkUserSession();
 
-            const savedServices = localStorage.getItem('guided_clickup_services_v8');
-            services = savedServices ? JSON.parse(savedServices) : INITIAL_SERVICES;
+            services = INITIAL_SERVICES;
 
-            const savedAnalytics = localStorage.getItem('galileo_analytics_data_v3');
+            const savedAnalytics = localStorage.getItem('galileo_analytics_data_v5');
             if (savedAnalytics) {
                 analytics = JSON.parse(savedAnalytics);
+                if (!analytics.logs) analytics.logs = [];
             }
 
             updateAnalyticsBadges();
@@ -598,49 +626,24 @@
 
             document.getElementById('searchInput').addEventListener('input', renderCards);
 
-            // Guardar usuario e identificar su área mapeada automáticamente
             document.getElementById('userLoginForm').addEventListener('submit', (e) => {
                 e.preventDefault();
-                const email = document.getElementById('userEmail').value.trim();
+                const email = document.getElementById('userEmail').value.trim().toLowerCase();
                 const bu = document.getElementById('userBU').value;
 
                 if (email && bu) {
                     const mappedArea = BU_AREA_MAP[bu] || 'hq';
                     currentUser = { email, bu, mappedArea };
-                    localStorage.setItem('galileo_user_session_v2', JSON.stringify(currentUser));
+                    localStorage.setItem('galileo_user_session_v4', JSON.stringify(currentUser));
                     
                     document.getElementById('loginModal').classList.add('hidden');
                     setupUserEnvironment();
                 }
             });
-
-            document.getElementById('addForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-                const country = document.getElementById('formCountry').value;
-                const flags = { 'MX': '🇲🇽', 'CO': '🇨🇴', 'CL': '🇨🇱' };
-
-                const newServ = {
-                    id: Date.now().toString(),
-                    title: document.getElementById('formTitle').value,
-                    country: country,
-                    brand: document.getElementById('formBrand').value,
-                    area: document.getElementById('formArea').value,
-                    url: document.getElementById('formUrl').value,
-                    description: document.getElementById('formDescription').value,
-                    flag: flags[country] || '🌐',
-                    icon: 'fa-headset'
-                };
-
-                services.push(newServ);
-                localStorage.setItem('guided_clickup_services_v8', JSON.stringify(services));
-                renderCards();
-                closeModal('addModal');
-                document.getElementById('addForm').reset();
-            });
         });
 
         function checkUserSession() {
-            const savedSession = localStorage.getItem('galileo_user_session_v2');
+            const savedSession = localStorage.getItem('galileo_user_session_v4');
             if (savedSession) {
                 currentUser = JSON.parse(savedSession);
                 document.getElementById('loginModal').classList.add('hidden');
@@ -656,38 +659,117 @@
             const userHeader = document.getElementById('userInfoHeader');
             const userEmailDisplay = document.getElementById('userEmailDisplay');
             const userBUDisplay = document.getElementById('userBUDisplay');
+            const adminReportSection = document.getElementById('adminReportSection');
             
             userHeader.classList.remove('hidden');
             userEmailDisplay.textContent = currentUser.email;
             userBUDisplay.textContent = currentUser.bu;
 
-            // Auto-seleccionar el filtro general correspondiente
-            if (currentUser.mappedArea) {
-                setArea(currentUser.mappedArea);
+            // Muestra panel exclusivo de Admin si es Guillermo Villanueva en BU Tech
+            if (currentUser.email === ADMIN_EMAIL && currentUser.bu === ADMIN_BU) {
+                adminReportSection.classList.remove('hidden');
+                populateLogsTable();
+            } else {
+                adminReportSection.classList.add('hidden');
+            }
+
+            if (currentUser.bu) {
+                setBU(currentUser.bu);
             }
         }
 
         function logoutUser() {
             if (confirm("¿Deseas cambiar de usuario o ingresar con otro correo?")) {
-                localStorage.removeItem('galileo_user_session_v2');
+                localStorage.removeItem('galileo_user_session_v4');
                 currentUser = null;
                 document.getElementById('userInfoHeader').classList.add('hidden');
+                document.getElementById('adminReportSection').classList.add('hidden');
                 document.getElementById('loginModal').classList.remove('hidden');
             }
         }
 
-        function recordUsage(serviceId, country, brand, area) {
+        function recordUsage(serviceId, serviceTitle, country, brand, area) {
             analytics.cards[serviceId] = (analytics.cards[serviceId] || 0) + 1;
             
             if (country && analytics.countries[country] !== undefined) analytics.countries[country]++;
             if (brand && analytics.brands[brand] !== undefined) analytics.brands[brand]++;
-            if (area && analytics.areas[area] !== undefined) analytics.areas[area]++;
+            if (selectedBU && analytics.bus[selectedBU] !== undefined) analytics.bus[selectedBU]++;
             
             analytics.totalUsage++;
 
-            localStorage.setItem('galileo_analytics_data_v3', JSON.stringify(analytics));
+            // Registrar Log detallado de Usabilidad
+            const now = new Date();
+            const timestamp = now.getFullYear() + '-' +
+                String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                String(now.getDate()).padStart(2, '0') + ' ' +
+                String(now.getHours()).padStart(2, '0') + ':' +
+                String(now.getMinutes()).padStart(2, '0') + ':' +
+                String(now.getSeconds()).padStart(2, '0');
+
+            const logEntry = {
+                timestamp: timestamp,
+                userEmail: currentUser ? currentUser.email : 'Anónimo',
+                userBU: currentUser ? currentUser.bu : 'N/A',
+                serviceTitle: serviceTitle,
+                filters: `País: ${selectedCountry || 'Todos'} | Marca: ${selectedBrand || 'Todas'} | BU: ${selectedBU || 'Todas'}`
+            };
+
+            analytics.logs.unshift(logEntry); // Insertar al inicio
+
+            localStorage.setItem('galileo_analytics_data_v5', JSON.stringify(analytics));
             updateAnalyticsBadges();
+            populateLogsTable();
             renderCards();
+        }
+
+        function populateLogsTable() {
+            const tableBody = document.getElementById('logsTableBody');
+            if (!tableBody) return;
+
+            if (!analytics.logs || analytics.logs.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No hay interacciones registradas aún.</td></tr>`;
+                return;
+            }
+
+            tableBody.innerHTML = analytics.logs.map(log => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 font-mono font-bold text-[#00529B] whitespace-nowrap">${log.timestamp}</td>
+                    <td class="p-3 font-medium">${log.userEmail}</td>
+                    <td class="p-3"><span class="bg-blue-50 text-[#003B70] px-2 py-0.5 rounded font-bold">${log.userBU}</span></td>
+                    <td class="p-3 font-bold">${log.serviceTitle}</td>
+                    <td class="p-3 text-slate-500">${log.filters}</td>
+                </tr>
+            `).join('');
+        }
+
+        function downloadCSVReport() {
+            if (!analytics.logs || analytics.logs.length === 0) {
+                alert("No hay datos de usabilidad registrados aún para exportar.");
+                return;
+            }
+
+            let csvContent = "\uFEFF"; // BOM UTF-8 para Excel
+            csvContent += "Fecha y Hora,Usuario (Correo),Business Unit (BU),Formulario Seleccionado,Filtros Seleccionados\n";
+
+            analytics.logs.forEach(log => {
+                const row = [
+                    `"${log.timestamp}"`,
+                    `"${log.userEmail}"`,
+                    `"${log.userBU}"`,
+                    `"${log.serviceTitle.replace(/"/g, '""')}"`,
+                    `"${log.filters.replace(/"/g, '""')}"`
+                ];
+                csvContent += row.join(",") + "\n";
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Reporte_Usabilidad_Galileo_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         function updateAnalyticsBadges() {
@@ -703,9 +785,9 @@
                 if (el) el.textContent = analytics.brands[b] || 0;
             });
 
-            ['hq', 'tiendas', 'ops'].forEach(a => {
-                const el = document.getElementById(`badge-area-${a}`);
-                if (el) el.textContent = analytics.areas[a] || 0;
+            Object.keys(BU_AREA_MAP).forEach(bu => {
+                const el = document.getElementById(`badge-bu-${bu}`);
+                if (el) el.textContent = analytics.bus[bu] || 0;
             });
         }
 
@@ -721,9 +803,15 @@
             renderCards();
         }
 
-        function setArea(area) {
-            selectedArea = (selectedArea === area) ? null : area;
-            updateBtnStyles('area-btn', 'btn-' + selectedArea, 'border-[#00529B]', 'bg-blue-50');
+        function setBU(bu) {
+            if (selectedBU === bu) {
+                selectedBU = null;
+                selectedArea = null;
+            } else {
+                selectedBU = bu;
+                selectedArea = BU_AREA_MAP[bu] || 'hq';
+            }
+            updateBtnStyles('bu-btn', selectedBU ? 'btn-bu-' + selectedBU : null, 'border-[#00529B]', 'bg-blue-50');
             renderCards();
         }
 
@@ -733,21 +821,24 @@
                 btn.classList.add('bg-white', 'border-slate-200');
             });
 
-            const activeBtn = document.getElementById(activeId);
-            if (activeBtn) {
-                activeBtn.classList.remove('bg-white', 'border-slate-200');
-                activeBtn.classList.add(borderClass, bgClass, 'text-[#00529B]');
+            if (activeId) {
+                const activeBtn = document.getElementById(activeId);
+                if (activeBtn) {
+                    activeBtn.classList.remove('bg-white', 'border-slate-200');
+                    activeBtn.classList.add(borderClass, bgClass, 'text-[#00529B]');
+                }
             }
         }
 
         function resetFilters() {
             selectedCountry = null;
             selectedBrand = null;
+            selectedBU = null;
             selectedArea = null;
             document.getElementById('searchInput').value = '';
             updateBtnStyles('country-btn', null, 'border-[#00529B]', 'bg-blue-50');
             updateBtnStyles('brand-btn', null, 'border-[#00529B]', 'bg-blue-50');
-            updateBtnStyles('area-btn', null, 'border-[#00529B]', 'bg-blue-50');
+            updateBtnStyles('bu-btn', null, 'border-[#00529B]', 'bg-blue-50');
             renderCards();
         }
 
@@ -776,7 +867,7 @@
             let summaryText = [];
             if (selectedCountry) summaryText.push(COUNTRY_NAMES[selectedCountry]);
             if (selectedBrand) summaryText.push(BRAND_NAMES[selectedBrand]);
-            if (selectedArea) summaryText.push(AREA_NAMES[selectedArea]);
+            if (selectedBU) summaryText.push(`BU: ${selectedBU}`);
             if (query) summaryText.push(`"${query}"`);
             
             document.getElementById('filterSummary').textContent = summaryText.length > 0 ? summaryText.join(' + ') : 'Todos los formularios';
@@ -821,11 +912,11 @@
                     </div>
 
                     <div class="pt-3 border-t border-slate-100 flex items-center space-x-2">
-                        <button onclick="handleFormClick('${s.id}', '${s.country}', '${s.brand}', '${s.area}')" class="flex-grow bg-[#00529B] hover:bg-[#003B70] text-white font-bold py-2 px-3 rounded-xl text-xs transition-colors flex items-center justify-center space-x-2 shadow-sm">
+                        <button onclick="handleFormClick('${s.id}', '${s.title}', '${s.country}', '${s.brand}', '${s.area}')" class="flex-grow bg-[#00529B] hover:bg-[#003B70] text-white font-bold py-2 px-3 rounded-xl text-xs transition-colors flex items-center justify-center space-x-2 shadow-sm">
                             <i class="fa-solid fa-[#FFD100] fa-paper-plane text-[#FFD100]"></i>
                             <span>Llenar Solicitud</span>
                         </button>
-                        <a href="${s.url}" target="_blank" onclick="recordUsage('${s.id}', '${s.country}', '${s.brand}', '${s.area}')" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs transition-colors" title="Abrir en pestaña nueva">
+                        <a href="${s.url}" target="_blank" onclick="recordUsage('${s.id}', '${s.title}', '${s.country}', '${s.brand}', '${s.area}')" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs transition-colors" title="Abrir en pestaña nueva">
                             <i class="fa-solid fa-arrow-up-right-from-square"></i>
                         </a>
                     </div>
@@ -833,8 +924,8 @@
             `}).join('');
         }
 
-        function handleFormClick(id, country, brand, area) {
-            recordUsage(id, country, brand, area);
+        function handleFormClick(id, title, country, brand, area) {
+            recordUsage(id, title, country, brand, area);
             openViewer(id);
         }
 
