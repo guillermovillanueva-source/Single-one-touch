@@ -47,8 +47,9 @@
                 <span class="text-blue-300">|</span>
                 <span class="text-blue-100">Central de Tickets Galileo • Service Desk</span>
             </div>
-            <div class="text-blue-200">
+            <div class="flex items-center space-x-4 text-blue-200">
                 <span>Atención Multi-Región: 🇲🇽 🇨🇴 🇨🇱</span>
+                <button onclick="resetAnalytics()" class="text-blue-200 hover:text-white underline text-[10px]">Reiniciar Contadores</button>
             </div>
         </div>
     </div>
@@ -99,20 +100,25 @@
                 
                 <!-- Selector 1: PAÍS -->
                 <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-2 flex items-center space-x-1">
-                        <i class="fa-solid fa-earth-americas text-[#00529B]"></i>
-                        <span>1. País</span>
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-2 flex items-center justify-between">
+                        <span class="flex items-center space-x-1">
+                            <i class="fa-solid fa-earth-americas text-[#00529B]"></i>
+                            <span>1. País</span>
+                        </span>
                     </label>
                     <div class="grid grid-cols-3 gap-1">
-                        <button onclick="setCountry('MX')" id="btn-MX" class="country-btn px-1.5 py-1.5 rounded-lg text-xs font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                        <button onclick="setCountry('MX')" id="btn-MX" class="country-btn px-1.5 py-1.5 rounded-lg text-xs font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
+                            <span id="badge-country-MX" class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white text-[9px] px-1.5 py-0.2 rounded-full font-extrabold">0</span>
                             <span class="text-sm">🇲🇽</span>
                             <span class="text-[10px]">México</span>
                         </button>
-                        <button onclick="setCountry('CO')" id="btn-CO" class="country-btn px-1.5 py-1.5 rounded-lg text-xs font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                        <button onclick="setCountry('CO')" id="btn-CO" class="country-btn px-1.5 py-1.5 rounded-lg text-xs font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
+                            <span id="badge-country-CO" class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white text-[9px] px-1.5 py-0.2 rounded-full font-extrabold">0</span>
                             <span class="text-sm">🇨🇴</span>
                             <span class="text-[10px]">Colombia</span>
                         </button>
-                        <button onclick="setCountry('CL')" id="btn-CL" class="country-btn px-2 py-1.5 rounded-lg text-xs font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                        <button onclick="setCountry('CL')" id="btn-CL" class="country-btn px-2 py-1.5 rounded-lg text-xs font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
+                            <span id="badge-country-CL" class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white text-[9px] px-1.5 py-0.2 rounded-full font-extrabold">0</span>
                             <span class="text-sm">🇨🇱</span>
                             <span class="text-[10px]">Chile</span>
                         </button>
@@ -121,15 +127,19 @@
 
                 <!-- Selector 2: MARCA / BU -->
                 <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-2 flex items-center space-x-1">
-                        <i class="fa-solid fa-glasses text-[#00529B]"></i>
-                        <span>2. Marca / BU</span>
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-2 flex items-center justify-between">
+                        <span class="flex items-center space-x-1">
+                            <i class="fa-solid fa-glasses text-[#00529B]"></i>
+                            <span>2. Marca / BU</span>
+                        </span>
                     </label>
                     <div class="grid grid-cols-2 gap-1">
-                        <button onclick="setBrand('bf')" id="btn-bf" class="brand-btn px-2 py-1.5 rounded-lg text-[10px] font-bold border flex items-center justify-center space-x-1 bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                        <button onclick="setBrand('bf')" id="btn-bf" class="brand-btn px-2 py-1.5 rounded-lg text-[10px] font-bold border flex items-center justify-center space-x-1 bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
+                            <span id="badge-brand-bf" class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white text-[9px] px-1.5 py-0.2 rounded-full font-extrabold">0</span>
                             <span class="brand-bf text-[9px] uppercase">Ben & Frank</span>
                         </button>
-                        <button onclick="setBrand('bv')" id="btn-bv" class="brand-btn px-2 py-1.5 rounded-lg text-[10px] font-bold border flex items-center justify-center space-x-1 bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                        <button onclick="setBrand('bv')" id="btn-bv" class="brand-btn px-2 py-1.5 rounded-lg text-[10px] font-bold border flex items-center justify-center space-x-1 bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
+                            <span id="badge-brand-bv" class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white text-[9px] px-1.5 py-0.2 rounded-full font-extrabold">0</span>
                             <span class="brand-bv text-[10px] lowercase">bombavista</span>
                         </button>
                     </div>
@@ -137,20 +147,25 @@
 
                 <!-- Selector 3: ÁREA / ROL -->
                 <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-2 flex items-center space-x-1">
-                        <i class="fa-solid fa-users-gear text-[#00529B]"></i>
-                        <span>3. Área</span>
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-2 flex items-center justify-between">
+                        <span class="flex items-center space-x-1">
+                            <i class="fa-solid fa-users-gear text-[#00529B]"></i>
+                            <span>3. Área</span>
+                        </span>
                     </label>
                     <div class="grid grid-cols-3 gap-1">
-                        <button onclick="setArea('hq')" id="btn-hq" class="area-btn px-1 py-1.5 rounded-lg text-[10px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                        <button onclick="setArea('hq')" id="btn-hq" class="area-btn px-1 py-1.5 rounded-lg text-[10px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
+                            <span id="badge-area-hq" class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white text-[9px] px-1.5 py-0.2 rounded-full font-extrabold">0</span>
                             <i class="fa-solid fa-building text-slate-400 text-xs"></i>
                             <span>HQ</span>
                         </button>
-                        <button onclick="setArea('tiendas')" id="btn-tiendas" class="area-btn px-1 py-1.5 rounded-lg text-[10px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                        <button onclick="setArea('tiendas')" id="btn-tiendas" class="area-btn px-1 py-1.5 rounded-lg text-[10px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
+                            <span id="badge-area-tiendas" class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white text-[9px] px-1.5 py-0.2 rounded-full font-extrabold">0</span>
                             <i class="fa-solid fa-store text-slate-400 text-xs"></i>
                             <span>Tiendas</span>
                         </button>
-                        <button onclick="setArea('ops')" id="btn-ops" class="area-btn px-1 py-1.5 rounded-lg text-[10px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                        <button onclick="setArea('ops')" id="btn-ops" class="area-btn px-1 py-1.5 rounded-lg text-[10px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
+                            <span id="badge-area-ops" class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white text-[9px] px-1.5 py-0.2 rounded-full font-extrabold">0</span>
                             <i class="fa-solid fa-gears text-slate-400 text-xs"></i>
                             <span>Ops / Lab</span>
                         </button>
@@ -173,9 +188,14 @@
             </div>
 
             <!-- Resumen de Selección Activa -->
-            <div id="activeFilterBadge" class="mt-2.5 text-xs text-slate-500 flex items-center space-x-2">
-                <span>Filtro activo:</span>
-                <span id="filterSummary" class="font-bold text-[#003B70] bg-blue-50 px-2 py-0.5 rounded border border-blue-100">Todos los formularios</span>
+            <div id="activeFilterBadge" class="mt-2.5 text-xs text-slate-500 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <span>Filtro activo:</span>
+                    <span id="filterSummary" class="font-bold text-[#003B70] bg-blue-50 px-2 py-0.5 rounded border border-blue-100">Todos los formularios</span>
+                </div>
+                <div class="text-[11px] font-semibold text-slate-600">
+                    Total Solicitudes Iniciadas: <span id="globalUsageCount" class="font-bold text-[#00529B] bg-yellow-100 px-2 py-0.5 rounded">0</span>
+                </div>
             </div>
 
         </div>
@@ -303,7 +323,7 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- JAVASCRIPT LOGIC CON CONTADORES DE USABILIDAD -->
     <script>
         const COUNTRY_NAMES = { 'MX': '🇲🇽 México', 'CO': '🇨🇴 Colombia', 'CL': '🇨🇱 Chile' };
         const BRAND_NAMES = { 'bf': 'Ben & Frank', 'bv': 'Bombavista', 'all': 'Todas las marcas' };
@@ -484,10 +504,24 @@
         let selectedBrand = null;
         let selectedArea = null;
         let services = [];
+        let analytics = {
+            cards: {},
+            countries: { 'MX': 0, 'CO': 0, 'CL': 0 },
+            brands: { 'bf': 0, 'bv': 0 },
+            areas: { 'hq': 0, 'tiendas': 0, 'ops': 0 },
+            totalUsage: 0
+        };
 
         document.addEventListener('DOMContentLoaded', () => {
-            const saved = localStorage.getItem('guided_clickup_services_v5');
-            services = saved ? JSON.parse(saved) : INITIAL_SERVICES;
+            const savedServices = localStorage.getItem('guided_clickup_services_v6');
+            services = savedServices ? JSON.parse(savedServices) : INITIAL_SERVICES;
+
+            const savedAnalytics = localStorage.getItem('galileo_analytics_data');
+            if (savedAnalytics) {
+                analytics = JSON.parse(savedAnalytics);
+            }
+
+            updateAnalyticsBadges();
             renderCards();
 
             document.getElementById('searchInput').addEventListener('input', renderCards);
@@ -510,12 +544,60 @@
                 };
 
                 services.push(newServ);
-                localStorage.setItem('guided_clickup_services_v5', JSON.stringify(services));
+                localStorage.setItem('guided_clickup_services_v6', JSON.stringify(services));
                 renderCards();
                 closeModal('addModal');
                 document.getElementById('addForm').reset();
             });
         });
+
+        function recordUsage(serviceId, country, brand, area) {
+            analytics.cards[serviceId] = (analytics.cards[serviceId] || 0) + 1;
+            
+            if (country && analytics.countries[country] !== undefined) analytics.countries[country]++;
+            if (brand && analytics.brands[brand] !== undefined) analytics.brands[brand]++;
+            if (area && analytics.areas[area] !== undefined) analytics.areas[area]++;
+            
+            analytics.totalUsage++;
+
+            localStorage.setItem('galileo_analytics_data', JSON.stringify(analytics));
+            updateAnalyticsBadges();
+            renderCards();
+        }
+
+        function updateAnalyticsBadges() {
+            document.getElementById('globalUsageCount').textContent = analytics.totalUsage;
+
+            ['MX', 'CO', 'CL'].forEach(c => {
+                const el = document.getElementById(`badge-country-${c}`);
+                if (el) el.textContent = analytics.countries[c] || 0;
+            });
+
+            ['bf', 'bv'].forEach(b => {
+                const el = document.getElementById(`badge-brand-${b}`);
+                if (el) el.textContent = analytics.brands[b] || 0;
+            });
+
+            ['hq', 'tiendas', 'ops'].forEach(a => {
+                const el = document.getElementById(`badge-area-${a}`);
+                if (el) el.textContent = analytics.areas[a] || 0;
+            });
+        }
+
+        function resetAnalytics() {
+            if (confirm("¿Deseas reiniciar los contadores de uso a cero?")) {
+                analytics = {
+                    cards: {},
+                    countries: { 'MX': 0, 'CO': 0, 'CL': 0 },
+                    brands: { 'bf': 0, 'bv': 0 },
+                    areas: { 'hq': 0, 'tiendas': 0, 'ops': 0 },
+                    totalUsage: 0
+                };
+                localStorage.setItem('galileo_analytics_data', JSON.stringify(analytics));
+                updateAnalyticsBadges();
+                renderCards();
+            }
+        }
 
         function setCountry(country) {
             selectedCountry = (selectedCountry === country) ? null : country;
@@ -565,7 +647,6 @@
             const empty = document.getElementById('emptyState');
 
             const filtered = services.filter(s => {
-                // REGLA SOLICITADA: Bombavista en Chile o Colombia NUNCA muestra resultados
                 if ((selectedCountry === 'CO' || selectedCountry === 'CL') && selectedBrand === 'bv') {
                     return false;
                 }
@@ -573,7 +654,6 @@
                 const matchCountry = !selectedCountry || s.country === selectedCountry;
                 const matchBrand = !selectedBrand || s.brand === 'all' || s.brand === selectedBrand;
                 
-                // REGLA HQ MEXICO
                 let matchArea = !selectedArea || s.area === selectedArea;
                 if (selectedCountry === 'MX' && selectedArea === 'hq') {
                     matchArea = true;
@@ -583,7 +663,6 @@
                 return matchCountry && matchBrand && matchArea && matchQuery;
             });
 
-            // Resumen Activo
             let summaryText = [];
             if (selectedCountry) summaryText.push(COUNTRY_NAMES[selectedCountry]);
             if (selectedBrand) summaryText.push(BRAND_NAMES[selectedBrand]);
@@ -605,9 +684,18 @@
                 if (s.brand === 'bf') brandTag = '<span class="brand-bf text-[9px] uppercase border px-1.5 py-0.5 rounded bg-slate-50 border-slate-300">BEN & FRANK</span>';
                 else if (s.brand === 'bv') brandTag = '<span class="brand-bv text-[10px] lowercase border px-1.5 py-0.5 rounded bg-blue-50/60 border-blue-200">bombavista</span>';
 
+                const cardUsage = analytics.cards[s.id] || 0;
+
                 return `
-                <div class="service-card bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-xl flex flex-col justify-between border-t-4 border-t-[#00529B] relative">
-                    <div>
+                <div class="service-card bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-xl flex flex-col justify-between border-t-4 border-t-[#00529B] relative overflow-hidden">
+                    
+                    <!-- ESQUINA SUPERIOR IZQUIERDA: CONTADOR DE USOS -->
+                    <div class="absolute top-0 left-0 bg-[#003B70] text-white text-[9px] font-black px-2.5 py-1 rounded-br-xl shadow-sm flex items-center space-x-1 z-10">
+                        <i class="fa-solid fa-fire text-amber-300 text-[8px]"></i>
+                        <span>${cardUsage} usos</span>
+                    </div>
+
+                    <div class="pt-4">
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center space-x-1.5">
                                 <span class="text-base">${s.flag}</span>
@@ -623,16 +711,21 @@
                     </div>
 
                     <div class="pt-3 border-t border-slate-100 flex items-center space-x-2">
-                        <button onclick="openViewer('${s.id}')" class="flex-grow bg-[#00529B] hover:bg-[#003B70] text-white font-bold py-2 px-3 rounded-xl text-xs transition-colors flex items-center justify-center space-x-2 shadow-sm">
+                        <button onclick="handleFormClick('${s.id}', '${s.country}', '${s.brand}', '${s.area}')" class="flex-grow bg-[#00529B] hover:bg-[#003B70] text-white font-bold py-2 px-3 rounded-xl text-xs transition-colors flex items-center justify-center space-x-2 shadow-sm">
                             <i class="fa-solid fa-[#FFD100] fa-paper-plane text-[#FFD100]"></i>
                             <span>Llenar Solicitud</span>
                         </button>
-                        <a href="${s.url}" target="_blank" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs transition-colors" title="Abrir en pestaña nueva">
+                        <a href="${s.url}" target="_blank" onclick="recordUsage('${s.id}', '${s.country}', '${s.brand}', '${s.area}')" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs transition-colors" title="Abrir en pestaña nueva">
                             <i class="fa-solid fa-arrow-up-right-from-square"></i>
                         </a>
                     </div>
                 </div>
             `}).join('');
+        }
+
+        function handleFormClick(id, country, brand, area) {
+            recordUsage(id, country, brand, area);
+            openViewer(id);
         }
 
         function openViewer(id) {
