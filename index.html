@@ -38,7 +38,7 @@
 
     <!-- MODAL INICIAL DE ACCESO Y REGISTRO DE USUARIO -->
     <div id="loginModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden border border-slate-100 animate-fade-in">
+        <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden border border-slate-100">
             <div class="bg-[#00529B] text-white p-6 text-center relative border-b-4 border-[#FFD100]">
                 <div class="bg-black text-white rounded-full w-14 h-14 mx-auto flex items-center justify-center shadow-lg border-2 border-white/30 mb-3">
                     <svg viewBox="0 0 100 100" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -61,14 +61,18 @@
                 <div>
                     <label class="block font-bold text-slate-700 uppercase mb-1.5 flex items-center space-x-1.5">
                         <i class="fa-solid fa-sitemap text-[#00529B]"></i>
-                        <span>Área a la que perteneces</span>
+                        <span>Business Unit / Área a la que perteneces</span>
                     </label>
-                    <select id="userArea" required class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#00529B] focus:outline-none text-xs font-semibold bg-white">
-                        <option value="" disabled selected>Selecciona tu área...</option>
-                        <option value="hq">🏢 HQ (Corporativo)</option>
-                        <option value="tiendas">🏪 Retail / Tiendas</option>
-                        <option value="ops">⚙️ Ops / Laboratorio</option>
-                        <option value="rh">👥 Recursos Humanos (RH)</option>
+                    <select id="userBU" required class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#00529B] focus:outline-none text-xs font-semibold bg-white">
+                        <option value="" disabled selected>Selecciona tu Business Unit (BU)...</option>
+                        <option value="Operaciones">⚙️ Operaciones</option>
+                        <option value="HQ">🏢 HQ</option>
+                        <option value="Retail">🏪 Retail</option>
+                        <option value="Finanzas">📊 Finanzas</option>
+                        <option value="Estrategia">🎯 Estrategia</option>
+                        <option value="Recursos Humanos">👥 Recursos Humanos</option>
+                        <option value="Marketing">📣 Marketing</option>
+                        <option value="Tech">💻 Tech</option>
                     </select>
                 </div>
 
@@ -99,6 +103,7 @@
                 <div id="userInfoHeader" class="hidden flex items-center space-x-2 bg-white/10 px-2.5 py-1 rounded-lg border border-white/10">
                     <i class="fa-solid fa-circle-user text-[#FFD100]"></i>
                     <span id="userEmailDisplay" class="font-semibold text-white text-[11px]"></span>
+                    <span id="userBUDisplay" class="bg-blue-900/80 text-blue-200 px-1.5 py-0.2 rounded text-[10px] font-bold"></span>
                     <button onclick="logoutUser()" class="text-amber-300 hover:text-white underline text-[10px] ml-2" title="Cerrar sesión o cambiar datos">Salir</button>
                 </div>
                 <span>🇲🇽 🇨🇴 🇨🇱</span>
@@ -197,7 +202,7 @@
                     </div>
                 </div>
 
-                <!-- Selector 3: ÁREA / ROL -->
+                <!-- Selector 3: ÁREA GENERAL -->
                 <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
                     <label class="block text-[11px] font-bold text-slate-700 uppercase mb-2 flex items-center justify-between">
                         <span class="flex items-center space-x-1">
@@ -356,7 +361,6 @@
                             <option value="hq">HQ</option>
                             <option value="tiendas">Tiendas</option>
                             <option value="ops">Ops / Lab</option>
-                            <option value="rh">Recursos Humanos (RH)</option>
                         </select>
                     </div>
                 </div>
@@ -376,11 +380,23 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC CON CONTADORES Y CONTROL DE USUARIO -->
+    <!-- JAVASCRIPT LOGIC CON MAPEADOR DE BU Y CONTADORES -->
     <script>
         const COUNTRY_NAMES = { 'MX': '🇲🇽 México', 'CO': '🇨🇴 Colombia', 'CL': '🇨🇱 Chile' };
         const BRAND_NAMES = { 'bf': 'Ben & Frank', 'bv': 'Bombavista', 'all': 'Todas las marcas' };
-        const AREA_NAMES = { 'hq': 'HQ', 'tiendas': 'Tiendas', 'ops': 'Ops / Lab', 'rh': 'RH' };
+        const AREA_NAMES = { 'hq': 'HQ', 'tiendas': 'Tiendas', 'ops': 'Ops / Lab' };
+
+        // TABLA DE EQUIVALENCIAS BU -> ÁREA GENERAL DEL SISTEMA
+        const BU_AREA_MAP = {
+            'Operaciones': 'ops',
+            'HQ': 'hq',
+            'Retail': 'tiendas',
+            'Finanzas': 'hq',
+            'Estrategia': 'hq',
+            'Recursos Humanos': 'hq',
+            'Marketing': 'hq',
+            'Tech': 'hq'
+        };
 
         const INITIAL_SERVICES = [
             // MÉXICO
@@ -562,17 +578,17 @@
             cards: {},
             countries: { 'MX': 0, 'CO': 0, 'CL': 0 },
             brands: { 'bf': 0, 'bv': 0 },
-            areas: { 'hq': 0, 'tiendas': 0, 'ops': 0, 'rh': 0 },
+            areas: { 'hq': 0, 'tiendas': 0, 'ops': 0 },
             totalUsage: 0
         };
 
         document.addEventListener('DOMContentLoaded', () => {
             checkUserSession();
 
-            const savedServices = localStorage.getItem('guided_clickup_services_v7');
+            const savedServices = localStorage.getItem('guided_clickup_services_v8');
             services = savedServices ? JSON.parse(savedServices) : INITIAL_SERVICES;
 
-            const savedAnalytics = localStorage.getItem('galileo_analytics_data_v2');
+            const savedAnalytics = localStorage.getItem('galileo_analytics_data_v3');
             if (savedAnalytics) {
                 analytics = JSON.parse(savedAnalytics);
             }
@@ -582,15 +598,16 @@
 
             document.getElementById('searchInput').addEventListener('input', renderCards);
 
-            // Registro del formulario de Login / Identificación
+            // Guardar usuario e identificar su área mapeada automáticamente
             document.getElementById('userLoginForm').addEventListener('submit', (e) => {
                 e.preventDefault();
                 const email = document.getElementById('userEmail').value.trim();
-                const area = document.getElementById('userArea').value;
+                const bu = document.getElementById('userBU').value;
 
-                if (email && area) {
-                    currentUser = { email, area };
-                    localStorage.setItem('galileo_user_session', JSON.stringify(currentUser));
+                if (email && bu) {
+                    const mappedArea = BU_AREA_MAP[bu] || 'hq';
+                    currentUser = { email, bu, mappedArea };
+                    localStorage.setItem('galileo_user_session_v2', JSON.stringify(currentUser));
                     
                     document.getElementById('loginModal').classList.add('hidden');
                     setupUserEnvironment();
@@ -615,7 +632,7 @@
                 };
 
                 services.push(newServ);
-                localStorage.setItem('guided_clickup_services_v7', JSON.stringify(services));
+                localStorage.setItem('guided_clickup_services_v8', JSON.stringify(services));
                 renderCards();
                 closeModal('addModal');
                 document.getElementById('addForm').reset();
@@ -623,7 +640,7 @@
         });
 
         function checkUserSession() {
-            const savedSession = localStorage.getItem('galileo_user_session');
+            const savedSession = localStorage.getItem('galileo_user_session_v2');
             if (savedSession) {
                 currentUser = JSON.parse(savedSession);
                 document.getElementById('loginModal').classList.add('hidden');
@@ -638,19 +655,21 @@
             
             const userHeader = document.getElementById('userInfoHeader');
             const userEmailDisplay = document.getElementById('userEmailDisplay');
+            const userBUDisplay = document.getElementById('userBUDisplay');
             
             userHeader.classList.remove('hidden');
             userEmailDisplay.textContent = currentUser.email;
+            userBUDisplay.textContent = currentUser.bu;
 
-            // Auto-seleccionar el área del usuario
-            if (currentUser.area && currentUser.area !== 'rh') {
-                setArea(currentUser.area);
+            // Auto-seleccionar el filtro general correspondiente
+            if (currentUser.mappedArea) {
+                setArea(currentUser.mappedArea);
             }
         }
 
         function logoutUser() {
             if (confirm("¿Deseas cambiar de usuario o ingresar con otro correo?")) {
-                localStorage.removeItem('galileo_user_session');
+                localStorage.removeItem('galileo_user_session_v2');
                 currentUser = null;
                 document.getElementById('userInfoHeader').classList.add('hidden');
                 document.getElementById('loginModal').classList.remove('hidden');
@@ -666,7 +685,7 @@
             
             analytics.totalUsage++;
 
-            localStorage.setItem('galileo_analytics_data_v2', JSON.stringify(analytics));
+            localStorage.setItem('galileo_analytics_data_v3', JSON.stringify(analytics));
             updateAnalyticsBadges();
             renderCards();
         }
