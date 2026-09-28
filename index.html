@@ -11,6 +11,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Identity Services Library -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -36,7 +39,7 @@
 </head>
 <body class="bg-[#F4F7FA] text-slate-800 font-sans min-h-screen flex flex-col antialiased relative">
 
-    <!-- MODAL INICIAL DE ACCESO Y REGISTRO DE USUARIO -->
+    <!-- MODAL INICIAL DE ACCESO Y REGISTRO DE USUARIO CON GOOGLE -->
     <div id="loginModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden border border-slate-100">
             <div class="bg-[#00529B] text-white p-6 text-center relative border-b-4 border-[#FFD100]">
@@ -46,43 +49,48 @@
                     </svg>
                 </div>
                 <h2 class="text-xl font-extrabold tracking-tight">Bienvenido a la Central Galileo</h2>
-                <p class="text-blue-100 text-xs mt-1">Ingresa tus datos corporativos para personalizar tu soporte</p>
+                <p class="text-blue-100 text-xs mt-1">Inicia sesión con tu cuenta corporativa de Google</p>
             </div>
             
-            <form id="userLoginForm" class="p-6 space-y-4 text-xs">
-                <div>
-                    <label class="block font-bold text-slate-700 uppercase mb-1.5 flex items-center space-x-1.5">
-                        <i class="fa-solid fa-envelope text-[#00529B]"></i>
-                        <span>Correo Electrónico Corporativo</span>
-                    </label>
-                    <input type="email" id="userEmail" required placeholder="tu.nombre@benandfrank.com" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#00529B] focus:outline-none text-xs font-medium">
-                </div>
-
+            <div class="p-6 space-y-4 text-xs">
                 <div>
                     <label class="block font-bold text-slate-700 uppercase mb-1.5 flex items-center space-x-1.5">
                         <i class="fa-solid fa-sitemap text-[#00529B]"></i>
                         <span>Business Unit / Área a la que perteneces</span>
                     </label>
                     <select id="userBU" required class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#00529B] focus:outline-none text-xs font-semibold bg-white">
-                        <option value="" disabled selected>Selecciona tu Business Unit (BU)...</option>
+                        <option value="HQ" selected>🏢 HQ</option>
+                        <option value="Tech">💻 Tech</option>
                         <option value="Operaciones">🧪 Operaciones</option>
-                        <option value="HQ">🏢 HQ</option>
                         <option value="Retail">🏪 Retail</option>
                         <option value="Finanzas">📊 Finanzas</option>
                         <option value="Estrategia">🎯 Estrategia</option>
                         <option value="Recursos Humanos">👥 Recursos Humanos</option>
                         <option value="Marketing">📣 Marketing</option>
-                        <option value="Tech">💻 Tech</option>
                     </select>
                 </div>
 
-                <div class="pt-2">
-                    <button type="submit" class="w-full bg-[#00529B] hover:bg-[#003B70] text-white font-bold py-3 px-4 rounded-xl text-xs transition-all shadow-md flex items-center justify-center space-x-2">
-                        <span>Ingresar al Portal</span>
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </button>
+                <!-- Botón de Inicio de Sesión Oficial de Google -->
+                <div class="flex flex-col items-center justify-center pt-3 border-t border-slate-100">
+                    <div id="g_id_onload"
+                         data-client_id="507934604170-3l2mbffts42qr65d8saatten60781k97.apps.googleusercontent.com"
+                         data-context="signin"
+                         data-ux_mode="popup"
+                         data-callback="handleGoogleCredentialResponse"
+                         data-auto_prompt="false">
+                    </div>
+
+                    <div class="g_id_signin"
+                         data-type="standard"
+                         data-shape="rectangular"
+                         data-theme="outline"
+                         data-text="signin_with"
+                         data-size="large"
+                         data-logo_alignment="left"
+                         data-width="320">
+                    </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -101,7 +109,9 @@
             <div class="flex items-center space-x-4 text-blue-200">
                 <!-- Info del Usuario Logueado -->
                 <div id="userInfoHeader" class="hidden flex items-center space-x-2 bg-white/10 px-2.5 py-1 rounded-lg border border-white/10">
-                    <i class="fa-solid fa-circle-user text-[#FFD100]"></i>
+                    <div id="userAvatarHeader" class="w-4 h-4 rounded-full bg-yellow-400 flex items-center justify-center text-slate-900 font-bold text-[9px] overflow-hidden">
+                        <i class="fa-solid fa-circle-user text-[#FFD100]"></i>
+                    </div>
                     <span id="userEmailDisplay" class="font-semibold text-white text-[11px]"></span>
                     <span id="userBUDisplay" class="bg-blue-900/80 text-blue-200 px-1.5 py-0.2 rounded text-[10px] font-bold"></span>
                     <button onclick="logoutUser()" class="text-amber-300 hover:text-white underline text-[10px] ml-2" title="Cerrar sesión o cambiar datos">Salir</button>
@@ -404,7 +414,7 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC CON AUDITORÍA EXCLUSIVA DE ADMIN -->
+    <!-- JAVASCRIPT LOGIC CON GOOGLE SIGN-IN Y AUDITORÍA -->
     <script>
         const COUNTRY_NAMES = { 'MX': '🇲🇽 México', 'CO': '🇨🇴 Colombia', 'CL': '🇨🇱 Chile' };
         const BRAND_NAMES = { 'bf': 'Ben & Frank', 'bv': 'Bombavista', 'all': 'Todas las marcas' };
@@ -621,7 +631,7 @@
             logs: []
         };
 
-        document.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', () => {
             checkUserSession();
 
             services = INITIAL_SERVICES;
@@ -636,22 +646,41 @@
             renderCards();
 
             document.getElementById('searchInput').addEventListener('input', renderCards);
-
-            document.getElementById('userLoginForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-                const email = document.getElementById('userEmail').value.trim().toLowerCase();
-                const bu = document.getElementById('userBU').value;
-
-                if (email && bu) {
-                    const mappedArea = BU_AREA_MAP[bu] || 'hq';
-                    currentUser = { email, bu, mappedArea };
-                    localStorage.setItem('galileo_user_session_v5', JSON.stringify(currentUser));
-                    
-                    document.getElementById('loginModal').classList.add('hidden');
-                    setupUserEnvironment();
-                }
-            });
         });
+
+        // Decodificador de tokens JWT de Google
+        function parseJwt(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+                return JSON.parse(jsonPayload);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // Callback activado al autenticarse con Google
+        function handleGoogleCredentialResponse(response) {
+            const payload = parseJwt(response.credential);
+            if (!payload) {
+                alert('Error al autenticar con Google. Inténtalo de nuevo.');
+                return;
+            }
+
+            const email = payload.email ? payload.email.toLowerCase() : '';
+            const bu = document.getElementById('userBU').value;
+            const picture = payload.picture || '';
+
+            if (!email || !bu) return;
+
+            const mappedArea = BU_AREA_MAP[bu] || 'hq';
+            currentUser = { email, bu, mappedArea, picture, name: payload.name };
+            localStorage.setItem('galileo_user_session_v5', JSON.stringify(currentUser));
+            
+            document.getElementById('loginModal').classList.add('hidden');
+            setupUserEnvironment();
+        }
 
         function checkUserSession() {
             const savedSession = localStorage.getItem('galileo_user_session_v5');
@@ -670,11 +699,18 @@
             const userHeader = document.getElementById('userInfoHeader');
             const userEmailDisplay = document.getElementById('userEmailDisplay');
             const userBUDisplay = document.getElementById('userBUDisplay');
+            const userAvatarHeader = document.getElementById('userAvatarHeader');
             const adminReportSection = document.getElementById('adminReportSection');
             
             userHeader.classList.remove('hidden');
             userEmailDisplay.textContent = currentUser.email;
             userBUDisplay.textContent = currentUser.bu;
+
+            if (currentUser.picture) {
+                userAvatarHeader.innerHTML = `<img src="${currentUser.picture}" class="w-full h-full object-cover" alt="Avatar" />`;
+            } else {
+                userAvatarHeader.innerHTML = `<i class="fa-solid fa-circle-user text-[#FFD100]"></i>`;
+            }
 
             if (currentUser.email === ADMIN_EMAIL && currentUser.bu === ADMIN_BU) {
                 adminReportSection.classList.remove('hidden');
@@ -689,7 +725,7 @@
         }
 
         function logoutUser() {
-            if (confirm("¿Deseas cambiar de usuario o ingresar con otro correo?")) {
+            if (confirm("¿Deseas cerrar sesión para ingresar con otra cuenta de Google?")) {
                 localStorage.removeItem('galileo_user_session_v5');
                 currentUser = null;
                 document.getElementById('userInfoHeader').classList.add('hidden');
