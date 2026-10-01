@@ -113,7 +113,7 @@
                         <i class="fa-solid fa-circle-user text-[#FFD100]"></i>
                     </div>
                     <span id="userEmailDisplay" class="font-semibold text-white text-[11px]"></span>
-                    <span id="userBUDisplay" class="bg-blue-900/80 text-blue-200 px-1.5 py-0.2 rounded text-[10px] font-bold"></span>
+                    <span id="userBUDisplay" class="bg-blue-900/80 text-blue-200 px-1.5 py-px rounded text-[10px] font-bold"></span>
                     <button onclick="logoutUser()" class="text-amber-300 hover:text-white underline text-[10px] ml-2" title="Cerrar sesión o cambiar datos">Salir</button>
                 </div>
                 <span>🇲🇽 🇨🇴 🇨🇱</span>
@@ -189,17 +189,17 @@
                     </label>
                     <div class="grid grid-cols-3 gap-1">
                         <button onclick="setCountry('MX')" id="btn-MX" class="country-btn px-1.5 py-1.5 rounded-lg text-xs font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
-                            <span id="badge-country-MX" class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white text-[9px] px-1.5 py-0.2 rounded-full font-extrabold">0</span>
+                            <span id="badge-country-MX" class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white text-[9px] px-1.5 py-px rounded-full font-extrabold">0</span>
                             <span class="text-sm">🇲🇽</span>
                             <span class="text-[10px]">México</span>
                         </button>
                         <button onclick="setCountry('CO')" id="btn-CO" class="country-btn px-1.5 py-1.5 rounded-lg text-xs font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
-                            <span id="badge-country-CO" class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white text-[9px] px-1.5 py-0.2 rounded-full font-extrabold">0</span>
+                            <span id="badge-country-CO" class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white text-[9px] px-1.5 py-px rounded-full font-extrabold">0</span>
                             <span class="text-sm">🇨🇴</span>
                             <span class="text-[10px]">Colombia</span>
                         </button>
                         <button onclick="setCountry('CL')" id="btn-CL" class="country-btn px-2 py-1.5 rounded-lg text-xs font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
-                            <span id="badge-country-CL" class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white text-[9px] px-1.5 py-0.2 rounded-full font-extrabold">0</span>
+                            <span id="badge-country-CL" class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white text-[9px] px-1.5 py-px rounded-full font-extrabold">0</span>
                             <span class="text-sm">🇨🇱</span>
                             <span class="text-[10px]">Chile</span>
                         </button>
@@ -216,11 +216,11 @@
                     </label>
                     <div class="grid grid-cols-2 gap-1">
                         <button onclick="setBrand('bf')" id="btn-bf" class="brand-btn px-2 py-1.5 rounded-lg text-[10px] font-bold border flex items-center justify-center space-x-1 bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
-                            <span id="badge-brand-bf" class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white text-[9px] px-1.5 py-0.2 rounded-full font-extrabold">0</span>
+                            <span id="badge-brand-bf" class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white text-[9px] px-1.5 py-px rounded-full font-extrabold">0</span>
                             <span class="brand-bf text-[9px] uppercase">Ben & Frank</span>
                         </button>
                         <button onclick="setBrand('bv')" id="btn-bv" class="brand-btn px-2 py-1.5 rounded-lg text-[10px] font-bold border flex items-center justify-center space-x-1 bg-white border-slate-200 hover:border-[#00529B] transition-all relative">
-                            <span id="badge-brand-bv" class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white text-[9px] px-1.5 py-0.2 rounded-full font-extrabold">0</span>
+                            <span id="badge-brand-bv" class="absolute -top-1.5 -right-1.5 bg-slate-800 text-white text-[9px] px-1.5 py-px rounded-full font-extrabold">0</span>
                             <span class="brand-bv text-[10px] lowercase">bombavista</span>
                         </button>
                     </div>
@@ -353,10 +353,10 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <a id="modalExternalLink" href="#" target="_blank" class="p-2 text-blue-200 hover:text-white rounded-lg hover:bg-white/10 transition-colors" title="Abrir en pestaña nueva">
+                    <a id="modalExternalLink" href="#" target="_blank" rel="noopener noreferrer" class="p-2 text-blue-200 hover:text-white rounded-lg hover:bg-white/10 transition-colors" title="Abrir en pestaña nueva">
                         <i class="fa-solid fa-arrow-up-right-from-square text-sm"></i>
                     </a>
-                    <button onclick="closeModal('viewerModal')" class="p-2 text-blue-200 hover:text-white rounded-lg hover:bg-white/10 transition-colors">
+                    <button onclick="closeModal('viewerModal')" aria-label="Cerrar" class="p-2 text-blue-200 hover:text-white rounded-lg hover:bg-white/10 transition-colors">
                         <i class="fa-solid fa-xmark text-base"></i>
                     </button>
                 </div>
@@ -389,7 +389,7 @@
                         <i class="fa-solid fa-download"></i>
                         <span>Exportar CSV</span>
                     </button>
-                    <button onclick="closeModal('logsModal')" class="text-blue-200 hover:text-white p-2">
+                    <button onclick="closeModal('logsModal')" aria-label="Cerrar" class="text-blue-200 hover:text-white p-2">
                         <i class="fa-solid fa-xmark text-lg"></i>
                     </button>
                 </div>
@@ -422,6 +422,21 @@
 
         const ADMIN_EMAIL = "guillermo.villanueva@benandfrank.com";
         const ADMIN_BU = "Tech";
+
+        // ---- Configuración y utilidades ----
+        const ALLOWED_DOMAINS = [];            // p. ej. ['benandfrank.com']; vacío = cualquier cuenta Google
+        const SESSION_TTL_MS = 12 * 60 * 60 * 1000; // la sesión local caduca a las 12 h
+        const MAX_LOGS = 500;                  // evita llenar localStorage
+        const KEYS = { session: 'galileo_user_session_v5', analytics: 'galileo_analytics_data_v6' };
+        let viewerTimer;
+
+        const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        const normalize = s => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const store = {
+            get(k, fb = null) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch { return fb; } },
+            set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } },
+            remove(k) { try { localStorage.removeItem(k); } catch {} }
+        };
 
         const BU_AREA_MAP = {
             'Operaciones': 'ops',
@@ -636,16 +651,19 @@
 
             services = INITIAL_SERVICES;
 
-            const savedAnalytics = localStorage.getItem('galileo_analytics_data_v6');
-            if (savedAnalytics) {
-                analytics = JSON.parse(savedAnalytics);
+            const saved = store.get(KEYS.analytics);
+            if (saved) {
+                analytics = { ...analytics, ...saved };
                 if (!analytics.logs) analytics.logs = [];
             }
 
             updateAnalyticsBadges();
             renderCards();
 
-            document.getElementById('searchInput').addEventListener('input', renderCards);
+            let debounce;
+            document.getElementById('searchInput').addEventListener('input', () => { clearTimeout(debounce); debounce = setTimeout(renderCards, 150); });
+            document.getElementById('formsGrid').addEventListener('click', onGridClick);
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') ['viewerModal', 'logsModal'].forEach(closeModal); });
         });
 
         // Decodificador de tokens JWT de Google
@@ -673,19 +691,23 @@
             const picture = payload.picture || '';
 
             if (!email || !bu) return;
+            if (payload.email_verified === false || (ALLOWED_DOMAINS.length && !ALLOWED_DOMAINS.includes(email.split('@')[1]))) {
+                alert('Debes usar tu cuenta corporativa de Google.');
+                return;
+            }
 
             const mappedArea = BU_AREA_MAP[bu] || 'hq';
-            currentUser = { email, bu, mappedArea, picture, name: payload.name };
-            localStorage.setItem('galileo_user_session_v5', JSON.stringify(currentUser));
+            currentUser = { email, bu, mappedArea, picture, name: payload.name, ts: Date.now() };
+            store.set(KEYS.session, currentUser);
             
             document.getElementById('loginModal').classList.add('hidden');
             setupUserEnvironment();
         }
 
         function checkUserSession() {
-            const savedSession = localStorage.getItem('galileo_user_session_v5');
-            if (savedSession) {
-                currentUser = JSON.parse(savedSession);
+            const savedSession = store.get(KEYS.session);
+            if (savedSession && Date.now() - (savedSession.ts || 0) < SESSION_TTL_MS) {
+                currentUser = savedSession;
                 document.getElementById('loginModal').classList.add('hidden');
                 setupUserEnvironment();
             } else {
@@ -707,7 +729,7 @@
             userBUDisplay.textContent = currentUser.bu;
 
             if (currentUser.picture) {
-                userAvatarHeader.innerHTML = `<img src="${currentUser.picture}" class="w-full h-full object-cover" alt="Avatar" />`;
+                userAvatarHeader.innerHTML = `<img src="${esc(currentUser.picture)}" class="w-full h-full object-cover" alt="Avatar" />`;
             } else {
                 userAvatarHeader.innerHTML = `<i class="fa-solid fa-circle-user text-[#FFD100]"></i>`;
             }
@@ -726,7 +748,8 @@
 
         function logoutUser() {
             if (confirm("¿Deseas cerrar sesión para ingresar con otra cuenta de Google?")) {
-                localStorage.removeItem('galileo_user_session_v5');
+                store.remove(KEYS.session);
+                window.google?.accounts?.id?.disableAutoSelect?.();
                 currentUser = null;
                 document.getElementById('userInfoHeader').classList.add('hidden');
                 document.getElementById('adminReportSection').classList.add('hidden');
@@ -760,8 +783,9 @@
             };
 
             analytics.logs.unshift(logEntry);
+            if (analytics.logs.length > MAX_LOGS) analytics.logs.length = MAX_LOGS;
 
-            localStorage.setItem('galileo_analytics_data_v6', JSON.stringify(analytics));
+            store.set(KEYS.analytics, analytics);
             updateAnalyticsBadges();
             populateLogsTable();
             renderCards();
@@ -778,13 +802,20 @@
 
             tableBody.innerHTML = analytics.logs.map(log => `
                 <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="p-3 font-mono font-bold text-[#00529B] whitespace-nowrap">${log.timestamp}</td>
-                    <td class="p-3 font-medium">${log.userEmail}</td>
-                    <td class="p-3"><span class="bg-blue-50 text-[#003B70] px-2 py-0.5 rounded font-bold">${log.userBU}</span></td>
-                    <td class="p-3 font-bold">${log.serviceTitle}</td>
-                    <td class="p-3 text-slate-500">${log.filters}</td>
+                    <td class="p-3 font-mono font-bold text-[#00529B] whitespace-nowrap">${esc(log.timestamp)}</td>
+                    <td class="p-3 font-medium">${esc(log.userEmail)}</td>
+                    <td class="p-3"><span class="bg-blue-50 text-[#003B70] px-2 py-0.5 rounded font-bold">${esc(log.userBU)}</span></td>
+                    <td class="p-3 font-bold">${esc(log.serviceTitle)}</td>
+                    <td class="p-3 text-slate-500">${esc(log.filters)}</td>
                 </tr>
             `).join('');
+        }
+
+        // Evita inyección de fórmulas en Excel (=, +, -, @)
+        function csvCell(v) {
+            let s = String(v ?? '');
+            if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+            return `"${s.replace(/"/g, '""')}"`;
         }
 
         function downloadCSVReport() {
@@ -798,11 +829,11 @@
 
             analytics.logs.forEach(log => {
                 const row = [
-                    `"${log.timestamp}"`,
-                    `"${log.userEmail}"`,
-                    `"${log.userBU}"`,
-                    `"${log.serviceTitle.replace(/"/g, '""')}"`,
-                    `"${log.filters.replace(/"/g, '""')}"`
+                    csvCell(log.timestamp),
+                    csvCell(log.userEmail),
+                    csvCell(log.userBU),
+                    csvCell(log.serviceTitle),
+                    csvCell(log.filters)
                 ];
                 csvContent += row.join(",") + "\n";
             });
@@ -815,6 +846,7 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         }
 
         function updateAnalyticsBadges() {
@@ -888,7 +920,8 @@
         }
 
         function renderCards() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
+            const rawQuery = document.getElementById('searchInput').value.trim();
+            const query = normalize(rawQuery);
             const grid = document.getElementById('formsGrid');
             const empty = document.getElementById('emptyState');
 
@@ -905,7 +938,7 @@
                     matchArea = true;
                 }
 
-                const matchQuery = s.title.toLowerCase().includes(query) || s.description.toLowerCase().includes(query);
+                const matchQuery = normalize(s.title).includes(query) || normalize(s.description).includes(query);
                 return matchCountry && matchBrand && matchArea && matchQuery;
             });
 
@@ -913,7 +946,7 @@
             if (selectedCountry) summaryText.push(COUNTRY_NAMES[selectedCountry]);
             if (selectedBrand) summaryText.push(BRAND_NAMES[selectedBrand]);
             if (selectedBU) summaryText.push(`BU: ${selectedBU}`);
-            if (query) summaryText.push(`"${query}"`);
+            if (query) summaryText.push(`"${rawQuery}"`);
             
             document.getElementById('filterSummary').textContent = summaryText.length > 0 ? summaryText.join(' + ') : 'Todos los formularios';
             document.getElementById('totalCards').textContent = `${filtered.length} Resultados`;
@@ -957,11 +990,11 @@
                     </div>
 
                     <div class="pt-3 border-t border-slate-100 flex items-center space-x-2">
-                        <button onclick="handleFormClick('${s.id}', '${s.title}', '${s.country}', '${s.brand}', '${s.area}')" class="flex-grow bg-[#00529B] hover:bg-[#003B70] text-white font-bold py-2 px-3 rounded-xl text-xs transition-colors flex items-center justify-center space-x-2 shadow-sm">
-                            <i class="fa-solid fa-[#FFD100] fa-paper-plane text-[#FFD100]"></i>
+                        <button data-action="open" data-id="${s.id}" class="flex-grow bg-[#00529B] hover:bg-[#003B70] text-white font-bold py-2 px-3 rounded-xl text-xs transition-colors flex items-center justify-center space-x-2 shadow-sm">
+                            <i class="fa-solid fa-paper-plane text-[#FFD100]"></i>
                             <span>Llenar Solicitud</span>
                         </button>
-                        <a href="${s.url}" target="_blank" onclick="recordUsage('${s.id}', '${s.title}', '${s.country}', '${s.brand}', '${s.area}')" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs transition-colors" title="Abrir en pestaña nueva">
+                        <a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer" data-action="track" data-id="${s.id}" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs transition-colors" title="Abrir en pestaña nueva">
                             <i class="fa-solid fa-arrow-up-right-from-square"></i>
                         </a>
                     </div>
@@ -969,9 +1002,14 @@
             `}).join('');
         }
 
-        function handleFormClick(id, title, country, brand, area) {
-            recordUsage(id, title, country, brand, area);
-            openViewer(id);
+        // Delegación de eventos: sin onclick inline ni strings frágiles
+        function onGridClick(e) {
+            const el = e.target.closest('[data-action]');
+            const s = el && services.find(x => x.id === el.dataset.id);
+            if (!s) return;
+            // diferido para no re-renderizar antes de que el enlace navegue
+            setTimeout(() => recordUsage(s.id, s.title, s.country, s.brand, s.area), 0);
+            if (el.dataset.action === 'open') openViewer(s.id);
         }
 
         function openViewer(id) {
@@ -979,7 +1017,7 @@
             if (!serv) return;
 
             if (serv.url.includes('casimiros.com')) {
-                window.open(serv.url, '_blank');
+                window.open(serv.url, '_blank', 'noopener');
                 return;
             }
 
@@ -993,7 +1031,10 @@
             
             loader.classList.remove('hidden');
             iframe.src = serv.url;
-            iframe.onload = () => loader.classList.add('hidden');
+            iframe.onload = () => { clearTimeout(viewerTimer); loader.classList.add('hidden'); };
+            // si el sitio bloquea el iframe, no dejar el loader girando para siempre
+            clearTimeout(viewerTimer);
+            viewerTimer = setTimeout(() => loader.classList.add('hidden'), 8000);
 
             openModal('viewerModal');
         }
@@ -1001,7 +1042,7 @@
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function closeModal(id) {
             document.getElementById(id).classList.add('hidden');
-            if (id === 'viewerModal') document.getElementById('modalIframe').src = '';
+            if (id === 'viewerModal') { clearTimeout(viewerTimer); document.getElementById('modalIframe').src = ''; }
         }
     </script>
 </body>
