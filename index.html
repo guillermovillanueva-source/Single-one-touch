@@ -29,22 +29,25 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-  <!-- ==================== CONFIGURACIÓN ==================== -->
+  <!-- ==================== CONFIGURACIÓN DE API ==================== -->
   <script>
     // PEGA AQUÍ LA URL DE TU APLICACIÓN WEB DE GOOGLE APPS SCRIPT:
     window.TICKET_API_URL = 'PEGA_AQUI_TU_URL_DE_APPS_SCRIPT';
   </script>
 
-  <!-- Navbar / Encabezado -->
+  <!-- Encabezado / Navbar -->
   <header class="bg-slate-900 text-white shadow-md sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
       <div class="flex items-center space-x-3">
         <div class="bg-amber-400 text-slate-900 font-bold p-2 rounded-lg text-lg">SD</div>
-        <h1 class="text-xl font-bold tracking-tight">Portal de Tickets</h1>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight">Portal de Tickets</h1>
+          <p class="text-xs text-slate-400">Service Desk & Soporte Interno</p>
+        </div>
       </div>
       <div id="user-session" class="flex items-center space-x-4">
-        <span id="user-email" class="text-sm text-slate-300">usuario@empresa.com</span>
-        <button onclick="logout()" class="text-sm bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-md transition">Salir</button>
+        <span id="user-email" class="text-sm text-slate-300">usuario@benandfrank.com</span>
+        <button onclick="logout()" class="text-sm bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-md transition border border-slate-700">Salir</button>
       </div>
     </div>
   </header>
@@ -52,51 +55,52 @@
   <!-- Contenido Principal -->
   <main class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full space-y-8">
 
-    <!-- SECCIÓN: Buscador de Estatus de Tickets -->
+    <!-- SECCIÓN 1: Buscador de Estatus de Tickets (Nuevo) -->
     <section id="ticket-search-section" class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-      <div class="max-w-2xl mx-auto text-center space-y-4">
-        <h2 class="text-2xl font-bold text-slate-900">Consulta el estatus de tu ticket</h2>
-        <p class="text-slate-600 text-sm">Ingresa el número de ticket asignado para ver su avance y documentación de atención.</p>
+      <div class="max-w-2xl mx-auto text-center space-y-3">
+        <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Consulta en tiempo real</span>
+        <h2 class="text-2xl font-bold text-slate-900">Seguimiento de tu Ticket</h2>
+        <p class="text-slate-600 text-sm">Ingresa el ID o número de ticket para conocer su estatus y consultar la documentación de atención.</p>
         
         <div class="flex flex-col sm:flex-row gap-2 mt-4">
           <input 
             type="text" 
             id="ticket-input" 
-            placeholder="Ejemplo: 86dy5xdb6 o ID de ClickUp" 
+            placeholder="Ejemplo: 86dy5xdb6" 
             class="flex-1 px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 font-mono text-sm"
             onkeypress="if(event.key==='Enter') searchTicket()"
           />
           <button 
             onclick="searchTicket()" 
-            class="bg-amber-400 hover:bg-amber-500 text-slate-900 font-semibold px-6 py-2.5 rounded-lg transition flex items-center justify-center gap-2">
+            class="bg-amber-400 hover:bg-amber-500 text-slate-900 font-semibold px-6 py-2.5 rounded-lg transition flex items-center justify-center gap-2 shadow-sm">
             <span>Buscar Ticket</span>
           </button>
         </div>
 
-        <!-- Mensajes de Carga / Error -->
+        <!-- Mensajes de Estado -->
         <div id="search-loading" class="hidden text-slate-500 text-sm py-4">
           <div class="inline-block animate-spin rounded-full h-5 w-5 border-2 border-slate-900 border-t-transparent mr-2"></div>
-          Consultando estatus...
+          Buscando ticket en el sistema...
         </div>
 
-        <div id="search-error" class="hidden text-red-600 bg-red-50 p-3 rounded-lg text-sm border border-red-200"></div>
+        <div id="search-error" class="hidden text-red-600 bg-red-50 p-3 rounded-lg text-sm border border-red-200 mt-2"></div>
 
-        <!-- Tarjeta de Resultado del Ticket -->
-        <div id="search-result" class="hidden mt-6 text-left border border-slate-200 rounded-lg p-5 bg-slate-50 space-y-4">
+        <!-- Tarjeta de Resultado -->
+        <div id="search-result" class="hidden mt-6 text-left border border-slate-200 rounded-lg p-5 bg-slate-50 space-y-4 shadow-inner">
           <div class="flex justify-between items-start border-b border-slate-200 pb-3">
             <div>
               <span class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Número de Ticket</span>
               <p id="res-ticket-number" class="text-lg font-bold font-mono text-slate-900">-</p>
             </div>
             <div>
-              <span id="res-status-badge" class="status-badge bg-slate-200 text-slate-800">Pendiente</span>
+              <span id="res-status-badge" class="status-badge bg-slate-200 text-slate-800">Cargando...</span>
             </div>
           </div>
 
           <div>
             <span class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Documentación / Atención</span>
             <div id="res-doc-container" class="mt-1">
-              <span class="text-sm text-slate-400 italic">No hay archivos adjuntos</span>
+              <span class="text-sm text-slate-400 italic">Sin archivos adjuntos</span>
             </div>
           </div>
         </div>
@@ -104,46 +108,118 @@
       </div>
     </section>
 
-    <!-- SECCIÓN: Formulario / Servicios (Mantenido) -->
-    <section id="services-section" class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
-      <h3 class="text-lg font-bold text-slate-900">Crear Nueva Solicitud</h3>
-      <p class="text-slate-600 text-sm">Selecciona el área para desplegar los formularios correspondientes.</p>
-
-      <!-- Filtros -->
-      <div id="filters-container" class="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-2">
-        <select id="filter-country" class="px-3 py-2 border rounded-lg text-sm border-slate-300">
-          <option value="">Todos los Países</option>
-          <option value="MX">México 🇲🇽</option>
-          <option value="CL">Chile 🇨🇱</option>
-          <option value="CO">Colombia 🇨🇴</option>
-        </select>
-        
-        <select id="filter-brand" class="px-3 py-2 border rounded-lg text-sm border-slate-300">
-          <option value="">Todas las Marcas</option>
-          <option value="Ben&Frank">Ben & Frank</option>
-        </select>
-
-        <select id="filter-area" class="px-3 py-2 border rounded-lg text-sm border-slate-300">
-          <option value="">Todas las Áreas (BU)</option>
-          <option value="Retail">Retail</option>
-          <option value="Sistemas">Sistemas</option>
-        </select>
-
-        <button id="btn-clear-filters" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm px-3 py-2 rounded-lg transition">
-          Limpiar Filtros
-        </button>
+    <!-- SECCIÓN 2: Filtros de Selección de Formulario -->
+    <section id="filters-section" class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+        <div>
+          <h3 class="text-lg font-bold text-slate-900">Crear una Nueva Solicitud</h3>
+          <p class="text-slate-500 text-sm">Filtra el servicio correspondiente para abrir el formulario de captura.</p>
+        </div>
+        <div class="text-sm text-slate-500">
+          Mostrando <span id="results-count" class="font-bold text-slate-900">3</span> servicios disponibles
+        </div>
       </div>
 
-      <!-- Tarjetas de Servicios -->
-      <div id="services-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
-        <div class="service-card border border-slate-200 rounded-lg p-4 hover:border-amber-400 transition">
-          <h4 class="font-bold text-slate-900">Soporte Operativo Retail</h4>
-          <p class="text-xs text-slate-500 mt-1">Atención a problemas en tienda, caja y sistema.</p>
-          <button class="mt-4 w-full bg-slate-900 hover:bg-slate-800 text-white text-xs py-2 rounded font-semibold transition">
-            Llenar solicitud
+      <!-- Contenedor de Filtros -->
+      <div id="filters-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1">País</label>
+          <select id="filter-country" onchange="filterServices()" class="w-full px-3 py-2 border rounded-lg text-sm border-slate-300 focus:ring-2 focus:ring-amber-400 focus:outline-none">
+            <option value="">Todos los Países</option>
+            <option value="MX">México 🇲🇽</option>
+            <option value="CL">Chile 🇨🇱</option>
+            <option value="CO">Colombia 🇨🇴</option>
+          </select>
+        </div>
+        
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1">Marca</label>
+          <select id="filter-brand" onchange="filterServices()" class="w-full px-3 py-2 border rounded-lg text-sm border-slate-300 focus:ring-2 focus:ring-amber-400 focus:outline-none">
+            <option value="">Todas las Marcas</option>
+            <option value="Ben&Frank">Ben & Frank</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1">Área / BU</label>
+          <select id="filter-area" onchange="filterServices()" class="w-full px-3 py-2 border rounded-lg text-sm border-slate-300 focus:ring-2 focus:ring-amber-400 focus:outline-none">
+            <option value="">Todas las Áreas</option>
+            <option value="Retail">Retail</option>
+            <option value="Sistemas">Sistemas</option>
+            <option value="Logistica">Logística</option>
+          </select>
+        </div>
+
+        <div class="flex items-end">
+          <button id="btn-clear-filters" onclick="clearFilters()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium py-2 px-4 rounded-lg transition border border-slate-200">
+            Limpiar Filtros
           </button>
         </div>
       </div>
+    </section>
+
+    <!-- SECCIÓN 3: Tarjetas de Servicios / Formularios -->
+    <section id="services-section">
+      <div id="services-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Tarjeta 1 -->
+        <div class="service-card bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md hover:border-amber-400 transition flex flex-col justify-between" data-country="MX" data-brand="Ben&Frank" data-area="Retail">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold px-2 py-0.5 bg-slate-100 text-slate-600 rounded">México 🇲🇽</span>
+              <span class="text-xs text-slate-400 font-medium">Retail</span>
+            </div>
+            <h4 class="font-bold text-slate-900 text-base">Soporte Operativo Retail</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">Reporte de incidencias en sistemas POS, cajas, inventario o hardware de tienda.</p>
+          </div>
+          <div class="mt-5 pt-3 border-t border-slate-100 flex gap-2">
+            <a href="https://clickup.com" target="_blank" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold py-2 px-3 rounded-lg text-center transition">
+              Llenar solicitud
+            </a>
+          </div>
+        </div>
+
+        <!-- Tarjeta 2 -->
+        <div class="service-card bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md hover:border-amber-400 transition flex flex-col justify-between" data-country="CL" data-brand="Ben&Frank" data-area="Sistemas">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold px-2 py-0.5 bg-slate-100 text-slate-600 rounded">Chile 🇨🇱</span>
+              <span class="text-xs text-slate-400 font-medium">Sistemas</span>
+            </div>
+            <h4 class="font-bold text-slate-900 text-base">Atención a Errores de Sincronización</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">Inconvenientes con la búsqueda de órdenes, Odoo o integración de catálogos.</p>
+          </div>
+          <div class="mt-5 pt-3 border-t border-slate-100 flex gap-2">
+            <a href="https://clickup.com" target="_blank" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold py-2 px-3 rounded-lg text-center transition">
+              Llenar solicitud
+            </a>
+          </div>
+        </div>
+
+        <!-- Tarjeta 3 -->
+        <div class="service-card bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md hover:border-amber-400 transition flex flex-col justify-between" data-country="MX" data-brand="Ben&Frank" data-area="Logistica">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold px-2 py-0.5 bg-slate-100 text-slate-600 rounded">México 🇲🇽</span>
+              <span class="text-xs text-slate-400 font-medium">Logística</span>
+            </div>
+            <h4 class="font-bold text-slate-900 text-base">Rutas de Stock y Almacén</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">Solicitud para ajustar la configuración de rutas de stock o templos en almacenes.</p>
+          </div>
+          <div class="mt-5 pt-3 border-t border-slate-100 flex gap-2">
+            <a href="https://clickup.com" target="_blank" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold py-2 px-3 rounded-lg text-center transition">
+              Llenar solicitud
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECCIÓN 4: Panel de Administrador (Opcional/Mantenido) -->
+    <section id="admin-panel" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-5">
+      <h4 class="text-amber-900 font-bold text-sm">Panel de Administración</h4>
+      <p class="text-amber-700 text-xs mt-1">Solo visible para administradores del portal.</p>
     </section>
 
   </main>
@@ -156,10 +232,10 @@
     <span>❓ Ver tutorial</span>
   </button>
 
-  <!-- Lógica del Buscador y Tutorial -->
+  <!-- LÓGICA COMPLETA DE INTERACCIÓN -->
   <script>
     // -------------------------------------------------------------
-    // 1. LÓGICA DEL BUSCADOR DE TICKETS
+    // 1. CONSULTA DE BUSCADOR DE TICKETS
     // -------------------------------------------------------------
     async function searchTicket() {
       const input = document.getElementById('ticket-input');
@@ -174,7 +250,6 @@
         return;
       }
 
-      // Limpiar estados previos
       error.classList.add('hidden');
       result.classList.add('hidden');
       loading.classList.remove('hidden');
@@ -192,17 +267,17 @@
           throw new Error(data.error || 'No se encontró el ticket');
         }
 
-        // Renderizar resultado
+        // Mostrar Número
         document.getElementById('res-ticket-number').textContent = data.ticketNumber || ticketNumber;
         
-        // Estatus y badge de color
+        // Formatear Estatus y Colores
         const badge = document.getElementById('res-status-badge');
         const statusText = (data.status || 'Desconocido').toLowerCase();
         badge.textContent = data.status || 'Desconocido';
 
         if (statusText.includes('done') || statusText.includes('cerrado') || statusText.includes('resuelto')) {
           badge.className = 'status-badge bg-emerald-100 text-emerald-800 border border-emerald-300';
-        } else if (statusText.includes('progress') || statusText.includes('atencion')) {
+        } else if (statusText.includes('progress') || statusText.includes('atencion') || statusText.includes('en proceso')) {
           badge.className = 'status-badge bg-amber-100 text-amber-800 border border-amber-300';
         } else {
           badge.className = 'status-badge bg-slate-200 text-slate-800 border border-slate-300';
@@ -223,7 +298,7 @@
         result.classList.remove('hidden');
 
       } catch (err) {
-        showError(err.message || 'Error al conectar con la API de tickets.');
+        showError(err.message || 'Error al consultar la API de tickets.');
       } finally {
         loading.classList.add('hidden');
       }
@@ -235,12 +310,46 @@
       error.classList.remove('hidden');
     }
 
+    // -------------------------------------------------------------
+    // 2. FILTRADO DE SERVICIOS
+    // -------------------------------------------------------------
+    function filterServices() {
+      const country = document.getElementById('filter-country').value;
+      const brand = document.getElementById('filter-brand').value;
+      const area = document.getElementById('filter-area').value;
+
+      const cards = document.querySelectorAll('.service-card');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const matchCountry = !country || card.dataset.country === country;
+        const matchBrand = !brand || card.dataset.brand === brand;
+        const matchArea = !area || card.dataset.area === area;
+
+        if (matchCountry && matchBrand && matchArea) {
+          card.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      document.getElementById('results-count').textContent = visibleCount;
+    }
+
+    function clearFilters() {
+      document.getElementById('filter-country').value = '';
+      document.getElementById('filter-brand').value = '';
+      document.getElementById('filter-area').value = '';
+      filterServices();
+    }
+
     function logout() {
       alert('Sesión cerrada');
     }
 
     // -------------------------------------------------------------
-    // 2. TUTORIAL INTERACTIVO CON DRIVER.JS
+    // 3. TUTORIAL AUTOMÁTICO (DRIVER.JS)
     // -------------------------------------------------------------
     function startTutorial(manual = false) {
       const driver = window.driver.js.driver;
@@ -254,15 +363,15 @@
         steps: [
           { 
             element: '#ticket-search-section', 
-            popover: { title: 'Buscador de Tickets', description: 'Ingresa tu número de ticket para conocer su estatus en tiempo real sin consultar a soporte.' } 
+            popover: { title: '1. Buscador de Tickets', description: 'Consulta aquí el número de ticket de ClickUp para ver su estatus y documentación.' } 
           },
           { 
             element: '#filters-container', 
-            popover: { title: 'Filtros de Solicitud', description: 'Filtra por país, marca o área para encontrar el formulario adecuado.' } 
+            popover: { title: '2. Filtros de Servicios', description: 'Filtra por país, marca o área para encontrar el formulario correcto.' } 
           },
           { 
             element: '#services-cards', 
-            popover: { title: 'Formularios de Atención', description: 'Selecciona "Llenar solicitud" para abrir el formulario de reporte.' } 
+            popover: { title: '3. Tarjetas de Solicitud', description: 'Haz clic en "Llenar solicitud" para abrir el formulario correspondiente.' } 
           }
         ]
       });
@@ -270,11 +379,11 @@
       driverObj.drive();
     }
 
-    // Autostart la primera vez
+    // Inicio automático solo la primera vez
     window.addEventListener('DOMContentLoaded', () => {
-      if (!localStorage.getItem('tutorial_seen')) {
+      if (!localStorage.getItem('portal_tutorial_seen')) {
         startTutorial();
-        localStorage.setItem('tutorial_seen', 'true');
+        localStorage.setItem('portal_tutorial_seen', 'true');
       }
     });
   </script>
