@@ -15,8 +15,8 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <script>
-        // https://script.google.com/macros/s/AKfycbwk4InikYyP2yg9Ao3IrMEB1HC57IN43YPQbjIvcu7Kxl2TBhbIxQbPp87uFOS7XHNpzA/exec
-        window.TICKET_API_URL = 'https://script.google.com/macros/s/AKfycbwk4InikYyP2yg9Ao3IrMEB1HC57IN43YPQbjIvcu7Kxl2TBhbIxQbPp87uFOS7XHNpzA/exec';
+        // https://script.google.com/macros/s/AKfycbwNdzIXg9IOBpF2QAm5RgGpGoMm7tehXaVRnNnqpQP49MMiJpgF4qTR2LnGhHkX9hHaCg/exec
+        window.TICKET_API_URL = 'https://script.google.com/macros/s/AKfycbwNdzIXg9IOBpF2QAm5RgGpGoMm7tehXaVRnNnqpQP49MMiJpgF4qTR2LnGhHkX9hHaCg/exec';
 
         tailwind.config = {
             theme: {
@@ -395,6 +395,20 @@
         </div>
     </footer>
 
+    <!-- MODAL RESULTADOS DE TICKETS -->
+    <div id="ticketsModal" class="fixed inset-0 bg-slate-900/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-6">
+        <div class="bg-white rounded-2xl w-full max-w-4xl max-h-[88vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
+            <div class="px-5 sm:px-6 py-4 bg-[#003B70] text-white flex justify-between items-center border-b-4 border-[#FFD100]">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-full bg-[#00529B] flex items-center justify-center border border-white/20"><i class="fa-solid fa-ticket text-[#FFD100]"></i></div>
+                    <div><h3 class="font-bold text-sm">Mis tickets en Galileo</h3><p id="ticketsModalSubtitle" class="text-[11px] text-blue-200">Consulta de los últimos 3 meses</p></div>
+                </div>
+                <button onclick="closeModal('ticketsModal')" aria-label="Cerrar" class="text-blue-200 hover:text-white p-2 rounded-lg hover:bg-white/10"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div id="ticketsModalBody" class="flex-grow overflow-y-auto p-4 sm:p-6 bg-slate-50"></div>
+        </div>
+    </div>
+
     <!-- MODAL IFRAME / VISUALIZADOR -->
     <div id="viewerModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
         <div class="bg-white rounded-2xl w-full max-w-5xl h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
@@ -570,7 +584,7 @@
             let debounce;
             document.getElementById('searchInput').addEventListener('input', () => { clearTimeout(debounce); debounce = setTimeout(renderCards, 150); });
             document.getElementById('formsGrid').addEventListener('click', onGridClick);
-            document.addEventListener('keydown', e => { if (e.key === 'Escape') ['viewerModal', 'logsModal'].forEach(closeModal); });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') ['viewerModal', 'logsModal', 'ticketsModal'].forEach(closeModal); });
         });
 
         // -------------------------------------------------------------
@@ -580,78 +594,80 @@
             const input = document.getElementById('userEmailSearchInput');
             const loading = document.getElementById('emailSearchLoading');
             const error = document.getElementById('emailSearchError');
-            const resultsContainer = document.getElementById('emailSearchResults');
+            const email = input.value.trim().toLowerCase();
 
-            const email = input.value.trim();
-
-            if (!email) {
+            if (!email || !email.includes('@')) {
                 showSearchError('Ingresa un correo electrónico válido para consultar.');
                 return;
             }
 
             error.classList.add('hidden');
-            resultsContainer.classList.add('hidden');
             loading.classList.remove('hidden');
 
             try {
-                const urlConEmail = `${window.TICKET_API_URL}?email=${encodeURIComponent(email)}`;
-
-                const response = await fetch(urlConEmail, {
-                method: 'GET'    
-                });
-
+                const response = await fetch(`${window.TICKET_API_URL}?email=${encodeURIComponent(email)}`, { method: 'GET' });
                 const data = await response.json();
+                if (!response.ok || data.error || data.success === false) throw new Error(data.error || 'No fue posible consultar los tickets.');
 
-                if (!response.ok || data.error) {
-                    throw new Error(data.error || 'No se encontraron tickets asociados a este correo.');
-                }
-
-                // Renderizar Tickets Encontrados
-                const tickets = Array.isArray(data.tickets)
-                    ? data.tickets
-                    : [];
-
-                if (tickets.length === 0) {
-                throw new Error(
-                'No encontramos tickets asociados a este correo durante los últimos 3 meses.'
-                );
-                }
-
-                resultsContainer.innerHTML = tickets.map(t => {
-                    const statusText = (t.status || 'Desconocido').toLowerCase();
-                    let badgeClass = 'bg-slate-200 text-slate-800 border-slate-300';
-
-                    if (statusText.includes('done') || statusText.includes('cerrado') || statusText.includes('resuelto')) {
-                        badgeClass = 'bg-emerald-100 text-emerald-800 border-emerald-300';
-                    } else if (statusText.includes('progress') || statusText.includes('atencion') || statusText.includes('in progress')) {
-                        badgeClass = 'bg-amber-100 text-amber-800 border-amber-300';
-                    }
-
-                    const docLink = t.documentationUrl 
-                        ? `<a href="${esc(t.documentationUrl)}" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-blue-600 hover:underline inline-flex items-center gap-1">📎 Abrir documento de atención ↗</a>`
-                        : `<span class="text-xs text-slate-400 italic">Sin archivos de atención adjuntos</span>`;
-
-                    return `
-                        <div class="border border-slate-200 rounded-xl p-4 bg-white shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                            <div class="space-y-1">
-                                <div class="flex items-center space-x-2">
-                                    <span class="text-xs font-mono font-bold text-[#00529B]">Ticket: ${esc(t.ticketNumber || t.id)}</span>
-                                    <span class="status-badge border ${badgeClass}">${esc(t.status || 'Desconocido')}</span>
-                                </div>
-                                <h4 class="text-xs font-bold text-slate-800">${esc(t.title || 'Solicitud de servicio')}</h4>
-                                <div>${docLink}</div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
-                resultsContainer.classList.remove('hidden');
-
+                const tickets = Array.isArray(data.tickets) ? data.tickets : (Array.isArray(data) ? data : []);
+                renderTicketsModal(tickets, email, data.period || 'Últimos 3 meses');
+                openModal('ticketsModal');
             } catch (err) {
                 showSearchError(err.message || 'Error de conexión con la API de tickets.');
             } finally {
                 loading.classList.add('hidden');
             }
+        }
+
+        function renderTicketsModal(tickets, email, period) {
+            const body = document.getElementById('ticketsModalBody');
+            const subtitle = document.getElementById('ticketsModalSubtitle');
+            subtitle.textContent = `${email} • ${period} • ${tickets.length} ticket${tickets.length === 1 ? '' : 's'}`;
+
+            if (!tickets.length) {
+                body.innerHTML = `<div class="text-center py-12"><div class="w-14 h-14 mx-auto rounded-full bg-slate-200 flex items-center justify-center text-slate-500 mb-3"><i class="fa-solid fa-inbox text-xl"></i></div><h4 class="font-bold text-slate-800">No encontramos tickets</h4><p class="text-xs text-slate-500 mt-1">No hay registros asociados a este correo durante los últimos 3 meses.</p></div>`;
+                return;
+            }
+
+            body.innerHTML = `<div class="space-y-4">${tickets.map((t, i) => {
+                const status = String(t.status || 'Desconocido').toUpperCase();
+                const closed = /CLOSED|DONE|CERRADO|RESUELTO|COMPLETE/.test(status);
+                const progress = /PROGRESS|ATENCI|ABIERTO|OPEN|PENDING/.test(status);
+                const badge = closed ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : progress ? 'bg-amber-100 text-amber-800 border-amber-200' : 'bg-slate-100 text-slate-700 border-slate-200';
+                const ticket = t.ticketNumber || t.id || 'N/A';
+                const title = t.title || t.subject || 'Solicitud de servicio';
+                const requester = t.requesterName || t.requester || '';
+                const documentation = t.lastDocumentation || t.documentation || 'Sin documentación registrada';
+                const docUser = t.lastDocumentationUser || t.documentedBy || '';
+                const docDate = formatTicketDate(t.lastDocumentationDate || t.documentationDate);
+                const updated = formatTicketDate(t.dateUpdated || t.lastUpdated || t.date_updated);
+                const clickup = t.clickupUrl || t.url || '';
+                return `<article class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+                    <div class="p-4 sm:p-5">
+                        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                            <div class="min-w-0"><div class="flex flex-wrap items-center gap-2 mb-2"><span class="font-mono text-xs font-extrabold text-[#00529B]">Ticket: ${esc(ticket)}</span><span class="status-badge border ${badge}">${esc(translateTicketStatus(status))}</span></div><h4 class="text-sm sm:text-base font-extrabold text-slate-900 leading-snug">${esc(title)}</h4>${requester ? `<p class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-user mr-1"></i>Solicitante: ${esc(requester)}</p>` : ''}</div>
+                            ${clickup ? `<a href="${esc(clickup)}" target="_blank" rel="noopener noreferrer" class="shrink-0 inline-flex items-center justify-center gap-2 bg-[#00529B] hover:bg-[#003B70] text-white px-3 py-2 rounded-xl text-xs font-bold">Abrir en ClickUp <i class="fa-solid fa-arrow-up-right-from-square text-[#FFD100]"></i></a>` : ''}
+                        </div>
+                        <div class="mt-4 rounded-xl bg-slate-50 border border-slate-200 p-3 sm:p-4"><div class="text-[10px] font-black uppercase tracking-wider text-[#003B70] mb-2"><i class="fa-solid fa-comment-dots mr-1 text-[#00529B]"></i>Última documentación</div><p class="text-xs sm:text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">${esc(documentation)}</p><div class="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-[11px] text-slate-500">${docUser ? `<span><i class="fa-solid fa-user-pen mr-1"></i>${esc(docUser)}</span>` : ''}${docDate ? `<span><i class="fa-regular fa-calendar mr-1"></i>${esc(docDate)}</span>` : ''}${updated ? `<span><i class="fa-solid fa-rotate mr-1"></i>Actualizado: ${esc(updated)}</span>` : ''}</div></div>
+                    </div></article>`;
+            }).join('')}</div>`;
+        }
+
+        function translateTicketStatus(status) {
+            const s = String(status || '').toUpperCase();
+            if (s === 'CLOSED' || s === 'DONE' || s === 'COMPLETE') return 'CERRADO';
+            if (s === 'OPEN') return 'ABIERTO';
+            if (s === 'IN PROGRESS' || s === 'PROGRESS') return 'EN ATENCIÓN';
+            if (s === 'PENDING') return 'PENDIENTE';
+            return status || 'DESCONOCIDO';
+        }
+
+        function formatTicketDate(value) {
+            if (!value) return '';
+            let d;
+            if (/^\d+$/.test(String(value))) d = new Date(Number(value)); else d = new Date(value);
+            if (Number.isNaN(d.getTime())) return String(value);
+            return new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium', timeStyle: 'short' }).format(d);
         }
 
         function showSearchError(msg) {
