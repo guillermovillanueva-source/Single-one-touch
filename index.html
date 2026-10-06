@@ -607,10 +607,14 @@
                 }
 
                 // Renderizar Tickets Encontrados
-                const tickets = Array.isArray(data) ? data : [data];
-                
+                const tickets = Array.isArray(data.tickets)
+                    ? data.tickets
+                    : [];
+
                 if (tickets.length === 0) {
-                    throw new Error('No hay tickets registrados con este correo.');
+                throw new Error(
+                'No encontramos tickets asociados a este correo durante los últimos 3 meses.'
+                );
                 }
 
                 resultsContainer.innerHTML = tickets.map(t => {
