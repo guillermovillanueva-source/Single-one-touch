@@ -35,6 +35,30 @@
         .service-card:hover { transform: translateY(-3px); }
         .brand-bf { font-family: 'Courier New', Courier, monospace; letter-spacing: 1.5px; font-weight: bold; }
         .brand-bv { font-family: system-ui, -apple-system, sans-serif; font-weight: 800; color: #00529B; }
+    
+        /* ===== TUTORIAL GUIADO ===== */
+        #tourRoot { position: fixed; inset: 0; z-index: 9998; display: none; }
+        #tourRoot.on { display: block; }
+        #tourShield { position: absolute; inset: 0; }
+        #tourSpot { position: absolute; border-radius: 14px; box-shadow: 0 0 0 9999px rgba(0, 25, 55, .74), 0 0 0 3px #FFD100; transition: all .28s cubic-bezier(.4,0,.2,1); pointer-events: none; }
+        #tourTip { position: absolute; width: min(360px, calc(100vw - 24px)); background: #fff; border-radius: 18px; border-top: 5px solid #FFD100; box-shadow: 0 20px 50px rgba(0,0,0,.35); padding: 18px 18px 14px; transition: top .28s cubic-bezier(.4,0,.2,1), left .28s cubic-bezier(.4,0,.2,1); font-family: system-ui, -apple-system, sans-serif; }
+        #tourTip .t-step { font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #00529B; }
+        #tourTip h4 { margin: 4px 0 6px; font-size: 16px; font-weight: 800; color: #003B70; line-height: 1.25; }
+        #tourTip p { margin: 0; font-size: 13px; line-height: 1.5; color: #475569; }
+        #tourTip .t-dots { display: flex; gap: 4px; margin: 14px 0 12px; }
+        #tourTip .t-dots i { height: 4px; flex: 1; border-radius: 4px; background: #E2E8F0; }
+        #tourTip .t-dots i.on { background: #00529B; }
+        #tourTip .t-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        #tourTip button { font-size: 12px; font-weight: 700; border-radius: 10px; padding: 8px 14px; cursor: pointer; border: 1px solid transparent; }
+        #tourTip .t-skip { background: none; color: #94A3B8; padding-left: 0; text-decoration: underline; }
+        #tourTip .t-skip:hover { color: #00529B; }
+        #tourTip .t-prev { background: #F1F5F9; color: #475569; }
+        #tourTip .t-prev:hover { background: #E2E8F0; }
+        #tourTip .t-next { background: #00529B; color: #fff; }
+        #tourTip .t-next:hover { background: #003B70; }
+        #tourHelpBtn { position: fixed; right: 18px; bottom: 18px; z-index: 40; display: none; align-items: center; gap: 8px; background: #00529B; color: #fff; border: 2px solid #FFD100; border-radius: 999px; padding: 10px 16px; font-size: 12px; font-weight: 800; box-shadow: 0 8px 20px rgba(0,0,0,.25); cursor: pointer; transition: transform .2s; }
+        #tourHelpBtn.show { display: inline-flex; }
+        #tourHelpBtn:hover { transform: translateY(-2px); background: #003B70; }
     </style>
 </head>
 <body class="bg-[#F4F7FA] text-slate-800 font-sans min-h-screen flex flex-col antialiased relative">
@@ -398,9 +422,35 @@
         </div>
     </div>
 
+
+    <!-- BOTÓN FLOTANTE PARA REPETIR EL TUTORIAL -->
+    <button id="tourHelpBtn" type="button" onclick="startTour(true)" title="Ver tutorial guiado">
+        <i class="fa-solid fa-circle-question" style="color:#FFD100;font-size:15px"></i>
+        <span>Ver tutorial</span>
+    </button>
+
+    <!-- CAPA DEL TUTORIAL -->
+    <div id="tourRoot" role="dialog" aria-modal="true" aria-labelledby="tourTitle">
+        <div id="tourShield"></div>
+        <div id="tourSpot"></div>
+        <div id="tourTip">
+            <div class="t-step" id="tourCount"></div>
+            <h4 id="tourTitle"></h4>
+            <p id="tourText"></p>
+            <div class="t-dots" id="tourDots"></div>
+            <div class="t-row">
+                <button type="button" class="t-skip" id="tourSkip">Omitir</button>
+                <div style="display:flex;gap:6px">
+                    <button type="button" class="t-prev" id="tourPrev">Anterior</button>
+                    <button type="button" class="t-next" id="tourNext">Siguiente</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- JAVASCRIPT LOGIC CON GOOGLE SIGN-IN Y AUDITORÍA -->
     <script>
-        const COUNTRY_NAMES = { 'MX': '🇲🇽 México', 'CO': '🇨🇴 Colombia', 'CL': '🇨🇱 Chile' };
+        const COUNTRY_NAMES = { 'MX': '🇲🇽 México', 'CO': '🇨🇴 Colombia', 'CL': '🇨🇱 Chile', 'ALL': '🌎 MX · CO · CL' };
         const BRAND_NAMES = { 'bf': 'Ben & Frank', 'bv': 'Bombavista', 'all': 'Todas las marcas' };
         const AREA_NAMES = { 'hq': 'HQ', 'tiendas': 'Tiendas', 'ops': 'Ops / Lab' };
 
@@ -433,11 +483,14 @@
             'Tech': 'hq'
         };
 
+        // Form de ClickUp "Solicitudes AC": Tiendas -> Back Office de Atención a Clientes (ServiceNinjas)
+        const MULTI_COUNTRY_FORM_URL = 'https://forms.clickup.com/14177510/f/dgn76-139817/HTQJ175NKSF6DNQTX7';
+
         const INITIAL_SERVICES = [
             // MÉXICO
             {
                 id: '1',
-                title: 'Mantenimiento Ben & Frank (México)',
+                title: 'Mantenimiento y Servicios Ben & Frank (México)',
                 country: 'MX',
                 brand: 'bf',
                 area: 'tiendas',
@@ -448,7 +501,7 @@
             },
             {
                 id: '2',
-                title: 'Mantenimiento Bombavista (México)',
+                title: 'Mantenimiento y Servicios Bombavista (México)',
                 country: 'MX',
                 brand: 'bv',
                 area: 'tiendas',
@@ -571,7 +624,7 @@
             },
             {
                 id: '13',
-                title: 'Mantenimiento Ben & Frank (Colombia)',
+                title: 'Mantenimiento y Servicios Ben & Frank (Colombia)',
                 country: 'CO',
                 brand: 'bf',
                 area: 'tiendas',
@@ -612,6 +665,19 @@
                 description: 'Atención a usuarios de Ops y Laboratorio en Colombia: Procesos Batch, Control de Calidad y Errores.',
                 flag: '🇨🇴',
                 icon: 'fa-gears'
+            },
+            // MULTI-PAÍS (México + Colombia + Chile) · levantado por Tiendas
+            {
+                id: 'multi-1',
+                title: 'Solicitudes AC (Atención a Clientes)',
+                country: 'ALL',            // aplica a los tres países; se sugiere cuando NO hay un país filtrado
+                brand: 'all',
+                area: 'tiendas',           // lo levanta Tiendas (BU Retail)
+                suggested: true,           // muestra la etiqueta "Sugerido" y se ordena primero
+                url: MULTI_COUNTRY_FORM_URL,
+                description: 'Canal de Tiendas hacia Back Office de Atención a Clientes para incidencias de pedidos en Odoo: contacto con el cliente final (datos incompletos, faltantes de inventario, casos especiales) y gestión de pedidos (nuevas órdenes, cambios de dirección, avisos de cierre de tienda).',
+                flag: '🌎',
+                icon: 'fa-earth-americas'
             }
         ];
 
@@ -727,6 +793,8 @@
             if (currentUser.bu) {
                 setBU(currentUser.bu);
             }
+
+            if (window.maybeStartTour) maybeStartTour();
         }
 
         function logoutUser() {
@@ -736,6 +804,7 @@
                 currentUser = null;
                 document.getElementById('userInfoHeader').classList.add('hidden');
                 document.getElementById('adminReportSection').classList.add('hidden');
+                document.getElementById('tourHelpBtn').classList.remove('show');
                 document.getElementById('loginModal').classList.remove('hidden');
             }
         }
@@ -909,7 +978,7 @@
 
                 const matchQuery = normalize(s.title).includes(query) || normalize(s.description).includes(query);
                 return matchCountry && matchBrand && matchArea && matchQuery;
-            });
+            }).sort((a, b) => (b.suggested ? 1 : 0) - (a.suggested ? 1 : 0));
 
             let summaryText = [];
             if (selectedCountry) summaryText.push(COUNTRY_NAMES[selectedCountry]);
@@ -932,13 +1001,31 @@
                 if (s.brand === 'bf') brandTag = '<span class="brand-bf text-[9px] uppercase border px-1.5 py-0.5 rounded bg-slate-50 border-slate-300">BEN & FRANK</span>';
                 else if (s.brand === 'bv') brandTag = '<span class="brand-bv text-[10px] lowercase border px-1.5 py-0.5 rounded bg-blue-50/60 border-blue-200">bombavista</span>';
 
+                const suggestedTag = s.suggested ? '<span class="bg-[#FFD100] text-[#003B70] font-extrabold text-[10px] uppercase px-2 py-0.5 rounded flex items-center space-x-1"><i class="fa-solid fa-star text-[9px]"></i><span>Sugerido</span></span>' : '';
+                const actions = s.url ? `
+                    <div class="pt-3 border-t border-slate-100 flex items-center space-x-2">
+                        <button data-action="open" data-id="${s.id}" class="flex-grow bg-[#00529B] hover:bg-[#003B70] text-white font-bold py-2 px-3 rounded-xl text-xs transition-colors flex items-center justify-center space-x-2 shadow-sm">
+                            <i class="fa-solid fa-paper-plane text-[#FFD100]"></i>
+                            <span>Llenar Solicitud</span>
+                        </button>
+                        <a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer" data-action="track" data-id="${s.id}" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs transition-colors" title="Abrir en pestaña nueva">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>` : `
+                    <div class="pt-3 border-t border-slate-100">
+                        <button disabled class="w-full bg-slate-100 text-slate-400 font-bold py-2 px-3 rounded-xl text-xs cursor-not-allowed flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-clock"></i><span>Próximamente</span>
+                        </button>
+                    </div>`;
+
                 return `
-                <div class="service-card bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-xl flex flex-col justify-between border-t-4 border-t-[#00529B] relative overflow-hidden">
+                <div class="service-card bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-xl flex flex-col justify-between border-t-4 ${s.suggested ? 'border-t-[#FFD100] ring-1 ring-[#FFD100]/60' : 'border-t-[#00529B]'} relative overflow-hidden">
                     <div>
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center space-x-1.5">
                                 <span class="text-base">${s.flag}</span>
                                 ${brandTag}
+                                ${suggestedTag}
                                 <span class="bg-blue-50 text-[#00529B] font-extrabold text-[10px] uppercase px-2 py-0.5 rounded border border-blue-100">
                                     ${AREA_NAMES[s.area] || s.area}
                                 </span>
@@ -949,15 +1036,7 @@
                         <p class="text-xs text-slate-500 leading-relaxed mb-4">${s.description}</p>
                     </div>
 
-                    <div class="pt-3 border-t border-slate-100 flex items-center space-x-2">
-                        <button data-action="open" data-id="${s.id}" class="flex-grow bg-[#00529B] hover:bg-[#003B70] text-white font-bold py-2 px-3 rounded-xl text-xs transition-colors flex items-center justify-center space-x-2 shadow-sm">
-                            <i class="fa-solid fa-paper-plane text-[#FFD100]"></i>
-                            <span>Llenar Solicitud</span>
-                        </button>
-                        <a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer" data-action="track" data-id="${s.id}" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs transition-colors" title="Abrir en pestaña nueva">
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                        </a>
-                    </div>
+                    ${actions}
                 </div>
             `}).join('');
         }
@@ -1003,5 +1082,149 @@
             if (id === 'viewerModal') { clearTimeout(viewerTimer); document.getElementById('modalIframe').src = ''; }
         }
     </script>
+
+    <!-- TUTORIAL GUIADO AUTOMÁTICO -->
+    <script>
+    (function () {
+        const DONE_PREFIX = 'galileo_tour_done_v1:';
+        const $ = s => document.querySelector(s);
+        const card = el => el && el.closest('div.bg-slate-50');
+        const isVisible = el => !!el && el.getClientRects().length > 0;
+
+        // Cada paso apunta a un elemento (el) o es un mensaje centrado (el: null)
+        const ALL_STEPS = [
+            { el: null, title: '¡Bienvenido a la Central Galileo! 👋',
+              text: 'En menos de un minuto te mostramos cómo encontrar el formulario correcto para tu solicitud o incidencia.' },
+            { el: () => $('#userInfoHeader'), title: 'Tu sesión',
+              text: 'Aquí aparece la cuenta de Google y el área (BU) con la que entraste. Con "Salir" puedes cambiar de cuenta.' },
+            { el: () => card($('#btn-MX')), title: '1. Elige el país',
+              text: 'Selecciona México, Colombia o Chile para ver solo los formularios de ese país. Sin país elegido verás también los formularios multi-país (marcados como Sugerido).' },
+            { el: () => card($('#btn-bf')), title: '2. Elige la marca',
+              text: 'Filtra por Ben & Frank o Bombavista. Ten en cuenta que Bombavista solo está disponible en México.' },
+            { el: () => card($('#btn-bu-HQ')), title: '3. Elige tu área (BU)',
+              text: 'Se preselecciona con el área que indicaste al entrar, pero puedes cambiarla cuando quieras.' },
+            { el: () => card($('#searchInput')), title: '4. Busca por palabra clave',
+              text: 'Escribe una palabra relacionada con tu falla o solicitud. La búsqueda revisa el título y la descripción de cada formulario.' },
+            { el: () => $('#activeFilterBadge'), title: 'Resumen del filtro activo',
+              text: 'Aquí ves, de un vistazo, qué filtros tienes aplicados en este momento.' },
+            { el: () => $('button[onclick="resetFilters()"]'), title: 'Limpiar filtros',
+              text: '¿No aparece lo que buscas? Pulsa aquí para quitar todos los filtros y volver a ver todos los formularios.' },
+            { el: () => $('#totalCards'), title: 'Contador de resultados',
+              text: 'Te indica cuántos formularios coinciden con tus filtros.' },
+            { el: () => $('#formsGrid .service-card'), title: 'Tarjetas de servicio',
+              text: 'Cada tarjeta es un formulario. Arriba ves el país, la marca y el área a la que corresponde, y abajo una breve descripción.' },
+            { el: () => $('#formsGrid [data-action="open"]'), title: 'Llenar solicitud',
+              text: 'Haz clic aquí para abrir el formulario y enviar tu ticket.' },
+            { el: () => $('#formsGrid [data-action="track"]'), title: 'Abrir en pestaña nueva',
+              text: 'Si prefieres, este botón abre el formulario directamente en una pestaña aparte.' },
+            { el: () => $('#adminReportSection'), title: 'Modo administrador',
+              text: 'Solo tú ves este panel: descarga el reporte de usabilidad en CSV o consulta el registro de accesos.' },
+            { el: () => $('#tourHelpBtn'), title: '¡Listo! 🎉',
+              text: 'Cuando quieras repetir este recorrido, pulsa el botón "Ver tutorial". ¡Que tengas un excelente día!' }
+        ];
+
+        let steps = [], idx = 0, running = false;
+        const root = $('#tourRoot'), spot = $('#tourSpot'), tip = $('#tourTip');
+
+        const doneKey = () => DONE_PREFIX + ((typeof currentUser !== 'undefined' && currentUser && currentUser.email) || 'anon');
+        const isDone = () => { try { return !!localStorage.getItem(doneKey()); } catch { return false; } };
+        const markDone = () => { try { localStorage.setItem(doneKey(), '1'); } catch {} };
+
+        function render() {
+            const s = steps[idx];
+            $('#tourCount').textContent = `Paso ${idx + 1} de ${steps.length}`;
+            $('#tourTitle').textContent = s.title;
+            $('#tourText').textContent = s.text;
+            $('#tourDots').innerHTML = steps.map((_, i) => `<i class="${i <= idx ? 'on' : ''}"></i>`).join('');
+            $('#tourPrev').style.visibility = idx === 0 ? 'hidden' : 'visible';
+            $('#tourNext').textContent = idx === steps.length - 1 ? 'Finalizar' : 'Siguiente';
+            $('#tourSkip').style.visibility = idx === steps.length - 1 ? 'hidden' : 'visible';
+
+            const el = s.el && s.el();
+            if (el) el.scrollIntoView({ block: 'center', behavior: 'auto' });
+            requestAnimationFrame(place);
+        }
+
+        function place() {
+            if (!running) return;
+            const s = steps[idx], el = s.el && s.el();
+            const vw = window.innerWidth, vh = window.innerHeight;
+            const tw = tip.offsetWidth, th = tip.offsetHeight, gap = 14, pad = 6;
+            let top, left;
+
+            if (el) {
+                const r = el.getBoundingClientRect();
+                spot.style.top = (r.top - pad) + 'px';
+                spot.style.left = (r.left - pad) + 'px';
+                spot.style.width = (r.width + pad * 2) + 'px';
+                spot.style.height = (r.height + pad * 2) + 'px';
+                if (vh - r.bottom - pad >= th + gap + 8) top = r.bottom + pad + gap;
+                else if (r.top - pad >= th + gap + 8) top = r.top - pad - gap - th;
+                else top = vh - th - 12;
+                left = r.left + r.width / 2 - tw / 2;
+            } else {
+                spot.style.top = (vh / 2) + 'px';
+                spot.style.left = (vw / 2) + 'px';
+                spot.style.width = '0px';
+                spot.style.height = '0px';
+                top = (vh - th) / 2;
+                left = (vw - tw) / 2;
+            }
+            tip.style.top = Math.max(12, Math.min(top, vh - th - 12)) + 'px';
+            tip.style.left = Math.max(12, Math.min(left, vw - tw - 12)) + 'px';
+        }
+
+        function go(n) {
+            if (n < 0) return;
+            if (n >= steps.length) return end();
+            idx = n; render();
+        }
+
+        function end() {
+            running = false;
+            markDone();
+            root.classList.remove('on');
+            window.removeEventListener('resize', place);
+            window.removeEventListener('scroll', place, true);
+            document.removeEventListener('keydown', onKey, true);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function onKey(e) {
+            if (!running) return;
+            if (e.key === 'Escape') { e.stopPropagation(); end(); }
+            else if (e.key === 'ArrowRight' || e.key === 'Enter') { e.preventDefault(); go(idx + 1); }
+            else if (e.key === 'ArrowLeft') { e.preventDefault(); go(idx - 1); }
+        }
+
+        window.startTour = function (manual) {
+            if (running) return;
+            if (!manual && isDone()) return;
+            ['viewerModal', 'logsModal'].forEach(id => { const m = document.getElementById(id); if (m) m.classList.add('hidden'); });
+            window.scrollTo(0, 0);
+            // Solo incluye los pasos cuyos elementos existen y están visibles
+            steps = ALL_STEPS.filter(s => !s.el || isVisible(s.el()));
+            if (!steps.length) return;
+            idx = 0; running = true;
+            root.classList.add('on');
+            window.addEventListener('resize', place);
+            window.addEventListener('scroll', place, true);
+            document.addEventListener('keydown', onKey, true);
+            render();
+            $('#tourNext').focus();
+        };
+
+        // Llamado al terminar el inicio de sesión: muestra el botón y lanza el tour la 1ª vez
+        window.maybeStartTour = function () {
+            $('#tourHelpBtn').classList.add('show');
+            if (!isDone()) setTimeout(() => window.startTour(false), 700);
+        };
+
+        $('#tourNext').addEventListener('click', () => go(idx + 1));
+        $('#tourPrev').addEventListener('click', () => go(idx - 1));
+        $('#tourSkip').addEventListener('click', end);
+    })();
+    </script>
+
 </body>
 </html>
