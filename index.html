@@ -1,95 +1,256 @@
-function renderCards() {
-    const rawQuery = document.getElementById('searchInput').value.trim();
-    const query = normalize(rawQuery);
-    const grid = document.getElementById('formsGrid');
-    const empty = document.getElementById('emptyState');
-
-    const filtered = services.filter(s => {
-        // Excepción Bombavista en CO y CL
-        if ((selectedCountry === 'CO' || selectedCountry === 'CL') && selectedBrand === 'bv') {
-            return false;
-        }
-
-        // 1. Coincidencia de PAÍS: 
-        // Coincide si no hay país seleccionado O si el servicio es específico para ese país O si el servicio aplica a todos ('ALL')
-        const matchCountry = !selectedCountry || s.country === selectedCountry || s.country === 'ALL';
-
-        // 2. Coincidencia de MARCA:
-        // Coincide si no hay marca seleccionada O si la tarjeta es 'all' O si coincide con la marca seleccionada
-        const matchBrand = !selectedBrand || s.brand === 'all' || s.brand === selectedBrand;
-        
-        // 3. Coincidencia de ÁREA / BU:
-        // Coincide si no hay área seleccionada O si coincide exactamente con el área mapeada ('tiendas', 'ops', 'hq')
-        let matchArea = !selectedArea || s.area === selectedArea;
-        
-        // Excepción existente para HQ en México
-        if (selectedCountry === 'MX' && selectedArea === 'hq' && s.area === 'hq') {
-            matchArea = true;
-        }
-
-        // 4. Búsqueda por texto
-        const matchQuery = normalize(s.title).includes(query) || normalize(s.description).includes(query);
-
-        return matchCountry && matchBrand && matchArea && matchQuery;
-    }).sort((a, b) => (b.suggested ? 1 : 0) - (a.suggested ? 1 : 0));
-
-    let summaryText = [];
-    if (selectedCountry) summaryText.push(COUNTRY_NAMES[selectedCountry]);
-    if (selectedBrand) summaryText.push(BRAND_NAMES[selectedBrand]);
-    if (selectedBU) summaryText.push(`BU: ${selectedBU}`);
-    if (query) summaryText.push(`"${rawQuery}"`);
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central de Tickets Galileo | Service Desk</title>
+    <!-- Favicon Nítido Vectorial con la G -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22black%22/><text x=%2250%25%22 y=%2258%25%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%2260%22 fill=%22white%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>G</text></svg>">
     
-    document.getElementById('filterSummary').textContent = summaryText.length > 0 ? summaryText.join(' + ') : 'Todos los formularios';
-    document.getElementById('totalCards').textContent = `${filtered.length} Resultados`;
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Identity Services Library -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-    if (filtered.length === 0) {
-        grid.innerHTML = '';
-        empty.classList.remove('hidden');
-        return;
-    }
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        coppel: {
+                            blue: '#00529B',
+                            darkBlue: '#003B70',
+                            yellow: '#FFD100',
+                            lightBg: '#F4F7FA',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .service-card { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        .service-card:hover { transform: translateY(-3px); }
+        .brand-bf { font-family: 'Courier New', Courier, monospace; letter-spacing: 1.5px; font-weight: bold; }
+        .brand-bv { font-family: system-ui, -apple-system, sans-serif; font-weight: 800; color: #00529B; }
+    
+        /* ===== TUTORIAL GUIADO ===== */
+        #tourRoot { position: fixed; inset: 0; z-index: 9998; display: none; }
+        #tourRoot.on { display: block; }
+        #tourShield { position: absolute; inset: 0; }
+        #tourSpot { position: absolute; border-radius: 14px; box-shadow: 0 0 0 9999px rgba(0, 25, 55, .74), 0 0 0 3px #FFD100; transition: all .28s cubic-bezier(.4,0,.2,1); pointer-events: none; }
+        #tourTip { position: absolute; width: min(360px, calc(100vw - 24px)); background: #fff; border-radius: 18px; border-top: 5px solid #FFD100; box-shadow: 0 20px 50px rgba(0,0,0,.35); padding: 18px 18px 14px; transition: top .28s cubic-bezier(.4,0,.2,1), left .28s cubic-bezier(.4,0,.2,1); font-family: system-ui, -apple-system, sans-serif; }
+        #tourTip .t-step { font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #00529B; }
+        #tourTip h4 { margin: 4px 0 6px; font-size: 16px; font-weight: 800; color: #003B70; line-height: 1.25; }
+        #tourTip p { margin: 0; font-size: 13px; line-height: 1.5; color: #475569; }
+        #tourTip .t-dots { display: flex; gap: 4px; margin: 14px 0 12px; }
+        #tourTip .t-dots i { height: 4px; flex: 1; border-radius: 4px; background: #E2E8F0; }
+        #tourTip .t-dots i.on { background: #00529B; }
+        #tourTip .t-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        #tourTip button { font-size: 12px; font-weight: 700; border-radius: 10px; padding: 8px 14px; cursor: pointer; border: 1px solid transparent; }
+        #tourTip .t-skip { background: none; color: #94A3B8; padding-left: 0; text-decoration: underline; }
+        #tourTip .t-skip:hover { color: #00529B; }
+        #tourTip .t-prev { background: #F1F5F9; color: #475569; }
+        #tourTip .t-prev:hover { background: #E2E8F0; }
+        #tourTip .t-next { background: #00529B; color: #fff; }
+        #tourTip .t-next:hover { background: #003B70; }
+        #tourHelpBtn { position: fixed; right: 18px; bottom: 18px; z-index: 40; display: none; align-items: center; gap: 8px; background: #00529B; color: #fff; border: 2px solid #FFD100; border-radius: 999px; padding: 10px 16px; font-size: 12px; font-weight: 800; box-shadow: 0 8px 20px rgba(0,0,0,.25); cursor: pointer; transition: transform .2s; }
+        #tourHelpBtn.show { display: inline-flex; }
+        #tourHelpBtn:hover { transform: translateY(-2px); background: #003B70; }
+    </style>
+</head>
+<body class="bg-[#F4F7FA] text-slate-800 font-sans min-h-screen flex flex-col antialiased relative">
 
-    empty.classList.add('hidden');
-    grid.innerHTML = filtered.map(s => {
-        let brandTag = '';
-        if (s.brand === 'bf') brandTag = '<span class="brand-bf text-[9px] uppercase border px-1.5 py-0.5 rounded bg-slate-50 border-slate-300">BEN & FRANK</span>';
-        else if (s.brand === 'bv') brandTag = '<span class="brand-bv text-[10px] lowercase border px-1.5 py-0.5 rounded bg-blue-50/60 border-blue-200">bombavista</span>';
-
-        const suggestedTag = s.suggested ? '<span class="bg-[#FFD100] text-[#003B70] font-extrabold text-[10px] uppercase px-2 py-0.5 rounded flex items-center space-x-1"><i class="fa-solid fa-star text-[9px]"></i><span>Sugerido</span></span>' : '';
-        const actions = s.url ? `
-            <div class="pt-3 border-t border-slate-100 flex items-center space-x-2">
-                <button data-action="open" data-id="${s.id}" class="flex-grow bg-[#00529B] hover:bg-[#003B70] text-white font-bold py-2 px-3 rounded-xl text-xs transition-colors flex items-center justify-center space-x-2 shadow-sm">
-                    <i class="fa-solid fa-paper-plane text-[#FFD100]"></i>
-                    <span>Llenar Solicitud</span>
-                </button>
-                <a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer" data-action="track" data-id="${s.id}" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs transition-colors" title="Abrir en pestaña nueva">
-                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                </a>
-            </div>` : `
-            <div class="pt-3 border-t border-slate-100">
-                <button disabled class="w-full bg-slate-100 text-slate-400 font-bold py-2 px-3 rounded-xl text-xs cursor-not-allowed flex items-center justify-center space-x-2">
-                    <i class="fa-solid fa-clock"></i><span>Próximamente</span>
-                </button>
-            </div>`;
-
-        return `
-        <div class="service-card bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-xl flex flex-col justify-between border-t-4 ${s.suggested ? 'border-t-[#FFD100] ring-1 ring-[#FFD100]/60' : 'border-t-[#00529B]'} relative overflow-hidden">
-            <div>
-                <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center space-x-1.5">
-                        <span class="text-base">${s.flag}</span>
-                        ${brandTag}
-                        ${suggestedTag}
-                        <span class="bg-blue-50 text-[#00529B] font-extrabold text-[10px] uppercase px-2 py-0.5 rounded border border-blue-100">
-                            ${AREA_NAMES[s.area] || s.area}
-                        </span>
-                    </div>
-                    <i class="fa-solid ${s.icon || 'fa-headset'} text-slate-300 text-base"></i>
+    <!-- MODAL INICIAL DE ACCESO Y REGISTRO DE USUARIO CON GOOGLE -->
+    <div id="loginModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden border border-slate-100">
+            <div class="bg-[#00529B] text-white p-6 text-center relative border-b-4 border-[#FFD100]">
+                <div class="bg-black text-white rounded-full w-14 h-14 mx-auto flex items-center justify-center shadow-lg border-2 border-white/30 mb-3">
+                    <svg viewBox="0 0 100 100" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                        <text x="50%" y="56%" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="64" fill="white" text-anchor="middle" dominant-baseline="middle" letter-spacing="-2">G</text>
+                    </svg>
                 </div>
-                <h3 class="font-bold text-slate-900 text-sm mb-1.5 leading-snug">${s.title}</h3>
-                <p class="text-xs text-slate-500 leading-relaxed mb-4">${s.description}</p>
+                <h2 class="text-xl font-extrabold tracking-tight">Bienvenido a la Central Galileo</h2>
+                <p class="text-blue-100 text-xs mt-1">Inicia sesión con tu cuenta corporativa de Google</p>
+            </div>
+            
+            <div class="p-6 space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 uppercase mb-1.5 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-sitemap text-[#00529B]"></i>
+                        <span>Business Unit / Área a la que perteneces</span>
+                    </label>
+                    <select id="userBU" required class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#00529B] focus:outline-none text-xs font-semibold bg-white">
+                        <option value="HQ" selected>🏢 HQ</option>
+                        <option value="Tech">💻 Tech</option>
+                        <option value="Operaciones">🧪 Operaciones</option>
+                        <option value="Retail">🏪 Retail</option>
+                        <option value="Finanzas">📊 Finanzas</option>
+                        <option value="Estrategia">🎯 Estrategia</option>
+                        <option value="Recursos Humanos">👥 Recursos Humanos</option>
+                        <option value="Marketing">📣 Marketing</option>
+                    </select>
+                </div>
+
+                <!-- Botón de Inicio de Sesión Oficial de Google -->
+                <div class="flex flex-col items-center justify-center pt-3 border-t border-slate-100">
+                    <div id="g_id_onload"
+                         data-client_id="507934604170-3l2mbffts42qr65d8saatten60781k97.apps.googleusercontent.com"
+                         data-context="signin"
+                         data-ux_mode="popup"
+                         data-callback="handleGoogleCredentialResponse"
+                         data-auto_prompt="false">
+                    </div>
+
+                    <div class="g_id_signin"
+                         data-type="standard"
+                         data-shape="rectangular"
+                         data-theme="outline"
+                         data-text="signin_with"
+                         data-size="large"
+                         data-logo_alignment="left"
+                         data-width="320">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Bar -->
+    <div class="bg-[#003B70] text-white text-xs py-2 px-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <span class="flex items-center space-x-1.5 font-medium">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Sistemas Operativos 100%</span>
+                </span>
+                <span class="text-blue-300">|</span>
+                <span class="text-blue-100">Central de Tickets Galileo • Service Desk</span>
+            </div>
+            
+            <div class="flex items-center space-x-4 text-blue-200">
+                <!-- Info del Usuario Logueado -->
+                <div id="userInfoHeader" class="hidden flex items-center space-x-2 bg-white/10 px-2.5 py-1 rounded-lg border border-white/10">
+                    <div id="userAvatarHeader" class="w-4 h-4 rounded-full bg-yellow-400 flex items-center justify-center text-slate-900 font-bold text-[9px] overflow-hidden">
+                        <i class="fa-solid fa-circle-user text-[#FFD100]"></i>
+                    </div>
+                    <span id="userEmailDisplay" class="font-semibold text-white text-[11px]"></span>
+                    <span id="userBUDisplay" class="bg-blue-900/80 text-blue-200 px-1.5 py-px rounded text-[10px] font-bold"></span>
+                    <button onclick="logoutUser()" class="text-amber-300 hover:text-white underline text-[10px] ml-2" title="Cerrar sesión o cambiar datos">Salir</button>
+                </div>
+                <span>🇲🇽 🇨🇴 🇨🇱</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header Principal con Isotipo 'G' HD Vectorial -->
+    <header class="bg-[#00529B] text-white border-b-4 border-[#FFD100] shadow-md relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center space-x-4">
+                    
+                    <!-- Emblema Isotipo 'G' Vectorial Minimalista -->
+                    <div class="bg-black text-white rounded-full w-14 h-14 flex items-center justify-center flex-shrink-0 shadow-xl border-2 border-white/30 p-1">
+                        <svg viewBox="0 0 100 100" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                            <text x="50%" y="56%" font-family="system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="64" fill="white" text-anchor="middle" dominant-baseline="middle" letter-spacing="-2">G</text>
+                        </svg>
+                    </div>
+
+                    <div>
+                        <span class="bg-[#FFD100] text-[#003B70] text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-wider">Portal Oficial</span>
+                        <h1 class="text-2xl font-extrabold tracking-tight mt-0.5 text-white">Central de Tickets Galileo</h1>
+                        <p class="text-blue-100 text-xs mt-0.5">Mesa de Servicios e Incidencias Técnicas Multi-Región</p>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN EXCLUSIVA ADMINISTRADOR (Guillermo Villanueva - Tech) -->
+                <div id="adminReportSection" class="hidden flex items-center space-x-2 bg-emerald-950/60 p-2.5 rounded-2xl border border-emerald-400/40 shadow-lg">
+                    <div class="flex flex-col text-left mr-2">
+                        <span class="text-[#FFD100] text-[10px] font-black uppercase tracking-wider flex items-center space-x-1">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span>Admin Mode</span>
+                        </span>
+                        <span class="text-white text-xs font-bold">Reportes de Usabilidad</span>
+                    </div>
+                    <button onclick="downloadCSVReport()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold px-3 py-2 rounded-xl text-xs transition-all shadow-md flex items-center space-x-1.5">
+                        <i class="fa-solid fa-file-csv text-sm"></i>
+                        <span>Descargar CSV</span>
+                    </button>
+                    <button onclick="openModal('logsModal')" class="bg-white/10 hover:bg-white/20 text-white font-bold px-3 py-2 rounded-xl text-xs transition-all border border-white/20 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-table"></i>
+                        <span>Ver Registro</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- PANEL PREDICTIVO DE SELECCIÓN (GUIADO EN 4 PASOS) -->
+    <section class="bg-white border-b border-slate-200 shadow-sm relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+            
+            <div class="mb-3 flex items-center justify-between">
+                <h2 class="text-xs font-extrabold uppercase text-[#003B70] tracking-wider flex items-center space-x-2">
+                    <i class="fa-solid fa-filter text-[#00529B]"></i>
+                    <span>Filtro Predictivo de Solicitudes</span>
+                </h2>
+                <button onclick="resetFilters()" class="text-xs text-slate-400 hover:text-[#00529B] font-semibold underline">
+                    Limpiar Filtros
+                </button>
             </div>
 
-            ${actions}
-        </div>
-    `}).join('');
-}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                
+                <!-- Selector 1: PAÍS -->
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-2 flex items-center justify-between">
+                        <span class="flex items-center space-x-1">
+                            <i class="fa-solid fa-earth-americas text-[#00529B]"></i>
+                            <span>1. País</span>
+                        </span>
+                    </label>
+                    <div class="grid grid-cols-3 gap-1">
+                        <button onclick="setCountry('MX')" id="btn-MX" class="country-btn px-1.5 py-1.5 rounded-lg text-xs font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <span class="text-sm">🇲🇽</span>
+                            <span class="text-[10px]">México</span>
+                        </button>
+                        <button onclick="setCountry('CO')" id="btn-CO" class="country-btn px-1.5 py-1.5 rounded-lg text-xs font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <span class="text-sm">🇨🇴</span>
+                            <span class="text-[10px]">Colombia</span>
+                        </button>
+                        <button onclick="setCountry('CL')" id="btn-CL" class="country-btn px-2 py-1.5 rounded-lg text-xs font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <span class="text-sm">🇨🇱</span>
+                            <span class="text-[10px]">Chile</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Selector 2: MARCA / BU -->
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-2 flex items-center justify-between">
+                        <span class="flex items-center space-x-1">
+                            <i class="fa-solid fa-glasses text-[#00529B]"></i>
+                            <span>2. Marca / BU</span>
+                        </span>
+                    </label>
+                    <div class="grid grid-cols-2 gap-1">
+                        <button onclick="setBrand('bf')" id="btn-bf" class="brand-btn px-2 py-1.5 rounded-lg text-[10px] font-bold border flex items-center justify-center space-x-1 bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <span class="brand-bf text-[9px] uppercase">Ben & Frank</span>
+                        </button>
+                        <button onclick="setBrand('bv')" id="btn-bv" class="brand-btn px-2 py-1.5 rounded-lg text-[10px] font-bold border flex items-center justify-center space-x-1 bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <span class="brand-bv text-[10px] lowercase">bombavista</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Selector 3: BU / ÁREA CON ÍCONO DE LABORATORIO EN OPS -->
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-2 flex items-center justify-between">
+                        <span class="flex items-center space-x-1">
+                            <i class="fa-solid fa-users-gear text-[#00529B]"></i>
+                            <span>3. Área (BU)</span>
+                        </span>
+                    </label>
+                    <div
