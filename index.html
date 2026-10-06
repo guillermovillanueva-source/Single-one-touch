@@ -48,7 +48,7 @@
         #tourTip .t-dots { display: flex; gap: 4px; margin: 14px 0 12px; }
         #tourTip .t-dots i { height: 4px; flex: 1; border-radius: 4px; background: #E2E8F0; }
         #tourTip .t-dots i.on { background: #00529B; }
-        #tourTip .t-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        #tourTip .t-row { display: flex; align-items: center; justify-between; gap: 8px; }
         #tourTip button { font-size: 12px; font-weight: 700; border-radius: 10px; padding: 8px 14px; cursor: pointer; border: 1px solid transparent; }
         #tourTip .t-skip { background: none; color: #94A3B8; padding-left: 0; text-decoration: underline; }
         #tourTip .t-skip:hover { color: #00529B; }
@@ -674,7 +674,6 @@
                 country: 'ALL',            // aplica a los tres países
                 brand: 'all',
                 area: 'tiendas',           // lo levanta Tiendas (BU Retail)
-                suggested: true,           // muestra la etiqueta "Sugerido" y se ordena primero
                 url: MULTI_COUNTRY_FORM_URL,
                 description: 'Canal de Tiendas hacia Back Office de Atención a Clientes para incidencias de pedidos en Odoo: contacto con el cliente final (datos incompletos, faltantes de inventario, casos especiales) y gestión de pedidos (nuevas órdenes, cambios de dirección, avisos de cierre de tienda).',
                 flag: '🌎',
@@ -1004,7 +1003,7 @@
 
                 const matchQuery = normalize(s.title).includes(query) || normalize(s.description).includes(query);
                 return matchCountry && matchBrand && matchArea && matchQuery;
-            }).sort((a, b) => (b.suggested ? 1 : 0) - (a.suggested ? 1 : 0));
+            });
 
             let summaryText = [];
             if (selectedCountry) summaryText.push(COUNTRY_NAMES[selectedCountry]);
@@ -1027,7 +1026,6 @@
                 if (s.brand === 'bf') brandTag = '<span class="brand-bf text-[9px] uppercase border px-1.5 py-0.5 rounded bg-slate-50 border-slate-300">BEN & FRANK</span>';
                 else if (s.brand === 'bv') brandTag = '<span class="brand-bv text-[10px] lowercase border px-1.5 py-0.5 rounded bg-blue-50/60 border-blue-200">bombavista</span>';
 
-                const suggestedTag = s.suggested ? '<span class="bg-[#FFD100] text-[#003B70] font-extrabold text-[10px] uppercase px-2 py-0.5 rounded flex items-center space-x-1"><i class="fa-solid fa-star text-[9px]"></i><span>Sugerido</span></span>' : '';
                 const actions = s.url ? `
                     <div class="pt-3 border-t border-slate-100 flex items-center space-x-2">
                         <button data-action="open" data-id="${s.id}" class="flex-grow bg-[#00529B] hover:bg-[#003B70] text-white font-bold py-2 px-3 rounded-xl text-xs transition-colors flex items-center justify-center space-x-2 shadow-sm">
@@ -1045,13 +1043,12 @@
                     </div>`;
 
                 return `
-                <div class="service-card bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-xl flex flex-col justify-between border-t-4 ${s.suggested ? 'border-t-[#FFD100] ring-1 ring-[#FFD100]/60' : 'border-t-[#00529B]'} relative overflow-hidden">
+                <div class="service-card bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-xl flex flex-col justify-between border-t-4 border-t-[#00529B] relative overflow-hidden">
                     <div>
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center space-x-1.5">
                                 <span class="text-base">${s.flag}</span>
                                 ${brandTag}
-                                ${suggestedTag}
                                 <span class="bg-blue-50 text-[#00529B] font-extrabold text-[10px] uppercase px-2 py-0.5 rounded border border-blue-100">
                                     ${AREA_NAMES[s.area] || s.area}
                                 </span>
@@ -1124,7 +1121,7 @@
             { el: () => $('#userInfoHeader'), title: 'Tu sesión',
               text: 'Aquí aparece la cuenta de Google y el área (BU) con la que entraste. Con "Salir" puedes cambiar de cuenta.' },
             { el: () => card($('#btn-MX')), title: '1. Elige el país',
-              text: 'Selecciona México, Colombia o Chile para ver los formularios de ese país. Los marcados como Sugerido aplican a los tres países y se muestran siempre.' },
+              text: 'Selecciona México, Colombia o Chile para ver los formularios de ese país.' },
             { el: () => card($('#btn-bf')), title: '2. Elige la marca',
               text: 'Filtra por Ben & Frank o Bombavista. Ten en cuenta que Bombavista solo está disponible en México.' },
             { el: () => card($('#btn-bu-HQ')), title: '3. Elige tu área (BU)',
@@ -1235,7 +1232,7 @@
             root.classList.add('on');
             window.addEventListener('resize', place);
             window.addEventListener('scroll', place, true);
-            document.addEventListener('keydown', onKey, true);
+            document.removeEventListener('keydown', onKey, true);
             render();
             $('#tourNext').focus();
         };
