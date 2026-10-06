@@ -594,10 +594,10 @@
             loading.classList.remove('hidden');
 
             try {
-                const response = await fetch(window.TICKET_API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: email })
+                const urlConEmail = `${window.TICKET_API_URL}?email=${encodeURIComponent(email)}`;
+
+                const response = await fetch(urlConEmail, {
+                method: 'GET'    
                 });
 
                 const data = await response.json();
