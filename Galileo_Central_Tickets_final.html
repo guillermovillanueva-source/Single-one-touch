@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central de Tickets Galileo | Service Desk</title>
+    <!-- Favicon Nítido Vectorial con la G -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22black%22/><text x=%2250%25%22 y=%2258%25%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%2260%22 fill=%22white%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>G</text></svg>">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Identity Services Library -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <script>
+        // https://script.google.com/macros/s/AKfycbwNdzIXg9IOBpF2QAm5RgGpGoMm7tehXaVRnNnqpQP49MMiJpgF4qTR2LnGhHkX9hHaCg/exec
+        window.TICKET_API_URL = 'https://script.google.com/macros/s/AKfycbwNdzIXg9IOBpF2QAm5RgGpGoMm7tehXaVRnNnqpQP49MMiJpgF4qTR2LnGhHkX9hHaCg/exec';
+
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        coppel: {
+                            blue: '#00529B',
+                            darkBlue: '#003B70',
+                            yellow: '#FFD100',
+                            lightBg: '#F4F7FA',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .service-card { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        .service-card:hover { transform: translateY(-3px); }
+        .brand-bf { font-family: 'Courier New', Courier, monospace; letter-spacing: 1.5px; font-weight: bold; }
+        .brand-bv { font-family: system-ui, -apple-system, sans-serif; font-weight: 800; color: #00529B; }
+        .status-badge { display: inline-flex; items-center: center; padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; }
+    
+        /* ===== TUTORIAL GUIADO ===== */
+        #tourRoot { position: fixed; inset: 0; z-index: 9998; display: none; }
+        #tourRoot.on { display: block; }
+        #tourShield { position: absolute; inset: 0; }
+        #tourSpot { position: absolute; border-radius: 14px; box-shadow: 0 0 0 9999px rgba(0, 25, 55, .74), 0 0 0 3px #FFD100; transition: all .28s cubic-bezier(.4,0,.2,1); pointer-events: none; }
+        #tourTip { position: absolute; width: min(360px, calc(100vw - 24px)); background: #fff; border-radius: 18px; border-top: 5px solid #FFD100; box-shadow: 0 20px 50px rgba(0,0,0,.35); padding: 18px 18px 14px; transition: top .28s cubic-bezier(.4,0,.2,1), left .28s cubic-bezier(.4,0,.2,1); font-family: system-ui, -apple-system, sans-serif; }
+        #tourTip .t-step { font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #00529B; }
+        #tourTip h4 { margin: 4px 0 6px; font-size: 16px; font-weight: 800; color: #003B70; line-height: 1.25; }
+        #tourTip p { margin: 0; font-size: 13px; line-height: 1.5; color: #475569; }
+        #tourTip .t-dots { display: flex; gap: 4px; margin: 14px 0 12px; }
+        #tourTip .t-dots i { height: 4px; flex: 1; border-radius: 4px; background: #E2E8F0; }
+        #tourTip .t-dots i.on { background: #00529B; }
+        #tourTip .t-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        #tourTip button { font-size: 12px; font-weight: 700; border-radius: 10px; padding: 8px 14px; cursor: pointer; border: 1px solid transparent; }
+        #tourTip .t-skip { background: none; color: #94A3B8; padding-left: 0; text-decoration: underline; }
+        #tourTip .t-skip:hover { color: #00529B; }
+        #tourTip .t-prev { background: #F1F5F9; color: #475569; }
+        #tourTip .t-prev:hover { background: #E2E8F0; }
+        #tourTip .t-next { background: #00529B; color: #fff; }
+        #tourTip .t-next:hover { background: #003B70; }
+        #tourHelpBtn { position: fixed; right: 18px; bottom: 18px; z-index: 40; display: none; align-items: center; gap: 8px; background: #00529B; color: #fff; border: 2px solid #FFD100; border-radius: 999px; padding: 10px 16px; font-size: 12px; font-weight: 800; box-shadow: 0 8px 20px rgba(0,0,0,.25); cursor: pointer; transition: transform .2s; }
+        #tourHelpBtn.show { display: inline-flex; }
+        #tourHelpBtn:hover { transform: translateY(-2px); background: #003B70; }
+    </style>
+</head>
+<body class="bg-[#F4F7FA] text-slate-800 font-sans min-h-screen flex flex-col antialiased relative">
+
+    <!-- MODAL INICIAL DE ACCESO Y REGISTRO DE USUARIO CON GOOGLE -->
+    <div id="loginModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden border border-slate-100">
+            <div class="bg-[#00529B] text-white p-6 text-center relative border-b-4 border-[#FFD100]">
+                <div class="bg-black text-white rounded-full w-14 h-14 mx-auto flex items-center justify-center shadow-lg border-2 border-white/30 mb-3">
+                    <svg viewBox="0 0 100 100" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                        <text x="50%" y="56%" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="64" fill="white" text-anchor="middle" dominant-baseline="middle" letter-spacing="-2">G</text>
+                    </svg>
+                </div>
+                <h2 class="text-xl font-extrabold tracking-tight">Bienvenido a la Central Galileo</h2>
+                <p class="text-blue-100 text-xs mt-1">Inicia sesión con tu cuenta corporativa de Google</p>
+            </div>
+            
+            <div class="p-6 space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 uppercase mb-1.5 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-sitemap text-[#00529B]"></i>
+                        <span>Business Unit / Área a la que perteneces</span>
+                    </label>
+                    <select id="userBU" required class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#00529B] focus:outline-none text-xs font-semibold bg-white">
+                        <option value="" selected disabled>Selecciona tu área…</option>
+                        <option value="HQ">🏢 HQ</option>
+                        <option value="Tech">💻 Tech</option>
+                        <option value="Operaciones">🧪 Operaciones</option>
+                        <option value="Retail">🏪 Retail</option>
+                        <option value="Finanzas">📊 Finanzas</option>
+                        <option value="Estrategia">🎯 Estrategia</option>
+                        <option value="Recursos Humanos">👥 Recursos Humanos</option>
+                        <option value="Marketing">📣 Marketing</option>
+                    </select>
+                </div>
+
+                <!-- Botón de Inicio de Sesión Oficial de Google -->
+                <div class="flex flex-col items-center justify-center pt-3 border-t border-slate-100">
+                    <div id="g_id_onload"
+                         data-client_id="507934604170-3l2mbffts42qr65d8saatten60781k97.apps.googleusercontent.com"
+                         data-context="signin"
+                         data-ux_mode="popup"
+                         data-callback="handleGoogleCredentialResponse"
+                         data-auto_prompt="false">
+                    </div>
+
+                    <div class="g_id_signin"
+                         data-type="standard"
+                         data-shape="rectangular"
+                         data-theme="outline"
+                         data-text="signin_with"
+                         data-size="large"
+                         data-logo_alignment="left"
+                         data-width="320">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Bar -->
+    <div class="bg-[#003B70] text-white text-xs py-2 px-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <span class="flex items-center space-x-1.5 font-medium">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Sistemas Operativos 100%</span>
+                </span>
+                <span class="text-blue-300">|</span>
+                <span class="text-blue-100">Central de Tickets Galileo • Service Desk</span>
+            </div>
+            
+            <div class="flex items-center space-x-4 text-blue-200">
+                <div id="userInfoHeader" class="hidden flex items-center space-x-2 bg-white/10 px-2.5 py-1 rounded-lg border border-white/10">
+                    <div id="userAvatarHeader" class="w-4 h-4 rounded-full bg-yellow-400 flex items-center justify-center text-slate-900 font-bold text-[9px] overflow-hidden">
+                        <i class="fa-solid fa-circle-user text-[#FFD100]"></i>
+                    </div>
+                    <span id="userEmailDisplay" class="font-semibold text-white text-[11px]"></span>
+                    <span id="userBUDisplay" class="bg-blue-900/80 text-blue-200 px-1.5 py-px rounded text-[10px] font-bold"></span>
+                    <button onclick="logoutUser()" class="text-amber-300 hover:text-white underline text-[10px] ml-2" title="Cerrar sesión o cambiar datos">Salir</button>
+                </div>
+                <span>🇲🇽 🇨🇴 🇨🇱</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header Principal -->
+    <header class="bg-[#00529B] text-white border-b-4 border-[#FFD100] shadow-md relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center space-x-4">
+                    <div class="bg-black text-white rounded-full w-14 h-14 flex items-center justify-center flex-shrink-0 shadow-xl border-2 border-white/30 p-1">
+                        <svg viewBox="0 0 100 100" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                            <text x="50%" y="56%" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="64" fill="white" text-anchor="middle" dominant-baseline="middle" letter-spacing="-2">G</text>
+                        </svg>
+                    </div>
+
+                    <div>
+                        <span class="bg-[#FFD100] text-[#003B70] text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-wider">Portal Oficial</span>
+                        <h1 class="text-2xl font-extrabold tracking-tight mt-0.5 text-white">Central de Tickets Galileo</h1>
+                        <p class="text-blue-100 text-xs mt-0.5">Mesa de Servicios e Incidencias Técnicas Multi-Región</p>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN EXCLUSIVA ADMINISTRADOR -->
+                <div id="adminReportSection" class="hidden flex items-center space-x-2 bg-emerald-950/60 p-2.5 rounded-2xl border border-emerald-400/40 shadow-lg">
+                    <div class="flex flex-col text-left mr-2">
+                        <span class="text-[#FFD100] text-[10px] font-black uppercase tracking-wider flex items-center space-x-1">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span>Admin Mode</span>
+                        </span>
+                        <span class="text-white text-xs font-bold">Reportes de Usabilidad</span>
+                    </div>
+                    <button onclick="downloadCSVReport()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold px-3 py-2 rounded-xl text-xs transition-all shadow-md flex items-center space-x-1.5">
+                        <i class="fa-solid fa-file-csv text-sm"></i>
+                        <span>Descargar CSV</span>
+                    </button>
+                    <button onclick="openModal('logsModal')" class="bg-white/10 hover:bg-white/20 text-white font-bold px-3 py-2 rounded-xl text-xs transition-all border border-white/20 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-table"></i>
+                        <span>Ver Registro</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECCIÓN DE BÚSQUEDA DE TICKETS POR CORREO -->
+    <section id="emailSearchSection" class="bg-white border-b border-slate-200 shadow-sm relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5">
+                <div class="max-w-3xl mx-auto text-center space-y-2">
+                    <span class="bg-[#00529B] text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full tracking-wider">
+                        <i class="fa-solid fa-clock-rotate-left mr-1"></i> Consulta de Estatus
+                    </span>
+                    <h2 class="text-lg font-bold text-[#003B70]">¿Tienes tickets en atención? Consultalos por tu correo</h2>
+                    <p class="text-xs text-slate-500">Ingresa tu correo institucional para listar el estatus de todos tus requerimientos registrados en ClickUp.</p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-2 mt-4 max-w-xl mx-auto">
+                        <div class="relative flex-1">
+                            <input 
+                                type="email" 
+                                id="userEmailSearchInput" 
+                                placeholder="tu-correo@benandfrank.com" 
+                                class="w-full pl-9 pr-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00529B] text-xs font-semibold bg-white"
+                                onkeypress="if(event.key==='Enter') searchTicketsByEmail()"
+                            />
+                            <i class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        </div>
+                        <button 
+                            onclick="searchTicketsByEmail()" 
+                            class="bg-[#00529B] hover:bg-[#003B70] text-white font-bold px-5 py-2.5 rounded-xl text-xs transition-all flex items-center justify-center space-x-2 shadow-sm">
+                            <i class="fa-solid fa-magnifying-glass text-[#FFD100]"></i>
+                            <span>Buscar mis Tickets</span>
+                        </button>
+                    </div>
+
+                    <!-- Estados de Carga y Error -->
+                    <div id="emailSearchLoading" class="hidden text-slate-500 text-xs py-3">
+                        <i class="fa-solid fa-circle-notch fa-spin text-[#00529B] mr-1"></i>
+                        Consultando tickets en ClickUp...
+                    </div>
+                    <div id="emailSearchError" class="hidden text-red-600 bg-red-50 p-3 rounded-xl text-xs border border-red-200 mt-2"></div>
+
+                    <!-- Contenedor de Resultados -->
+                    <div id="emailSearchResults" class="hidden mt-4 text-left space-y-3"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PANEL PREDICTIVO DE SELECCIÓN DE FORMULARIOS -->
+    <section class="bg-white border-b border-slate-200 shadow-sm relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+            
+            <div class="mb-3 flex items-center justify-between">
+                <h2 class="text-xs font-extrabold uppercase text-[#003B70] tracking-wider flex items-center space-x-2">
+                    <i class="fa-solid fa-filter text-[#00529B]"></i>
+                    <span>Filtro Predictivo de Solicitudes</span>
+                </h2>
+                <button onclick="resetFilters()" class="text-xs text-slate-400 hover:text-[#00529B] font-semibold underline">
+                    Limpiar Filtros
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                
+                <!-- Selector 1: PAÍS -->
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-2 flex items-center justify-between">
+                        <span class="flex items-center space-x-1">
+                            <i class="fa-solid fa-earth-americas text-[#00529B]"></i>
+                            <span>1. País</span>
+                        </span>
+                    </label>
+                    <div class="grid grid-cols-3 gap-1">
+                        <button onclick="setCountry('MX')" id="btn-MX" class="country-btn px-1.5 py-1.5 rounded-lg text-xs font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <span class="text-sm">🇲🇽</span>
+                            <span class="text-[10px]">México</span>
+                        </button>
+                        <button onclick="setCountry('CO')" id="btn-CO" class="country-btn px-1.5 py-1.5 rounded-lg text-xs font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <span class="text-sm">🇨🇴</span>
+                            <span class="text-[10px]">Colombia</span>
+                        </button>
+                        <button onclick="setCountry('CL')" id="btn-CL" class="country-btn px-2 py-1.5 rounded-lg text-xs font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <span class="text-sm">🇨🇱</span>
+                            <span class="text-[10px]">Chile</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Selector 2: MARCA / BU -->
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-2 flex items-center justify-between">
+                        <span class="flex items-center space-x-1">
+                            <i class="fa-solid fa-glasses text-[#00529B]"></i>
+                            <span>2. Marca / BU</span>
+                        </span>
+                    </label>
+                    <div class="grid grid-cols-2 gap-1">
+                        <button onclick="setBrand('bf')" id="btn-bf" class="brand-btn px-2 py-1.5 rounded-lg text-[10px] font-bold border flex items-center justify-center space-x-1 bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <span class="brand-bf text-[9px] uppercase">Ben & Frank</span>
+                        </button>
+                        <button onclick="setBrand('bv')" id="btn-bv" class="brand-btn px-2 py-1.5 rounded-lg text-[10px] font-bold border flex items-center justify-center space-x-1 bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <span class="brand-bv text-[10px] lowercase">bombavista</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Selector 3: BU / ÁREA -->
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-2 flex items-center justify-between">
+                        <span class="flex items-center space-x-1">
+                            <i class="fa-solid fa-users-gear text-[#00529B]"></i>
+                            <span>3. Área (BU)</span>
+                        </span>
+                    </label>
+                    <div class="grid grid-cols-4 gap-1">
+                        <button onclick="setBU('Operaciones')" id="btn-bu-Operaciones" class="bu-btn px-1 py-1 rounded text-[9px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <i class="fa-solid fa-flask text-slate-500 text-xs mb-0.5"></i>
+                            <span>Ops</span>
+                        </button>
+                        <button onclick="setBU('Retail')" id="btn-bu-Retail" class="bu-btn px-1 py-1 rounded text-[9px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <i class="fa-solid fa-store text-slate-500 text-xs mb-0.5"></i>
+                            <span>Retail</span>
+                        </button>
+                        <button onclick="setBU('HQ')" id="btn-bu-HQ" class="bu-btn px-1 py-1 rounded text-[9px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <i class="fa-solid fa-building text-slate-500 text-xs mb-0.5"></i>
+                            <span>HQ</span>
+                        </button>
+                        <button onclick="setBU('Finanzas')" id="btn-bu-Finanzas" class="bu-btn px-1 py-1 rounded text-[9px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <i class="fa-solid fa-chart-pie text-slate-500 text-xs mb-0.5"></i>
+                            <span>Finanzas</span>
+                        </button>
+                        <button onclick="setBU('Estrategia')" id="btn-bu-Estrategia" class="bu-btn px-1 py-1 rounded text-[9px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <i class="fa-solid fa-bullseye text-slate-500 text-xs mb-0.5"></i>
+                            <span>Estrategia</span>
+                        </button>
+                        <button onclick="setBU('Recursos Humanos')" id="btn-bu-Recursos Humanos" class="bu-btn px-1 py-1 rounded text-[9px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <i class="fa-solid fa-users-gear text-slate-500 text-xs mb-0.5"></i>
+                            <span>RH</span>
+                        </button>
+                        <button onclick="setBU('Marketing')" id="btn-bu-Marketing" class="bu-btn px-1 py-1 rounded text-[9px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <i class="fa-solid fa-bullhorn text-slate-500 text-xs mb-0.5"></i>
+                            <span>Marketing</span>
+                        </button>
+                        <button onclick="setBU('Tech')" id="btn-bu-Tech" class="bu-btn px-1 py-1 rounded text-[9px] font-bold border flex flex-col items-center justify-center bg-white border-slate-200 hover:border-[#00529B] transition-all">
+                            <i class="fa-solid fa-laptop-code text-slate-500 text-xs mb-0.5"></i>
+                            <span>Tech</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Selector 4: BÚSQUEDA -->
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex flex-col justify-between">
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1 flex items-center space-x-1">
+                        <i class="fa-solid fa-magnifying-glass text-[#00529B]"></i>
+                        <span>4. Búsqueda</span>
+                    </label>
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Buscar falla..." 
+                            class="w-full pl-2.5 pr-7 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#00529B]">
+                        <i class="fa-solid fa-search absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Resumen de Selección Activa -->
+            <div id="activeFilterBadge" class="mt-2.5 text-xs text-slate-500 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <span>Filtro activo:</span>
+                    <span id="filterSummary" class="font-bold text-[#003B70] bg-blue-50 px-2 py-0.5 rounded border border-blue-100">Todos los formularios</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Grid de Servicios -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h3 class="text-base font-bold text-[#003B70]">Formularios y Accesos Disponibles</h3>
+                <p class="text-xs text-slate-500">Selecciona el módulo para reportar tu requerimiento</p>
+            </div>
+            <span id="totalCards" class="text-xs font-bold bg-blue-50 text-[#00529B] px-3 py-1 rounded-full border border-blue-100">0 Resultados</span>
+        </div>
+
+        <!-- Grid de Cards -->
+        <div id="formsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+
+        <!-- Estado Vacío -->
+        <div id="emptyState" class="hidden text-center py-12 bg-white rounded-2xl border border-slate-200 shadow-sm mt-4">
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-slate-100 text-slate-400 mb-3">
+                <i class="fa-solid fa-filter-circle-xmark text-xl"></i>
+            </div>
+            <h3 class="text-sm font-bold text-slate-800">No encontramos formularios para estos filtros</h3>
+            <p class="text-slate-500 text-xs mt-1">Prueba seleccionando otra marca o área en la barra superior.</p>
+            <button onclick="resetFilters()" class="mt-3 px-3 py-1.5 bg-[#00529B] text-white text-xs font-bold rounded-lg">Restablecer Filtros</button>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#003B70] text-white border-t-4 border-[#FFD100] mt-12 py-5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-blue-200">
+            <p class="font-semibold text-white">Central de Tickets Galileo • Service Desk</p>
+            <p>© 2026 Operaciones & Plataformas. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- MODAL RESULTADOS DE TICKETS -->
+    <div id="ticketsModal" class="fixed inset-0 bg-slate-900/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-6">
+        <div class="bg-white rounded-2xl w-full max-w-4xl max-h-[88vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
+            <div class="px-5 sm:px-6 py-4 bg-[#003B70] text-white flex justify-between items-center border-b-4 border-[#FFD100]">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-full bg-[#00529B] flex items-center justify-center border border-white/20"><i class="fa-solid fa-ticket text-[#FFD100]"></i></div>
+                    <div><h3 class="font-bold text-sm">Mis tickets en Galileo</h3><p id="ticketsModalSubtitle" class="text-[11px] text-blue-200">Consulta de los últimos 3 meses</p></div>
+                </div>
+                <button onclick="closeModal('ticketsModal')" aria-label="Cerrar" class="text-blue-200 hover:text-white p-2 rounded-lg hover:bg-white/10"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div id="ticketsModalBody" class="flex-grow overflow-y-auto p-4 sm:p-6 bg-slate-50"></div>
+        </div>
+    </div>
+
+    <!-- MODAL IFRAME / VISUALIZADOR -->
+    <div id="viewerModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
+        <div class="bg-white rounded-2xl w-full max-w-5xl h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
+            <div class="px-6 py-3.5 bg-[#00529B] text-white flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <span id="modalFlag" class="text-xl">🇲🇽</span>
+                    <div>
+                        <h3 id="modalTitle" class="font-bold text-sm text-white">Cargando servicio...</h3>
+                        <p id="modalCategory" class="text-[11px] text-blue-200">Mesa de Ayuda</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <a id="modalExternalLink" href="#" target="_blank" rel="noopener noreferrer" class="p-2 text-blue-200 hover:text-white rounded-lg hover:bg-white/10 transition-colors" title="Abrir en pestaña nueva">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-sm"></i>
+                    </a>
+                    <button onclick="closeModal('viewerModal')" aria-label="Cerrar" class="p-2 text-blue-200 hover:text-white rounded-lg hover:bg-white/10 transition-colors">
+                        <i class="fa-solid fa-xmark text-base"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="flex-grow relative bg-slate-100">
+                <div id="iframeLoader" class="absolute inset-0 flex items-center justify-center bg-white z-10">
+                    <div class="flex flex-col items-center space-y-3">
+                        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-[#00529B]"></i>
+                        <p class="text-xs text-slate-500 font-medium">Cargando formulario...</p>
+                    </div>
+                </div>
+                <iframe id="modalIframe" class="w-full h-full border-0 relative z-20" src=""></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TABLA DE AUDITORÍA Y LOGS -->
+    <div id="logsModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-6">
+        <div class="bg-white rounded-2xl w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
+            <div class="px-6 py-4 bg-[#003B70] text-white flex justify-between items-center border-b-4 border-[#FFD100]">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-list-check text-[#FFD100] text-lg"></i>
+                    <div>
+                        <h3 class="font-bold text-sm">Registro Detallado de Usabilidad</h3>
+                        <p class="text-[10px] text-blue-200">Listado cronológico de accesos e interacciones</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="downloadCSVReport()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-3 py-1.5 rounded-lg text-xs transition-colors flex items-center space-x-1">
+                        <i class="fa-solid fa-download"></i>
+                        <span>Exportar CSV</span>
+                    </button>
+                    <button onclick="closeModal('logsModal')" aria-label="Cerrar" class="text-blue-200 hover:text-white p-2">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="flex-grow overflow-auto p-4 bg-slate-50">
+                <table class="w-full text-left text-xs bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <thead class="bg-slate-100 border-b border-slate-200 font-bold text-slate-700 uppercase text-[10px]">
+                        <tr>
+                            <th class="p-3">Fecha y Hora</th>
+                            <th class="p-3">Usuario</th>
+                            <th class="p-3">BU Usuario</th>
+                            <th class="p-3">Formulario Seleccionado</th>
+                            <th class="p-3">Filtros Aplicados</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logsTableBody" class="divide-y divide-slate-100 text-[11px] text-slate-700"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTÓN FLOTANTE TUTORIAL -->
+    <button id="tourHelpBtn" type="button" onclick="startTour(true)" title="Ver tutorial guiado">
+        <i class="fa-solid fa-circle-question" style="color:#FFD100;font-size:15px"></i>
+        <span>Ver tutorial</span>
+    </button>
+
+    <!-- CAPA DEL TUTORIAL GUIADO -->
+    <div id="tourRoot" role="dialog" aria-modal="true" aria-labelledby="tourTitle">
+        <div id="tourShield"></div>
+        <div id="tourSpot"></div>
+        <div id="tourTip">
+            <div class="t-step" id="tourCount"></div>
+            <h4 id="tourTitle"></h4>
+            <p id="tourText"></p>
+            <div class="t-dots" id="tourDots"></div>
+            <div class="t-row">
+                <button type="button" class="t-skip" id="tourSkip">Omitir</button>
+                <div style="display:flex;gap:6px">
+                    <button type="button" class="t-prev" id="tourPrev">Anterior</button>
+                    <button type="button" class="t-next" id="tourNext">Siguiente</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC CON BÚSQUEDA POR CORREO INTEGRADA -->
+    <script>
+        const COUNTRY_NAMES = { 'MX': '🇲🇽 México', 'CO': '🇨🇴 Colombia', 'CL': '🇨🇱 Chile', 'ALL': '🌎 MX · CO · CL' };
+        const BRAND_NAMES = { 'bf': 'Ben & Frank', 'bv': 'Bombavista', 'all': 'Todas las marcas' };
+        const AREA_NAMES = { 'hq': 'HQ', 'tiendas': 'Tiendas', 'ops': 'Ops / Lab' };
+
+        const ADMIN_EMAIL = "guillermo.villanueva@benandfrank.com";
+        const ADMIN_BU = "Tech";
+
+        const ALLOWED_DOMAINS = [];
+        const SESSION_TTL_MS = 12 * 60 * 60 * 1000;
+        const MAX_LOGS = 500;
+        const KEYS = { session: 'galileo_user_session_v5', analytics: 'galileo_analytics_data_v6' };
+        let viewerTimer;
+
+        const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        const normalize = s => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const store = {
+            get(k, fb = null) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch { return fb; } },
+            set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } },
+            remove(k) { try { localStorage.removeItem(k); } catch {} }
+        };
+
+        const BU_AREA_MAP = {
+            'Operaciones': 'ops',
+            'HQ': 'hq',
+            'Retail': 'tiendas',
+            'Finanzas': 'hq',
+            'Estrategia': 'hq',
+            'Recursos Humanos': 'hq',
+            'Marketing': 'hq',
+            'Tech': 'hq'
+        };
+
+        const MULTI_COUNTRY_FORM_URL = 'https://forms.clickup.com/14177510/f/dgn76-139817/HTQJ175NKSF6DNQTX7';
+
+        const INITIAL_SERVICES = [
+            { id: '1', title: 'Mantenimiento y Servicios Ben & Frank (México)', country: 'MX', brand: 'bf', area: 'tiendas', url: 'https://forms.clickup.com/14177510/f/dgn76-104777/O14JII635QGEB2LM0W', description: 'Solicitudes e incidencias de mantenimiento para tiendas B&F: Electricidad, Clima, Mobiliario.', flag: '🇲🇽', icon: 'fa-wrench' },
+            { id: '2', title: 'Mantenimiento y Servicios Bombavista (México)', country: 'MX', brand: 'bv', area: 'tiendas', url: 'https://forms.clickup.com/14177510/f/dgn76-110897/CDV8W0PS0X1EQW3176', description: 'Solicitudes de mantenimiento preventivo y correctivo para tiendas Bombavista: Electricidad, Clima, Mobiliario.', flag: '🇲🇽', icon: 'fa-screwdriver-wrench' },
+            { id: '3', title: 'Soporte Tiendas (Casimiros / Odoo)', country: 'MX', brand: 'all', area: 'tiendas', url: 'https://templos-mx.casimiros.com/web?debug=1#cids=1&action=menu', description: 'Atención directa para tiendas: Incidentes Odoo, Fallas Mercado Pago, MO\'s y Cajas.', flag: '🇲🇽', icon: 'fa-cash-register' },
+            { id: '4', title: 'Soporte Operación (Aperturas)', country: 'MX', brand: 'all', area: 'ops', url: 'https://forms.clickup.com/14177510/f/dgn76-74297/BJPQI9ZZZNKKQJM1RG', description: 'Gestión y creación de tiendas: Alta de tiendas, Contadores y habilitación de Aperturas.', flag: '🇲🇽', icon: 'fa-store' },
+            { id: '5', title: 'Soporte Ops (Atención Usuarios)', country: 'MX', brand: 'all', area: 'ops', url: 'https://forms.clickup.com/14177510/f/dgn76-41665/YYJC5NOK3FBBNW1P57', description: 'Atención a usuarios de Ops: Control de Calidad, Procesos Batch, Errores de Reserva.', flag: '🇲🇽', icon: 'fa-gears' },
+            { id: '6', title: 'Soporte Sitio Lab (Vallejo)', country: 'MX', brand: 'all', area: 'ops', url: 'https://forms.clickup.com/14177510/f/dgn76-103457/W79DD8MVUQ0OB9STGE', description: 'Solicitudes para usuarios de laboratorio Vallejo: Equipo de cómputo, Impresoras y Producción.', flag: '🇲🇽', icon: 'fa-flask' },
+            { id: '7', title: 'Soporte HQ (Corporativo México)', country: 'MX', brand: 'all', area: 'hq', url: 'https://forms.clickup.com/14177510/f/dgn76-62697/2GDMHEPAQY71IFJL91', description: 'Atención a personal de HQ México: Equipo de cómputo, Telefonía Celular Galileo y Licencias.', flag: '🇲🇽', icon: 'fa-laptop' },
+            { id: '8', title: 'Soporte HQ Chile', country: 'CL', brand: 'bf', area: 'hq', url: 'https://forms.clickup.com/14177510/f/dgn76-111957/Q5NIEFTQ8AFVECDQYF', description: 'Solicitudes de soporte para colaboradores de HeadQuarters en Chile.', flag: '🇨🇱', icon: 'fa-building' },
+            { id: '9', title: 'Soporte Tiendas Chile (Casimiros)', country: 'CL', brand: 'all', area: 'tiendas', url: 'https://templos-mx.casimiros.com/web?debug=1#cids=1&action=menu', description: 'Atención y reporte de incidentes para templos y tiendas en Chile.', flag: '🇨🇱', icon: 'fa-store' },
+            { id: '10', title: 'Soporte Ops / Lab (Chile)', country: 'CL', brand: 'all', area: 'ops', url: 'https://forms.clickup.com/14177510/f/dgn76-41665/YYJC5NOK3FBBNW1P57', description: 'Atención a usuarios de Ops y Laboratorio en Chile: Procesos Batch, Errores y Soporte.', flag: '🇨🇱', icon: 'fa-gears' },
+            { id: '11', title: 'Soporte Operación (Aperturas)', country: 'CL', brand: 'all', area: 'tiendas', url: 'https://forms.clickup.com/14177510/f/dgn76-74297/BJPQI9ZZZNKKQJM1RG', description: 'Gestión y creación de tiendas: Alta de tiendas, Contadores y habilitación de Aperturas.', flag: '🇨🇱', icon: 'fa-store' },
+            { id: '12', title: 'Soporte HQ Colombia', country: 'CO', brand: 'bf', area: 'hq', url: 'https://forms.clickup.com/14177510/f/dgn76-62697/2GDMHEPAQY71IFJL91', description: 'Atención a personal corporativo/HQ en Colombia: Cómputo, telefonía y licencias.', flag: '🇨🇴', icon: 'fa-laptop' },
+            { id: '13', title: 'Mantenimiento y Servicios Ben & Frank (Colombia)', country: 'CO', brand: 'bf', area: 'tiendas', url: 'https://forms.clickup.com/14177510/f/dgn76-108457/ANZNI99C6TOU93RLGP', description: 'Solicitudes e incidencias de mantenimiento para sedes y tiendas en Colombia.', flag: '🇨🇴', icon: 'fa-wrench' },
+            { id: '14', title: 'Soporte a Tienda (Colombia)', country: 'CO', brand: 'all', area: 'tiendas', url: 'https://templos-mx.casimiros.com/web?debug=1#cids=1&action=menu', description: 'Atención operativa y técnica para tiendas en Colombia.', flag: '🇨🇴', icon: 'fa-cash-register' },
+            { id: '15', title: 'Soporte Operación (Aperturas)', country: 'CO', brand: 'all', area: 'tiendas', url: 'https://forms.clickup.com/14177510/f/dgn76-74297/BJPQI9ZZZNKKQJM1RG', description: 'Gestión y creación de tiendas: Alta de tiendas, Contadores y habilitación de Aperturas.', flag: '🇨🇴', icon: 'fa-store' },
+            { id: '16', title: 'Soporte Ops / Lab (Colombia)', country: 'CO', brand: 'all', area: 'ops', url: 'https://forms.clickup.com/14177510/f/dgn76-41665/YYJC5NOK3FBBNW1P57', description: 'Atención a usuarios de Ops y Laboratorio en Colombia: Procesos Batch, Control de Calidad y Errores.', flag: '🇨🇴', icon: 'fa-gears' },
+            { id: 'multi-1', title: 'Solicitudes AC (Atención a Clientes)', country: 'ALL', brand: 'all', area: 'tiendas', suggested: true, url: MULTI_COUNTRY_FORM_URL, description: 'Canal de Tiendas hacia Back Office de Atención a Clientes para incidencias de pedidos en Odoo.', flag: '🌎', icon: 'fa-earth-americas' }
+        ];
+
+        let currentUser = null;
+        let selectedCountry = null;
+        let selectedBrand = null;
+        let selectedBU = null;
+        let selectedArea = null;
+        let services = [];
+        let analytics = {
+            cards: {}, countries: { 'MX': 0, 'CO': 0, 'CL': 0 }, brands: { 'bf': 0, 'bv': 0 },
+            bus: { 'Operaciones': 0, 'HQ': 0, 'Retail': 0, 'Finanzas': 0, 'Estrategia': 0, 'Recursos Humanos': 0, 'Marketing': 0, 'Tech': 0 },
+            totalUsage: 0, logs: []
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            services = INITIAL_SERVICES;
+            const saved = store.get(KEYS.analytics);
+            if (saved) { analytics = { ...analytics, ...saved }; if (!analytics.logs) analytics.logs = []; }
+
+            checkUserSession();
+            renderCards();
+
+            let debounce;
+            document.getElementById('searchInput').addEventListener('input', () => { clearTimeout(debounce); debounce = setTimeout(renderCards, 150); });
+            document.getElementById('formsGrid').addEventListener('click', onGridClick);
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') ['viewerModal', 'logsModal', 'ticketsModal'].forEach(closeModal); });
+        });
+
+        // -------------------------------------------------------------
+        // BÚSQUEDA DE TICKETS POR CORREO ELECTRÓNICO EN CLICKUP
+        // -------------------------------------------------------------
+        async function searchTicketsByEmail() {
+            const input = document.getElementById('userEmailSearchInput');
+            const loading = document.getElementById('emailSearchLoading');
+            const error = document.getElementById('emailSearchError');
+            const email = input.value.trim().toLowerCase();
+
+            if (!email || !email.includes('@')) {
+                showSearchError('Ingresa un correo electrónico válido para consultar.');
+                return;
+            }
+
+            error.classList.add('hidden');
+            loading.classList.remove('hidden');
+
+            try {
+                const response = await fetch(`${window.TICKET_API_URL}?email=${encodeURIComponent(email)}`, { method: 'GET' });
+                const data = await response.json();
+                if (!response.ok || data.error || data.success === false) throw new Error(data.error || 'No fue posible consultar los tickets.');
+
+                const tickets = Array.isArray(data.tickets) ? data.tickets : (Array.isArray(data) ? data : []);
+                renderTicketsModal(tickets, email, data.period || 'Últimos 3 meses');
+                openModal('ticketsModal');
+            } catch (err) {
+                showSearchError(err.message || 'Error de conexión con la API de tickets.');
+            } finally {
+                loading.classList.add('hidden');
+            }
+        }
+
+        function renderTicketsModal(tickets, email, period) {
+            const body = document.getElementById('ticketsModalBody');
+            const subtitle = document.getElementById('ticketsModalSubtitle');
+            subtitle.textContent = `${email} • ${period} • ${tickets.length} ticket${tickets.length === 1 ? '' : 's'}`;
+
+            if (!tickets.length) {
+                body.innerHTML = `<div class="text-center py-12"><div class="w-14 h-14 mx-auto rounded-full bg-slate-200 flex items-center justify-center text-slate-500 mb-3"><i class="fa-solid fa-inbox text-xl"></i></div><h4 class="font-bold text-slate-800">No encontramos tickets</h4><p class="text-xs text-slate-500 mt-1">No hay registros asociados a este correo durante los últimos 3 meses.</p></div>`;
+                return;
+            }
+
+            body.innerHTML = `<div class="space-y-4">${tickets.map((t, i) => {
+                const status = String(t.status || 'Desconocido').toUpperCase();
+                const closed = /CLOSED|DONE|CERRADO|RESUELTO|COMPLETE/.test(status);
+                const progress = /PROGRESS|ATENCI|ABIERTO|OPEN|PENDING/.test(status);
+                const badge = closed ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : progress ? 'bg-amber-100 text-amber-800 border-amber-200' : 'bg-slate-100 text-slate-700 border-slate-200';
+                const ticket = t.ticketNumber || t.id || 'N/A';
+                const title = t.title || t.subject || 'Solicitud de servicio';
+                const requester = t.requesterName || t.requester || '';
+                const documentation = t.lastDocumentation || t.documentation || 'Sin documentación registrada';
+                const docUser = t.lastDocumentationUser || t.documentedBy || '';
+                const docDate = formatTicketDate(t.lastDocumentationDate || t.documentationDate);
+                const updated = formatTicketDate(t.dateUpdated || t.lastUpdated || t.date_updated);
+                const clickup = t.clickupUrl || t.url || '';
+                return `<article class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+                    <div class="p-4 sm:p-5">
+                        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                            <div class="min-w-0"><div class="flex flex-wrap items-center gap-2 mb-2"><span class="font-mono text-xs font-extrabold text-[#00529B]">Ticket: ${esc(ticket)}</span><span class="status-badge border ${badge}">${esc(translateTicketStatus(status))}</span></div><h4 class="text-sm sm:text-base font-extrabold text-slate-900 leading-snug">${esc(title)}</h4>${requester ? `<p class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-user mr-1"></i>Solicitante: ${esc(requester)}</p>` : ''}</div>
+                            ${clickup ? `<a href="${esc(clickup)}" target="_blank" rel="noopener noreferrer" class="shrink-0 inline-flex items-center justify-center gap-2 bg-[#00529B] hover:bg-[#003B70] text-white px-3 py-2 rounded-xl text-xs font-bold">Abrir en ClickUp <i class="fa-solid fa-arrow-up-right-from-square text-[#FFD100]"></i></a>` : ''}
+                        </div>
+                        <div class="mt-4 rounded-xl bg-slate-50 border border-slate-200 p-3 sm:p-4"><div class="text-[10px] font-black uppercase tracking-wider text-[#003B70] mb-2"><i class="fa-solid fa-comment-dots mr-1 text-[#00529B]"></i>Última documentación</div><p class="text-xs sm:text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">${esc(documentation)}</p><div class="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-[11px] text-slate-500">${docUser ? `<span><i class="fa-solid fa-user-pen mr-1"></i>${esc(docUser)}</span>` : ''}${docDate ? `<span><i class="fa-regular fa-calendar mr-1"></i>${esc(docDate)}</span>` : ''}${updated ? `<span><i class="fa-solid fa-rotate mr-1"></i>Actualizado: ${esc(updated)}</span>` : ''}</div></div>
+                    </div></article>`;
+            }).join('')}</div>`;
+        }
+
+        function translateTicketStatus(status) {
+            const s = String(status || '').toUpperCase();
+            if (s === 'CLOSED' || s === 'DONE' || s === 'COMPLETE') return 'CERRADO';
+            if (s === 'OPEN') return 'ABIERTO';
+            if (s === 'IN PROGRESS' || s === 'PROGRESS') return 'EN ATENCIÓN';
+            if (s === 'PENDING') return 'PENDIENTE';
+            return status || 'DESCONOCIDO';
+        }
+
+        function formatTicketDate(value) {
+            if (!value) return '';
+            let d;
+            if (/^\d+$/.test(String(value))) d = new Date(Number(value)); else d = new Date(value);
+            if (Number.isNaN(d.getTime())) return String(value);
+            return new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium', timeStyle: 'short' }).format(d);
+        }
+
+        function showSearchError(msg) {
+            const error = document.getElementById('emailSearchError');
+            error.textContent = msg;
+            error.classList.remove('hidden');
+        }
+
+        // -------------------------------------------------------------
+        // AUTENTICACIÓN GOOGLE Y ENTORNOS
+        // -------------------------------------------------------------
+        function parseJwt(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+                return JSON.parse(jsonPayload);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function handleGoogleCredentialResponse(response) {
+            if (!response || !response.credential) return;
+            const payload = parseJwt(response.credential);
+            if (!payload) return;
+
+            const email = payload.email ? payload.email.toLowerCase() : '';
+            const buSelect = document.getElementById('userBU');
+            const bu = buSelect ? buSelect.value : '';
+
+            if (!email || !bu) {
+                alert('Por favor selecciona tu área antes de continuar.');
+                return;
+            }
+
+            const mappedArea = BU_AREA_MAP[bu] || 'hq';
+            currentUser = { email, bu, mappedArea, picture: payload.picture || '', name: payload.name || email, ts: Date.now() };
+
+            store.set(KEYS.session, currentUser);
+            document.getElementById('loginModal').classList.add('hidden');
+            setupUserEnvironment();
+        }
+
+        function checkUserSession() {
+            const savedSession = store.get(KEYS.session);
+            if (savedSession && Date.now() - (savedSession.ts || 0) < SESSION_TTL_MS) {
+                currentUser = savedSession;
+                document.getElementById('loginModal').classList.add('hidden');
+                setupUserEnvironment();
+            } else {
+                document.getElementById('loginModal').classList.remove('hidden');
+            }
+        }
+
+        function setupUserEnvironment() {
+            if (!currentUser) return;
+            
+            document.getElementById('userInfoHeader').classList.remove('hidden');
+            document.getElementById('userEmailDisplay').textContent = currentUser.email;
+            document.getElementById('userBUDisplay').textContent = currentUser.bu;
+
+            // Prellenar el buscador de tickets con el correo logueado
+            const emailSearchInput = document.getElementById('userEmailSearchInput');
+            if (emailSearchInput) {
+                emailSearchInput.value = currentUser.email;
+            }
+
+            if (currentUser.picture) {
+                document.getElementById('userAvatarHeader').innerHTML = `<img src="${esc(currentUser.picture)}" class="w-full h-full object-cover" alt="Avatar" />`;
+            }
+
+            if (currentUser.email === ADMIN_EMAIL && currentUser.bu === ADMIN_BU) {
+                document.getElementById('adminReportSection').classList.remove('hidden');
+                populateLogsTable();
+            }
+
+            if (currentUser.bu) {
+                selectedBU = currentUser.bu;
+                selectedArea = BU_AREA_MAP[currentUser.bu] || 'hq';
+                updateBtnStyles('bu-btn', 'btn-bu-' + selectedBU, 'border-[#00529B]', 'bg-blue-50');
+                renderCards();
+            }
+
+            if (window.maybeStartTour) maybeStartTour();
+        }
+
+        function logoutUser() {
+            if (confirm("¿Deseas cerrar sesión?")) {
+                store.remove(KEYS.session);
+                currentUser = null;
+                document.getElementById('userInfoHeader').classList.add('hidden');
+                document.getElementById('adminReportSection').classList.add('hidden');
+                document.getElementById('loginModal').classList.remove('hidden');
+            }
+        }
+
+        function recordUsage(serviceId, serviceTitle, country, brand, area) {
+            analytics.cards[serviceId] = (analytics.cards[serviceId] || 0) + 1;
+            analytics.totalUsage++;
+
+            const now = new Date();
+            const timestamp = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+
+            analytics.logs.unshift({
+                timestamp, userEmail: currentUser ? currentUser.email : 'Anónimo', userBU: currentUser ? currentUser.bu : 'N/A', serviceTitle,
+                filters: `País: ${selectedCountry || 'Todos'} | Marca: ${selectedBrand || 'Todas'} | BU: ${selectedBU || 'Todas'}`
+            });
+
+            if (analytics.logs.length > MAX_LOGS) analytics.logs.length = MAX_LOGS;
+            store.set(KEYS.analytics, analytics);
+            populateLogsTable();
+            renderCards();
+        }
+
+        function populateLogsTable() {
+            const tableBody = document.getElementById('logsTableBody');
+            if (!tableBody || !analytics.logs) return;
+
+            tableBody.innerHTML = analytics.logs.map(log => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 font-mono font-bold text-[#00529B]">${esc(log.timestamp)}</td>
+                    <td class="p-3 font-medium">${esc(log.userEmail)}</td>
+                    <td class="p-3"><span class="bg-blue-50 text-[#003B70] px-2 py-0.5 rounded font-bold">${esc(log.userBU)}</span></td>
+                    <td class="p-3 font-bold">${esc(log.serviceTitle)}</td>
+                    <td class="p-3 text-slate-500">${esc(log.filters)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function downloadCSVReport() {
+            if (!currentUser || currentUser.email !== ADMIN_EMAIL) return;
+            let csvContent = "\uFEFFFecha y Hora,Usuario,BU,Formulario,Filtros\n";
+            analytics.logs.forEach(log => {
+                csvContent += `"${log.timestamp}","${log.userEmail}","${log.userBU}","${log.serviceTitle}","${log.filters}"\n`;
+            });
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `Reporte_Galileo_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+        }
+
+        function setCountry(country) {
+            selectedCountry = (selectedCountry === country) ? null : country;
+            updateBtnStyles('country-btn', 'btn-' + selectedCountry, 'border-[#00529B]', 'bg-blue-50');
+            renderCards();
+        }
+
+        function setBrand(brand) {
+            selectedBrand = (selectedBrand === brand) ? null : brand;
+            updateBtnStyles('brand-btn', 'btn-' + selectedBrand, 'border-[#00529B]', 'bg-blue-50');
+            renderCards();
+        }
+
+        function setBU(bu) {
+            if (selectedBU === bu) { selectedBU = null; selectedArea = null; }
+            else { selectedBU = bu; selectedArea = BU_AREA_MAP[bu] || 'hq'; }
+            updateBtnStyles('bu-btn', selectedBU ? 'btn-bu-' + selectedBU : null, 'border-[#00529B]', 'bg-blue-50');
+            renderCards();
+        }
+
+        function updateBtnStyles(className, activeId, borderClass, bgClass) {
+            document.querySelectorAll('.' + className).forEach(btn => {
+                btn.classList.remove(borderClass, bgClass, 'text-[#00529B]');
+                btn.classList.add('bg-white', 'border-slate-200');
+            });
+            if (activeId) {
+                const activeBtn = document.getElementById(activeId);
+                if (activeBtn) {
+                    activeBtn.classList.remove('bg-white', 'border-slate-200');
+                    activeBtn.classList.add(borderClass, bgClass, 'text-[#00529B]');
+                }
+            }
+        }
+
+        function resetFilters() {
+            selectedCountry = null; selectedBrand = null; selectedBU = null; selectedArea = null;
+            document.getElementById('searchInput').value = '';
+            updateBtnStyles('country-btn', null, 'border-[#00529B]', 'bg-blue-50');
+            updateBtnStyles('brand-btn', null, 'border-[#00529B]', 'bg-blue-50');
+            updateBtnStyles('bu-btn', null, 'border-[#00529B]', 'bg-blue-50');
+            renderCards();
+        }
+
+        function renderCards() {
+            const rawQuery = document.getElementById('searchInput').value.trim();
+            const query = normalize(rawQuery);
+            const grid = document.getElementById('formsGrid');
+            const empty = document.getElementById('emptyState');
+
+            const filtered = services.filter(s => {
+                if ((selectedCountry === 'CO' || selectedCountry === 'CL') && selectedBrand === 'bv') return false;
+                const matchCountry = !selectedCountry || s.country === selectedCountry || s.country === 'ALL';
+                const matchBrand = !selectedBrand || s.brand === 'all' || s.brand === selectedBrand;
+                const matchArea = !selectedArea || s.area === selectedArea;
+                const matchQuery = normalize(s.title).includes(query) || normalize(s.description).includes(query);
+                return matchCountry && matchBrand && matchArea && matchQuery;
+            }).sort((a, b) => (b.suggested ? 1 : 0) - (a.suggested ? 1 : 0));
+
+            document.getElementById('totalCards').textContent = `${filtered.length} Resultados`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = ''; empty.classList.remove('hidden'); return;
+            }
+
+            empty.classList.add('hidden');
+            grid.innerHTML = filtered.map(s => {
+                let brandTag = s.brand === 'bf' ? '<span class="brand-bf text-[9px] uppercase border px-1.5 py-0.5 rounded bg-slate-50 border-slate-300">BEN & FRANK</span>' : (s.brand === 'bv' ? '<span class="brand-bv text-[10px] lowercase border px-1.5 py-0.5 rounded bg-blue-50/60 border-blue-200">bombavista</span>' : '');
+                const suggestedTag = s.suggested ? '<span class="bg-[#FFD100] text-[#003B70] font-extrabold text-[10px] uppercase px-2 py-0.5 rounded flex items-center space-x-1"><i class="fa-solid fa-star text-[9px]"></i><span>Sugerido</span></span>' : '';
+
+                return `
+                <div class="service-card bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-xl flex flex-col justify-between border-t-4 ${s.suggested ? 'border-t-[#FFD100]' : 'border-t-[#00529B]'} relative overflow-hidden">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-1.5">
+                                <span class="text-base">${s.flag}</span>
+                                ${brandTag}
+                                ${suggestedTag}
+                                <span class="bg-blue-50 text-[#00529B] font-extrabold text-[10px] uppercase px-2 py-0.5 rounded border border-blue-100">${AREA_NAMES[s.area] || s.area}</span>
+                            </div>
+                            <i class="fa-solid ${s.icon || 'fa-headset'} text-slate-300 text-base"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-900 text-sm mb-1.5 leading-snug">${s.title}</h3>
+                        <p class="text-xs text-slate-500 leading-relaxed mb-4">${s.description}</p>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 flex items-center space-x-2">
+                        <button data-action="open" data-id="${s.id}" class="flex-grow bg-[#00529B] hover:bg-[#003B70] text-white font-bold py-2 px-3 rounded-xl text-xs transition-colors flex items-center justify-center space-x-2 shadow-sm">
+                            <i class="fa-solid fa-paper-plane text-[#FFD100]"></i>
+                            <span>Llenar Solicitud</span>
+                        </button>
+                        <a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer" data-action="track" data-id="${s.id}" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs transition-colors" title="Abrir en pestaña nueva">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function onGridClick(e) {
+            const el = e.target.closest('[data-action]');
+            const s = el && services.find(x => x.id === el.dataset.id);
+            if (!s) return;
+            recordUsage(s.id, s.title, s.country, s.brand, s.area);
+            if (el.dataset.action === 'open') openViewer(s.id);
+        }
+
+        function openViewer(id) {
+            const serv = services.find(s => s.id === id);
+            if (!serv) return;
+            if (serv.url.includes('casimiros.com')) { window.open(serv.url, '_blank', 'noopener'); return; }
+
+            document.getElementById('modalTitle').textContent = serv.title;
+            document.getElementById('modalFlag').textContent = serv.flag;
+            document.getElementById('modalCategory').textContent = `${COUNTRY_NAMES[serv.country]} - ${AREA_NAMES[serv.area]}`;
+            document.getElementById('modalExternalLink').href = serv.url;
+            
+            const iframe = document.getElementById('modalIframe');
+            document.getElementById('iframeLoader').classList.remove('hidden');
+            iframe.src = serv.url;
+            iframe.onload = () => { document.getElementById('iframeLoader').classList.add('hidden'); };
+            openModal('viewerModal');
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+            if (id === 'viewerModal') { document.getElementById('modalIframe').src = ''; }
+        }
+    </script>
+
+    <!-- TUTORIAL GUIADO AUTOMÁTICO -->
+    <script>
+    (function () {
+        const DONE_PREFIX = 'galileo_tour_done_v1:';
+        const $ = s => document.querySelector(s);
+        const card = el => el && el.closest('div.bg-slate-50');
+
+        const ALL_STEPS = [
+            { el: null, title: '¡Bienvenido a la Central Galileo! 👋', text: 'En menos de un minuto te mostramos cómo encontrar el formulario o consultar tus tickets.' },
+            { el: () => $('#emailSearchSection'), title: 'Consulta de tickets por correo', text: 'Escribe tu correo institucional para listar todos los tickets que tienes registrados en ClickUp con su estatus actualizado.' },
+            { el: () => $('#userInfoHeader'), title: 'Tu sesión', text: 'Muestra la cuenta corporativa de Google y tu BU seleccionada.' },
+            { el: () => card($('#btn-MX')), title: '1. Elige el país', text: 'Filtra por México, Colombia o Chile.' },
+            { el: () => card($('#btn-bf')), title: '2. Elige la marca', text: 'Filtra por Ben & Frank o Bombavista.' },
+            { el: () => card($('#btn-bu-HQ')), title: '3. Elige tu área (BU)', text: 'Preselecciona según tu departamento registrado.' },
+            { el: () => card($('#searchInput')), title: '4. Búsqueda directa', text: 'Escribe una palabra clave sobre la falla o requerimiento.' },
+            { el: () => $('#formsGrid .service-card'), title: 'Tarjetas de servicio', text: 'Haz clic en Llenar Solicitud para abrir el formulario interactivo.' },
+            { el: () => $('#tourHelpBtn'), title: '¡Listo! 🎉', text: 'Pulsa el botón Ver tutorial cuando quieras repetir el recorrido.' }
+        ];
+
+        let steps = [], idx = 0, running = false;
+        const root = $('#tourRoot'), spot = $('#tourSpot'), tip = $('#tourTip');
+
+        const doneKey = () => DONE_PREFIX + ((typeof currentUser !== 'undefined' && currentUser && currentUser.email) || 'anon');
+        const isDone = () => { try { return !!localStorage.getItem(doneKey()); } catch { return false; } };
+        const markDone = () => { try { localStorage.setItem(doneKey(), '1'); } catch {} };
+
+        function render() {
+            const s = steps[idx];
+            $('#tourCount').textContent = `Paso ${idx + 1} de ${steps.length}`;
+            $('#tourTitle').textContent = s.title;
+            $('#tourText').textContent = s.text;
+            $('#tourDots').innerHTML = steps.map((_, i) => `<i class="${i <= idx ? 'on' : ''}"></i>`).join('');
+            $('#tourPrev').style.visibility = idx === 0 ? 'hidden' : 'visible';
+            $('#tourNext').textContent = idx === steps.length - 1 ? 'Finalizar' : 'Siguiente';
+
+            const el = s.el && s.el();
+            if (el) el.scrollIntoView({ block: 'center', behavior: 'auto' });
+            requestAnimationFrame(place);
+        }
+
+        function place() {
+            if (!running) return;
+            const s = steps[idx], el = s.el && s.el();
+            const vw = window.innerWidth, vh = window.innerHeight;
+            const tw = tip.offsetWidth, th = tip.offsetHeight, gap = 14, pad = 6;
+            let top, left;
+
+            if (el) {
+                const r = el.getBoundingClientRect();
+                spot.style.top = (r.top - pad) + 'px';
+                spot.style.left = (r.left - pad) + 'px';
+                spot.style.width = (r.width + pad * 2) + 'px';
+                spot.style.height = (r.height + pad * 2) + 'px';
+                top = r.bottom + pad + gap;
+                left = r.left + r.width / 2 - tw / 2;
+            } else {
+                spot.style.top = (vh / 2) + 'px'; spot.style.left = (vw / 2) + 'px';
+                spot.style.width = '0px'; spot.style.height = '0px';
+                top = (vh - th) / 2; left = (vw - tw) / 2;
+            }
+            tip.style.top = Math.max(12, Math.min(top, vh - th - 12)) + 'px';
+            tip.style.left = Math.max(12, Math.min(left, vw - tw - 12)) + 'px';
+        }
+
+        function go(n) {
+            if (n < 0) return;
+            if (n >= steps.length) return end();
+            idx = n; render();
+        }
+
+        function end() {
+            running = false; markDone(); root.classList.remove('on');
+        }
+
+        window.startTour = function (manual) {
+            if (running) return;
+            if (!manual && isDone()) return;
+            steps = ALL_STEPS.filter(s => !s.el || s.el());
+            idx = 0; running = true; root.classList.add('on'); render();
+        };
+
+        window.maybeStartTour = function () {
+            $('#tourHelpBtn').classList.add('show');
+            if (!isDone()) setTimeout(() => window.startTour(false), 700);
+        };
+
+        $('#tourNext').addEventListener('click', () => go(idx + 1));
+        $('#tourPrev').addEventListener('click', () => go(idx - 1));
+        $('#tourSkip').addEventListener('click', end);
+    })();
+    </script>
+</body>
+</html>
