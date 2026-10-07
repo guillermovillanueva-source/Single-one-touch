@@ -692,7 +692,6 @@
             const docDate = formatGalileoDate(ticket.lastDocumentationDate);
             const updated = formatGalileoDate(ticket.dateUpdated);
             const created = formatGalileoDate(ticket.dateCreated);
-            const link = ticket.clickupUrl || (ticket.id ? `https://app.clickup.com/t/${ticket.id}` : '');
 
             return `
                 <article class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
@@ -706,20 +705,7 @@
                             </div>
                             <h4 class="text-base font-extrabold text-slate-900">${esc(title)}</h4>
                         </div>
-                        ${link ? `
-                            <a href="${esc(link)}" target="_blank" rel="noopener noreferrer"
-                               class="shrink-0 inline-flex items-center gap-2 bg-[#00529B] hover:bg-[#003B70] text-white px-4 py-2 rounded-xl text-xs font-bold">
-                                <i class="fa-solid fa-arrow-up-right-from-square text-[#FFD100]"></i>
-                                Abrir en ClickUp
-                            </a>` : ''}
-                    </div>
-
-                    <div class="p-5">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-                            <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
-                                <p class="text-[9px] font-black uppercase tracking-wider text-slate-400">Creado</p>
-                                <p class="text-xs font-semibold text-slate-700 mt-1">${esc(created)}</p>
-                            </div>
+                     </div>
                             <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
                                 <p class="text-[9px] font-black uppercase tracking-wider text-slate-400">Última actualización</p>
                                 <p class="text-xs font-semibold text-slate-700 mt-1">${esc(updated)}</p>
